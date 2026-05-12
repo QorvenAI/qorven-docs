@@ -1,0 +1,140 @@
+---
+title: "PostgreSQL Setup"
+description: "Set up PostgreSQL for Qorven — automatic installer setup, manual configuration, and required extensions."
+sidebarTitle: "PostgreSQL Setup"
+icon: "database"
+---
+
+Qorven requires PostgreSQL 14 or later with the `pgvector` extension. The one-line installer handles all of this automatically. This page covers manual setup if you are integrating with an existing PostgreSQL instance.
+
+## Automatic setup
+
+If you are starting fresh, the installer does everything:
+
+```bash
+curl -fsSL https://get.qorven.ai | sudo bash
+```
+
+This installs PostgreSQL 16, enables `pgvector`, creates the `qorven` database and user, and writes the connection string to `config.toml`.
+
+## Manual setup
+
+### 1. Install PostgreSQL
+
+```bash
+# Ubuntu / Debian
+sudo apt install postgresql postgresql-contrib
+
+# RHEL / CentOS
+sudo dnf install postgresql-server postgresql-contrib
+sudo postgresql-setup --initdb
+sudo systemctl enable --now postgresql
+```
+
+PostgreSQL 14, 15, or 16 are all supported. PostgreSQL 16 is recommended.
+
+### 2. Create the database and user
+
+```bash
+sudo -u postgres psql <<EOF
+CREATE USER qorven WITH PASSWORD 'your-secure-password';
+CREATE DATABASE qorven OWNER qorven;
+GRANT ALL PRIVILEGES ON DATABASE qorven TO qorven;
+EOF
+```
+
+### 3. Install pgvector
+
+pgvector is required for agent memory search. See [pgvector](/ops/pgvector) for detailed installation instructions.
+
+Quick install:
+
+```bash
+# Ubuntu — from the PostgreSQL apt repository
+sudo apt install postgresql-16-pgvector
+
+# Enable it in the database
+sudo -u postgres psql -d qorven -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+
+### 4. Configure the connection string
+
+Add the connection string to `/etc/qorven/config.toml`:
+
+```toml
+[database]
+url = "postgres://qorven:your-secure-password@localhost:5432/qorven?sslmode=disable"
+```
+
+For an SSL connection to a remote or managed database:
+
+```toml
+[database]
+url = "postgres://qorven:your-secure-password@db.example.com:5432/qorven?sslmode=require"
+```
+
+### 5. Verify
+
+Run the Qorven diagnostics:
+
+```bash
+qorven doctor
+```
+
+```
+[ok] database: connected (2ms)
+[ok] pgvector: installed (0.7.0)
+[ok] migrations: up to date (42 migrations)
+```
+
+If the check fails, see [Database errors](/ops/troubleshooting/database-errors).
+
+## Using a managed PostgreSQL service
+
+Qorven works with hosted PostgreSQL services — AWS RDS, Google Cloud SQL, Supabase, Neon — provided:
+
+1. The service runs PostgreSQL 14+ with the `pgvector` extension available.
+2. Your Qorven server can reach the database host on port 5432.
+
+**AWS RDS:** Enable pgvector via `CREATE EXTENSION vector;` after creating the database. Use `?sslmode=require` in the connection string.
+
+**Supabase:** pgvector is enabled by default. Use the connection pooler URL for production.
+
+**Neon:** pgvector is enabled by default. Use the pooled connection string.
+
+<Warning>
+  Some managed PostgreSQL tiers do not support pgvector. Without it, agent memory search falls back to keyword-only mode and loses semantic matching. See [pgvector](/ops/pgvector).
+</Warning>
+
+## Connection pooling
+
+Qorven maintains its own connection pool. The default pool size is 20 connections.
+
+```toml
+[database]
+max_connections = 20
+min_connections = 2
+```
+
+For high-concurrency deployments, increase `max_connections`. If your PostgreSQL server has a low `max_connections` setting, use PgBouncer in front of it (transaction-mode pooling).
+
+## Backup
+
+The database contains all of Qorven's persistent data. Back it up regularly. See [Backup and restore](/gateway/backup-restore).
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="pgvector" icon="search" href="/ops/pgvector">
+    Installing and verifying the vector extension.
+  </Card>
+  <Card title="Encryption key" icon="key" href="/ops/encryption-key">
+    Secrets stored in the database are encrypted.
+  </Card>
+  <Card title="Backup and restore" icon="archive" href="/gateway/backup-restore">
+    Database backup strategy.
+  </Card>
+  <Card title="Database errors" icon="database" href="/ops/troubleshooting/database-errors">
+    Diagnosing connection and schema errors.
+  </Card>
+</CardGroup>

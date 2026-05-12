@@ -1,0 +1,55 @@
+---
+title: "Text to Speech"
+description: "Convert agent responses to spoken audio for voice chat, Telegram voice messages, and hands-free workflows."
+sidebarTitle: "Text to Speech"
+icon: "volume-2"
+---
+
+Text to Speech (TTS) converts an agent's text response into audio so you can hear it instead of reading it. It is used automatically when you are in voice chat mode, and it powers voice replies on the Telegram channel.
+
+## Providers
+
+Qorven supports multiple TTS providers. The one that is used depends on which keys you have configured:
+
+| Provider | Quality | Setup required |
+|----------|---------|---------------|
+| OpenAI TTS | High — natural-sounding voices | OpenAI API key |
+| ElevenLabs | Highest — highly realistic, voice cloning available | ElevenLabs API key |
+| System TTS | Basic — uses the OS speech engine | None — works out of the box |
+
+Qorven tries providers in the order listed above and falls back automatically if a provider is unavailable.
+
+## Choosing a voice
+
+Go to **Settings → Voice** to select your preferred voice. The available voices depend on your configured provider:
+
+- **OpenAI TTS:** alloy, echo, fable, onyx, nova, shimmer
+- **ElevenLabs:** all voices in your ElevenLabs account, including custom clones
+- **System TTS:** voices installed on the server OS
+
+The voice setting is per-workspace and applies to all agents unless overridden per-agent.
+
+## Where TTS is used
+
+**Voice chat mode** — when you enable voice chat in the dashboard, agent responses are spoken aloud through your browser. TTS fires automatically; you do not need to do anything.
+
+**Telegram voice messages** — agents can reply with voice messages on Telegram. Enable this in the channel's settings. Useful for quick spoken updates without opening the dashboard.
+
+**Manual trigger** — in chat, click the speaker icon on any agent message to hear it read aloud.
+
+## Latency
+
+TTS adds a short delay (typically 0.5–2 seconds) before audio starts playing. ElevenLabs is slightly slower than OpenAI TTS because the audio is streamed from their servers, but the voice quality is noticeably better for conversational use.
+
+<Info>
+  Streaming TTS (audio starts playing before the full response is generated) is supported with OpenAI TTS and ElevenLabs. System TTS generates the complete audio file first.
+</Info>
+
+<CardGroup cols={2}>
+  <Card title="Speech to Text" icon="mic" href="/tools/media/stt">
+    Speak to agents instead of typing.
+  </Card>
+  <Card title="Telegram channel" icon="send" href="/channels/telegram">
+    Send and receive voice messages over Telegram.
+  </Card>
+</CardGroup>

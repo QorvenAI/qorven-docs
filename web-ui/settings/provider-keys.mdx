@@ -1,0 +1,106 @@
+---
+title: "Provider Keys"
+description: "Add API keys for AI model providers to unlock the models your agents can use."
+sidebarTitle: "Provider Keys"
+icon: "key"
+---
+
+Provider Keys is where you connect Qorven to AI model providers. Add an API key for a provider and its models immediately become available for your agents to use.
+
+## Supported providers
+
+<CardGroup cols={2}>
+  <Card title="Anthropic" icon="sparkles">
+    Claude Sonnet, Claude Haiku, Claude Opus. Best for reasoning, long documents, and instruction-following.
+  </Card>
+  <Card title="OpenAI" icon="zap">
+    GPT-4o, GPT-4o mini, o1, o3. Strong across general tasks; o-series models for multi-step reasoning.
+  </Card>
+  <Card title="Google" icon="google">
+    Gemini 2.0 Flash, Gemini 1.5 Pro. Long context windows; multimodal (text and images).
+  </Card>
+  <Card title="DeepSeek" icon="brain">
+    DeepSeek V3, DeepSeek R1. High performance at low cost for Chinese and English tasks.
+  </Card>
+  <Card title="Groq" icon="zap">
+    Llama and Mixtral models via Groq's fast inference. Useful for high-speed, low-latency tasks.
+  </Card>
+  <Card title="Mistral" icon="wind">
+    Mistral Large, Mistral Small, Codestral. Strong European option; Codestral for code tasks.
+  </Card>
+  <Card title="AWS Bedrock" icon="cloud">
+    Access Anthropic, Meta, and Amazon models via your AWS account. Useful if you have existing AWS commitments.
+  </Card>
+  <Card title="Ollama" icon="server">
+    Run open-source models locally on your Qorven server. No external API calls; data stays fully on-premise.
+  </Card>
+</CardGroup>
+
+## Adding a key
+
+<Steps>
+  <Step title="Get your API key">
+    Log in to the provider's platform and generate an API key. Keep it somewhere safe — most providers only show it once.
+  </Step>
+  <Step title="Open Provider Keys">
+    Go to **Settings → Provider Keys**.
+  </Step>
+  <Step title="Click Add Key">
+    Select the provider from the dropdown and paste your API key.
+  </Step>
+  <Step title="Test the key">
+    Click **Test** before saving. Qorven makes a minimal API call to verify the key is valid and has access to at least one model. If the test fails, check that the key hasn't expired and has the right permissions.
+  </Step>
+  <Step title="Save">
+    The key is encrypted and stored. The provider's models immediately appear in agent model selectors.
+  </Step>
+</Steps>
+
+## Key storage
+
+Keys are encrypted at rest using AES-256. They are decrypted in memory only when an agent needs to make a model call. Keys are never exposed in the UI after saving — the display shows only the first 8 characters followed by asterisks.
+
+## Managing existing keys
+
+Each saved key shows:
+
+- Provider name
+- Truncated key value
+- Date added
+- Last used timestamp
+- Test status (valid / expired / error)
+
+To update a key (e.g., after rotating it), click **Edit** on the key row and paste the new value.
+
+## AWS Bedrock setup
+
+AWS Bedrock requires an IAM access key rather than a single API key. You'll be asked for:
+
+- AWS Access Key ID
+- AWS Secret Access Key
+- AWS Region (e.g., `us-east-1`)
+
+Ensure the IAM user has the `AmazonBedrockFullAccess` policy or a scoped equivalent.
+
+## Ollama setup
+
+For Ollama, enter the URL of your Ollama server (e.g., `http://localhost:11434`). Qorven will query the Ollama API to discover which models are available on that instance. No API key is required.
+
+<Info>
+  Ollama models run on your hardware. Performance depends on your server's CPU/GPU. For production use, a GPU is strongly recommended.
+</Info>
+
+## Which models does each key unlock?
+
+After adding a key, go to any agent's configuration and open the **Model** dropdown. All models from that provider appear there. The model list updates automatically when providers release new models — no Qorven update required.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Agents" icon="brain" href="/web-ui/qors-page">
+    Assign models to individual agents.
+  </Card>
+  <Card title="OAuth Apps" icon="link" href="/web-ui/settings/oauth-apps">
+    Add credentials for connector services (not model providers).
+  </Card>
+</CardGroup>

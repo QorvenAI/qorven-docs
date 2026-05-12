@@ -1,0 +1,71 @@
+---
+title: "Agents"
+description: "Create and configure the AI agents that run your workspace — set instructions, choose models, and manage tools and memory."
+sidebarTitle: "Agents"
+icon: "brain"
+---
+
+The Agents page is where you manage every AI agent in your workspace. Built-in agents like Prime, Researcher, Writer, Developer, and Email Agent are listed here alongside any custom agents you've created.
+
+## Built-in agents
+
+| Agent | Role |
+|---|---|
+| **Prime** | Lead agent and Chief of Staff. Coordinates other agents, handles general requests, and manages tasks that don't belong to a specialist. |
+| **Researcher** | Web research, fact-finding, competitive analysis, and summarization. |
+| **Developer** | Code writing, debugging, code review, and repository management. Works with the Code Editor. |
+| **Writer** | Long-form content, emails, reports, and anything requiring polished writing. |
+| **Email Agent** | Inbox triage, draft replies, and email sending. Works with the Mail page. |
+
+## Viewing an agent's configuration
+
+Click any agent to open its detail panel. From here you can see:
+
+- **Instructions** — the system prompt that defines the agent's behavior and persona
+- **Model** — which AI model the agent uses (e.g., Claude Sonnet, GPT-4o)
+- **Tools** — which of Qorven's 70+ built-in tools the agent has access to
+- **Skills** — installed procedures from the Marketplace
+- **Memory** — memories this agent has stored (links to the filtered Memories view)
+- **Recent activity** — the last 20 tasks this agent completed
+
+## Editing instructions
+
+Click the **Instructions** field to edit inline. Changes take effect on the agent's next conversation — you do not need to restart anything.
+
+<Tip>
+  Instructions work best when they are specific and include examples. Instead of "be professional," write "reply to client emails in a concise, formal tone and always include next steps."
+</Tip>
+
+## Enabling and disabling agents
+
+Use the toggle at the top of any agent panel to enable or disable it. A disabled agent does not respond to messages, execute tasks, or appear in agent selection menus. Its configuration and memories are preserved.
+
+## Creating a custom agent
+
+Click **New Agent** at the top of the Agents page. You'll be asked to provide:
+
+1. **Name** — what this agent is called
+2. **Instructions** — its role, behavior, and any standing rules
+3. **Model** — choose from any model you've added in [Provider Keys](/web-ui/settings/provider-keys)
+4. **Tools** — select which tools to enable from the full tool list
+
+Custom agents can be used in chat, assigned tasks, given schedules, and connected to channels just like built-in agents.
+
+## Assigning channels to agents
+
+Each agent can be the designated responder for one or more channels. For example, you might have a custom "Support Agent" that handles all incoming Slack messages from your `#support` channel. Configure channel assignments in the Connectors and channel settings pages.
+
+## Agent models
+
+Each agent can use a different AI model. Use a more capable (and expensive) model for Prime and Developer, and a faster model for high-volume tasks like inbox triage. Model availability depends on which [Provider Keys](/web-ui/settings/provider-keys) you have configured.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Marketplace" icon="shopping-bag" href="/web-ui/marketplace">
+    Install community-built skills for your agents.
+  </Card>
+  <Card title="Schedule" icon="clock" href="/web-ui/schedule">
+    Set up recurring tasks for your agents.
+  </Card>
+</CardGroup>

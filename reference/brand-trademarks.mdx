@@ -1,0 +1,127 @@
+---
+title: "Brand names, trademarks, and icon attribution"
+description: "How Qorven uses third-party brand names and logos, and who owns them. Nominative fair use with disclaimer."
+sidebarTitle: "Trademarks & attribution"
+icon: "copyright"
+---
+
+<Info>
+  Qorven integrates with many third-party services. We reference and depict those brands to help you identify which one you're configuring. **We do not claim any ownership of these brands, nor are we endorsed, sponsored, or affiliated with them.**
+</Info>
+
+## Nominative fair use — why logos appear here
+
+Every logo on these docs appears under the legal doctrine of **nominative fair use**. We use brand names and logos only to:
+
+1. Identify the specific service you're connecting to (so you don't confuse Slack with Slacker)
+2. Show you at a glance which provider a page covers
+3. Never imply endorsement, partnership, or affiliation
+
+If a logo owner prefers we use a text badge instead, email `docs@qorven.ai` and we'll swap to plain text within one business day.
+
+## Trademark ownership (alphabetical)
+
+| Brand | Owner | Used on |
+|---|---|---|
+| Alibaba Cloud / DashScope / Qwen | Alibaba Group Holding Limited | [DashScope provider](/models/providers/dashscope) |
+| Amazon Web Services / Bedrock | Amazon.com, Inc. or its affiliates | [Bedrock provider](/models/providers/bedrock) |
+| Anthropic / Claude | Anthropic, PBC | [Anthropic provider](/models/providers/anthropic) |
+| Apple / iMessage | Apple Inc. | [iMessage channel](/channels/imessage) |
+| DeepSeek | DeepSeek (Hangzhou) AI Fundamental Technology Co., Ltd. | [DeepSeek provider](/models/providers/deepseek) |
+| DingTalk | Alibaba Group | [DingTalk channel](/channels/dingtalk) |
+| Discord | Discord Inc. | [Discord channel](/channels/discord) |
+| Facebook / Messenger / WhatsApp | Meta Platforms, Inc. | [Messenger](/channels/facebook), [WhatsApp](/channels/whatsapp) |
+| Feishu / Lark | ByteDance Ltd. | [Feishu channel](/channels/feishu) |
+| Fireworks AI | Fireworks AI, Inc. | [Fireworks provider](/models/providers/fireworks) |
+| GitHub | GitHub, Inc. (Microsoft) | [GitHub channel](/channels/github) |
+| Gmail / Google / Gemini | Google LLC | [Gmail/email](/channels/email), [Gemini provider](/models/providers/gemini) |
+| Groq | Groq, Inc. | [Groq provider](/models/providers/groq) |
+| LINE | LINE Corporation | [LINE channel](/channels/line) |
+| LM Studio | Element Labs, Inc. | [LM Studio provider](/models/providers/lmstudio) |
+| Matrix | The Matrix.org Foundation | [Matrix channel](/channels/matrix) |
+| Mattermost | Mattermost, Inc. | [Mattermost channel](/channels/mattermost) |
+| Microsoft / Teams | Microsoft Corporation | [Teams channel](/channels/teams) |
+| Mistral AI | Mistral AI | [Mistral provider](/models/providers/mistral) |
+| Ollama | Ollama, Inc. | [Ollama provider](/models/providers/ollama) |
+| OpenAI / GPT / ChatGPT | OpenAI OpCo, LLC | [OpenAI provider](/models/providers/openai) |
+| OpenRouter | OpenRouter, Inc. | [OpenRouter provider](/models/providers/openrouter) |
+| Perplexity | Perplexity AI, Inc. | [Perplexity provider](/models/providers/perplexity) |
+| Signal | Signal Foundation | [Signal channel](/channels/signal) |
+| Slack | Slack Technologies, LLC (Salesforce) | [Slack channel](/channels/slack) |
+| Telegram | Telegram FZ-LLC | [Telegram channel](/channels/telegram) |
+| Together AI | Together Computer, Inc. | [Together provider](/models/providers/together) |
+| Twilio | Twilio Inc. | [SMS channel](/channels/sms) |
+| WeChat / WeCom | Tencent Holdings Limited | [WeCom channel](/channels/wecom) |
+| Zalo | VNG Corporation | [Zalo channel](/channels/zalo) |
+
+All brand names, logos, and trademarks are the property of their respective owners.
+
+## Icon libraries used (credit)
+
+Qorven's docs are built with SVG icons from these open-source projects. We're grateful for the work and happy to point you at the upstream.
+
+<CardGroup cols={2}>
+  <Card title="thesvg" icon="github" href="https://github.com/glincker/thesvg">
+    MIT-licensed — the primary source for AI-provider and channel brand logos. ~11,000 icons covering OpenAI, Anthropic, Slack, Telegram, and essentially every service we integrate with.
+  </Card>
+  <Card title="lobe-icons" icon="github" href="https://github.com/lobehub/lobe-icons">
+    MIT-licensed — backup source for AI-provider logos. Excellent coverage of LLM providers with brand-colored variants.
+  </Card>
+  <Card title="simple-icons" icon="github" href="https://github.com/simple-icons/simple-icons">
+    CC0 — used for some general-purpose brand icons.
+  </Card>
+  <Card title="lucide" icon="github" href="https://lucide.dev/">
+    ISC-licensed — every non-brand icon in the docs (navigation, callouts, section headers).
+  </Card>
+</CardGroup>
+
+## Open-source projects Qorven builds on
+
+Qorven's backend, runtime, and tooling stand on the shoulders of many open-source projects. The full list is in the repo's [`NOTICE`](https://github.com/qorvenai/qorven/blob/main/NOTICE) file; here are the major ones:
+
+<CardGroup cols={3}>
+  <Card title="Go" href="https://go.dev/" icon="code">BSD — the runtime.</Card>
+  <Card title="PostgreSQL" href="https://www.postgresql.org/" icon="database">PostgreSQL License — the data layer.</Card>
+  <Card title="pgvector" href="https://github.com/pgvector/pgvector" icon="database">PostgreSQL License — vector search inside Postgres.</Card>
+  <Card title="chi router" href="https://github.com/go-chi/chi" icon="route">MIT — HTTP routing.</Card>
+  <Card title="Next.js" href="https://nextjs.org/" icon="layers">MIT — web UI framework.</Card>
+  <Card title="React" href="https://react.dev/" icon="atom">MIT — UI library.</Card>
+  <Card title="Tailwind CSS" href="https://tailwindcss.com/" icon="palette">MIT — styling.</Card>
+  <Card title="shadcn/ui" href="https://ui.shadcn.com/" icon="component">MIT — component primitives.</Card>
+  <Card title="Motion" href="https://motion.dev/" icon="film">MIT — animations.</Card>
+  <Card title="chromedp" href="https://github.com/chromedp/chromedp" icon="globe">MIT — headless Chrome automation for browser tools.</Card>
+  <Card title="Playwright" href="https://playwright.dev/" icon="test-tube">Apache-2.0 — browser automation + screenshot capture.</Card>
+  <Card title="Shiki" href="https://shiki.matsu.io/" icon="highlighter">MIT — VSCode-grade code highlighting.</Card>
+  <Card title="Mermaid" href="https://mermaid.js.org/" icon="git-merge">MIT — diagram rendering.</Card>
+  <Card title="TanStack Query" href="https://tanstack.com/query" icon="refresh-cw">MIT — data-fetching.</Card>
+  <Card title="Zustand" href="https://github.com/pmndrs/zustand" icon="box">MIT — state management.</Card>
+  <Card title="Sonner" href="https://sonner.emilkowal.ski/" icon="bell">MIT — toast notifications.</Card>
+  <Card title="Lucide" href="https://lucide.dev/" icon="image">ISC — icon library.</Card>
+  <Card title="Radix UI" href="https://www.radix-ui.com/" icon="component">MIT — primitives.</Card>
+</CardGroup>
+
+If your project is used in Qorven and isn't listed here or in `NOTICE`, open a PR or email `docs@qorven.ai` — we want credit to be complete.
+
+## Patches back upstream
+
+Where Qorven has contributed fixes back to upstream projects, we list them in [`CONTRIBUTIONS-UPSTREAM.md`](https://github.com/qorvenai/qorven/blob/main/CONTRIBUTIONS-UPSTREAM.md) in the repo.
+
+## Report a missing attribution
+
+- **Missing logo owner** — email `docs@qorven.ai`, we'll add within 24h
+- **Missing OSS project credit** — open a PR on the [qorven-docs repo](https://github.com/qorvenai/qorven-docs) or email us
+- **Trademark concern** — email `legal@qorven.ai`; we prioritise these
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Licensing (Qorven itself)" icon="file-text" href="/reference/licensing">
+    FSL-1.1-ALv2 in plain English.
+  </Card>
+  <Card title="Privacy" icon="eye-off" href="/reference/privacy">
+    What data Qorven sends where.
+  </Card>
+  <Card title="Contributors" icon="users" href="/reference/contributors">
+    Who built this.
+  </Card>
+</CardGroup>

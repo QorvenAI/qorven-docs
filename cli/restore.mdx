@@ -1,0 +1,51 @@
+---
+title: "qorven restore"
+description: "Restore your Qorven instance from a backup created by 'qorven backup'."
+sidebarTitle: "restore"
+icon: "upload"
+---
+
+<Info>Generated from `qorven restore --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Restore your Qorven instance from a backup created by 'qorven backup'.
+
+The restore process:
+  1. Reads the backup archive
+  2. For each table, performs INSERT ... ON CONFLICT DO NOTHING
+     (existing data is preserved, backup fills in missing records)
+  3. Reports how many records were restored per table
+
+Use --overwrite to replace existing records with backup data.
+
+Examples:
+  qorven restore qorven-backup-20260416-120000.tar.gz
+  qorven restore backup.tar.gz --overwrite
+
+Usage:
+  qorven restore <backup.tar.gz> [flags]
+
+Flags:
+  -h, --help        help for restore
+      --overwrite   Replace existing records with backup data
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

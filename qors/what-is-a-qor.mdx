@@ -1,0 +1,70 @@
+---
+title: "What is an Agent?"
+description: "Every agent in Qorven has a name, a role, a set of tools, and memory. Here's how they work — and how they work together."
+sidebarTitle: "What is an Agent?"
+icon: "brain"
+---
+
+<Info>
+  An **agent** in Qorven is a specialist with a job. You give it a name, tell it what to do in plain English, choose which tools it can use, and Qorven does the rest. Your agents run when you need them — in the background, on a schedule, or the moment a message arrives.
+</Info>
+
+## Your built-in team
+
+Every Qorven install comes with a ready-to-use team of five agents. You can use them as-is, customise them, or add your own.
+
+| Agent | Role | What it does |
+|---|---|---|
+| **Prime** | Lead Agent | Your AI Chief of Staff. Understands your request, decides who handles it, and coordinates the work. |
+| **Researcher** | Intelligence | Deep web research, source verification, structured briefings. |
+| **Developer** | Engineering | Reads and writes code, runs tests, opens pull requests, fixes bugs. |
+| **Writer** | Communications | Drafts emails, reports, social posts, and anything else that needs words. |
+| **Email Agent** | Inbox Operations | Monitors your inbox, triages messages, drafts replies, sends with your approval. |
+
+## Prime: your lead agent
+
+Prime is the agent you talk to by default. When you send a message, Prime decides what needs to happen and who should do it.
+
+**Ask Prime anything.** If the task needs research, Prime delegates to the Researcher. If it needs code written, the Developer picks it up. If it needs a well-written summary, the Writer handles it. You don't have to think about which agent to use — Prime does that coordination for you.
+
+## What each agent owns
+
+Every agent has its own identity, memory, tools, and model. You can configure all of these:
+
+| | |
+|---|---|
+| **Name & role description** | How Prime identifies and routes work to this agent |
+| **Instructions** | Plain-English directions — the agent's "job description" |
+| **Model** | Which AI model this agent uses (can differ from other agents) |
+| **Tools** | Which built-in capabilities this agent can use |
+| **Memory** | What this agent remembers from past conversations |
+
+## How agents run
+
+Agents in Qorven don't run constantly — they activate when there's work to do. When a message arrives:
+
+1. The agent loads its instructions, recent history, and relevant memories
+2. It calls the AI model with your message
+3. If it needs to use a tool (search the web, read a file, send an email), it does that and continues
+4. It sends back its reply and saves anything worth remembering for next time
+
+When the conversation ends, the agent goes quiet. No idle processes, no background compute.
+
+## Creating your own agents
+
+You can create agents for anything specific to your work — a customer support agent, an agent that monitors your Slack, one that tracks your shipments, or one trained on your company's internal docs.
+
+<CardGroup cols={2}>
+  <Card title="Create an agent" icon="plus" href="/qors/creating-a-qor">
+    Step-by-step guide to building a new agent.
+  </Card>
+  <Card title="Write good instructions" icon="file-text" href="/qors/system-prompts">
+    How to write agent instructions that actually work.
+  </Card>
+  <Card title="Choose tools" icon="wrench" href="/qors/tools">
+    What tools are available and how to control what each agent can do.
+  </Card>
+  <Card title="Agent memory" icon="database" href="/memory/overview">
+    How agents remember things — and how to browse and edit those memories.
+  </Card>
+</CardGroup>

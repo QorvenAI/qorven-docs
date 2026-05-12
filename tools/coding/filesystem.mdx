@@ -1,0 +1,78 @@
+---
+title: "Filesystem"
+description: "Read, write, move, and search files on the Qorven host. The foundation for your Developer agent's code work."
+sidebarTitle: "Filesystem"
+icon: "file-code"
+---
+
+<Info>
+  The filesystem tool gives agents the ability to read and write files on the Qorven server. It's the primary tool your Developer agent uses to work with your codebase.
+</Info>
+
+## What it can do
+
+| Operation | What happens |
+|---|---|
+| `read_file` | Returns the full contents of a file |
+| `write_file` | Creates or overwrites a file with new content |
+| `edit_file` | Makes targeted changes to a specific part of a file |
+| `list_dir` | Lists files and folders in a directory |
+| `create_dir` | Creates a new directory |
+| `move_file` | Moves or renames a file |
+| `delete_file` | Deletes a file (requires approval) |
+| `search_files` | Searches file contents by pattern |
+
+## How your Developer agent uses it
+
+When you ask your Developer agent to make a change to your code, it:
+
+1. Uses `list_dir` and `read_file` to understand the relevant files
+2. Plans the changes
+3. Uses `edit_file` or `write_file` to make the changes
+4. Uses `exec` to run tests and verify the changes work
+5. Reports back with what it did
+
+You see every file read and write as it happens in the chat interface.
+
+## Working with projects
+
+Register a project directory with Qorven to give your agents quick access to a codebase:
+
+```bash
+qorven projects add --name "my-app" --path /home/user/projects/my-app
+```
+
+Once registered, your Developer agent knows about the project and can navigate it efficiently without needing to be told the path every time.
+
+## Security: scoped access
+
+By default, the filesystem tool operates within the Qorven data directory and any registered project paths. Agents cannot read arbitrary system files unless you've explicitly granted broader access.
+
+To limit a specific agent to a particular directory:
+
+```yaml
+tools_config:
+  filesystem:
+    allowed_paths:
+      - /home/user/projects/my-app
+      - /var/lib/qorven/uploads
+```
+
+Destructive operations (`delete_file`, `write_file` outside approved paths) require approval by default.
+
+## Related tools
+
+<CardGroup cols={2}>
+  <Card title="Exec" icon="terminal" href="/tools/coding/exec">
+    Run shell commands — tests, builds, scripts.
+  </Card>
+  <Card title="Glob & Grep" icon="search" href="/tools/coding/glob-grep">
+    Search across files by pattern or content.
+  </Card>
+  <Card title="Apply Patch" icon="git-merge" href="/tools/coding/apply-patch">
+    Apply a unified diff patch to a file or directory.
+  </Card>
+  <Card title="Codebase Digest" icon="book" href="/tools/coding/codebase-digest">
+    Get a structured summary of a codebase for context.
+  </Card>
+</CardGroup>

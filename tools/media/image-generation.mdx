@@ -1,0 +1,69 @@
+---
+title: "Image Generation"
+description: "Agents can generate images from text descriptions — logos, diagrams, social visuals, UI mockups — saved automatically to Drive."
+sidebarTitle: "Image Generation"
+icon: "image"
+---
+
+The image generation tool lets agents create images from text descriptions. Ask an agent to produce a logo concept, a diagram, a social media visual, or a UI mockup and it will generate an image and save it to Drive for you.
+
+## Examples
+
+```
+"Generate a clean logo concept for a company called Meridian — minimal, dark background, teal accent"
+```
+
+```
+"Create a diagram showing a three-tier web architecture: browser → load balancer → app servers → database"
+```
+
+```
+"Make a 1200×630 social media banner for our product launch next week — modern, professional, blue theme"
+```
+
+```
+"Generate a rough UI mockup for a mobile expense submission form"
+```
+
+## Providers
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| OpenAI | DALL-E 3 | Default if an OpenAI key is configured; excellent for detailed prompts |
+| Stability AI | Stable Diffusion | Requires a Stability AI key |
+| Local (Ollama) | Stable Diffusion via Ollama | Runs on your server; no API key needed; GPU recommended |
+
+Configure your preferred provider in **Settings → AI Providers**. If multiple providers are configured, you can instruct the agent to use a specific one: *"Generate this with DALL-E 3."*
+
+## Image output
+
+Generated images are:
+
+- Saved automatically to **Drive** under `Generated/Images/`
+- Shown inline in the chat conversation
+- Downloadable directly from the chat or Drive
+
+Images are saved in PNG format at the provider's native resolution (1024×1024 for DALL-E 3 by default; width and height can be specified in the prompt or parameters).
+
+## Refining results
+
+Image generation is iterative. If the first result is not quite right, describe what to change:
+
+```
+"The logo is good but the font looks too heavy — try a lighter weight and add a small icon to the left of the text"
+```
+
+The agent re-generates based on your feedback, keeping the previous image in Drive so you can compare.
+
+## Approval
+
+Image generation is non-destructive and does not require approval by default. If you want all image generation to go through the approvals queue (for example, to review AI-generated content before it is used), enable it in the agent's tool permissions.
+
+<CardGroup cols={2}>
+  <Card title="Image Understanding" icon="eye" href="/tools/media/image-understanding">
+    Agents can also analyse, describe, and extract text from images.
+  </Card>
+  <Card title="Drive" icon="hard-drive" href="/drive">
+    Where generated images are saved and organised.
+  </Card>
+</CardGroup>

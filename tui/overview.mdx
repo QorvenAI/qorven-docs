@@ -1,0 +1,64 @@
+---
+title: "TUI overview"
+description: "The Qorven terminal UI — chat with your Qors from SSH, no browser needed."
+sidebarTitle: "Overview"
+icon: "terminal"
+---
+
+<Info>
+  The Qorven TUI is built into the same binary that powers the gateway. Run `qorven chat` and you get a Discord-style terminal UI with slash commands, agent picker, tool calls, streaming tokens — everything the web UI has.
+</Info>
+
+## Run it
+
+```bash
+qorven chat                      # connect to local gateway
+qorven chat --server https://...  # remote install
+```
+
+First run asks you to pick a Qor; subsequent runs remember.
+
+## What you get
+
+- **Split pane** — chat on the right, sidebar on the left with the current Qor, model, session stats
+- **Streaming tokens** — same UX as the web
+- **Slash commands** — `/agent`, `/model`, `/tools`, `/compact`, `/help`, 22 in total
+- **Keyboard-first** — every action has a key binding
+- **Code mode** — `/code` flips into a VS Code-style layout with file tree + editor panels
+- **Agent picker** — `/agents` opens a filterable list
+- **Sessions** — `/sessions` for other channels (email threads, group chats)
+- **Theming** — follows your terminal's theme; purple accents adapt
+
+## Why use the TUI
+
+<CardGroup cols={2}>
+  <Card title="You live on the command line" icon="terminal">
+    Same reason people use k9s or lazygit. The TUI is fast and stays in your flow.
+  </Card>
+  <Card title="You're SSH'd into a headless box" icon="server">
+    No browser, no port-forward, no hassle. The TUI works over SSH.
+  </Card>
+  <Card title="You want fewer tabs" icon="minimize">
+    If the web UI is one more browser tab you don't need open, kill it.
+  </Card>
+  <Card title="You want to script interactions" icon="code">
+    TUI ↔ stdout. Pipe, automate, build CI around it.
+  </Card>
+</CardGroup>
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Slash commands" icon="slash" href="/tui/slash-commands">
+    Every `/cmd` and what it does.
+  </Card>
+  <Card title="Keybindings" icon="keyboard" href="/tui/keybindings">
+    Cheat sheet.
+  </Card>
+  <Card title="Code mode" icon="code" href="/tui/code-mode">
+    VS Code layout in your terminal.
+  </Card>
+  <Card title="Agent picker" icon="users" href="/tui/agent-picker">
+    Switching between Qors fast.
+  </Card>
+</CardGroup>

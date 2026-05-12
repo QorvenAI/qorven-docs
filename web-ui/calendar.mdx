@@ -1,0 +1,73 @@
+---
+title: "Calendar"
+description: "Give your agents read/write access to your calendar so they can check availability, book meetings, and send invites."
+sidebarTitle: "Calendar"
+icon: "calendar"
+---
+
+The Calendar page shows your upcoming events and lets your agents interact with your calendar on your behalf — checking free slots, scheduling meetings, or blocking time for focused work.
+
+## Supported calendar providers
+
+<CardGroup cols={3}>
+  <Card title="Google Calendar" icon="google">
+    Connect via OAuth. Agents can read and write all calendars in your account.
+  </Card>
+  <Card title="Microsoft Outlook" icon="microsoft">
+    Connect via Microsoft OAuth (Microsoft 365 or personal accounts).
+  </Card>
+  <Card title="CalDAV" icon="server">
+    Any CalDAV-compatible server — iCloud, Nextcloud, Fastmail, and others.
+  </Card>
+</CardGroup>
+
+## Connecting a calendar
+
+<Steps>
+  <Step title="Open Calendar settings">
+    Go to **Calendar** in the sidebar, then click **Connect Calendar**.
+  </Step>
+  <Step title="Choose your provider">
+    Select Google Calendar, Outlook, or CalDAV. For CalDAV, enter your server URL and credentials.
+  </Step>
+  <Step title="Authorize access">
+    Complete the OAuth flow or credential entry. Qorven stores access tokens encrypted on your server — they never leave.
+  </Step>
+  <Step title="Select which calendars to share">
+    Choose which calendars agents can see and write to. You can grant read-only or full read/write access per calendar.
+  </Step>
+</Steps>
+
+## What agents can do with calendar access
+
+Once connected, your agents can:
+
+- **Check availability** — "Am I free Tuesday afternoon?" before scheduling anything
+- **Book meetings** — create events with title, time, location, and description
+- **Send invites** — add attendees and trigger calendar invitations
+- **Find conflicts** — warn you if a proposed time clashes with existing events
+- **Block focus time** — create "Do Not Disturb" blocks on request
+- **Read upcoming events** — summarize your day or week in a briefing
+
+<Info>
+  Agents only act on your calendar when you ask them to, or via an approved scheduled task. They do not autonomously accept or decline invitations.
+</Info>
+
+## Upcoming events view
+
+The Calendar page displays your events for the next 7 days in a compact list. Click any event to see its full details. This view is read-only — to make changes, ask an agent or use your native calendar app.
+
+## Permissions
+
+You can revoke calendar access at any time from the Connectors page. When revoked, agents immediately lose the ability to read or write calendar data.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Connectors" icon="link" href="/web-ui/connectors">
+    Manage all third-party service connections.
+  </Card>
+  <Card title="Schedule" icon="clock" href="/web-ui/schedule">
+    Set up recurring agent tasks, including daily briefings with your calendar.
+  </Card>
+</CardGroup>

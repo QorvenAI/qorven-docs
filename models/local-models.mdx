@@ -1,0 +1,93 @@
+---
+title: "Local Models"
+description: "Run AI models on your own hardware with Ollama or LM Studio — completely private, no data sent externally, no API costs."
+sidebarTitle: "Local Models"
+icon: "server"
+---
+
+Local models run entirely on your own server or workstation. No requests leave your network, no API key required, no per-token billing. For workloads where data privacy is critical or cost is a concern, local models are a compelling option.
+
+## Supported runtimes
+
+Qorven connects to local models through any OpenAI-compatible HTTP server. The two most popular options:
+
+**Ollama** — the simplest setup. Installs in one command, supports hundreds of models, and exposes an OpenAI-compatible API at `http://localhost:11434`. Best for most users.
+
+**LM Studio** — a desktop app with a GUI for downloading and managing models. Also exposes an OpenAI-compatible server. Good if you want a visual interface for managing your local model library.
+
+Both work the same way from Qorven's perspective.
+
+## Setting up Ollama
+
+<Steps>
+  <Step title="Install Ollama">
+    Follow the instructions at [ollama.com](https://ollama.com) for your platform (Linux, macOS, or Windows). On Linux:
+
+    ```bash
+    curl -fsSL https://ollama.com/install.sh | sh
+    ```
+  </Step>
+  <Step title="Download a model">
+    ```bash
+    ollama pull llama3.3
+    ```
+
+    Ollama will download and cache the model weights. This takes a few minutes depending on model size and connection speed.
+  </Step>
+  <Step title="Add Ollama to Qorven">
+    Go to **Settings → Provider Keys → Add provider → Ollama**.
+
+    Enter the endpoint URL: `http://localhost:11434` (or the server address if Ollama is running on a different machine).
+
+    No API key is needed. Click **Save and verify**.
+  </Step>
+  <Step title="Assign the model to an agent">
+    Go to **Settings → Agents → [Agent] → Model** and select your Ollama model from the dropdown. Or set it as the workspace default in **Settings → Models Hub**.
+  </Step>
+</Steps>
+
+## Supported models
+
+Any model available in Ollama or LM Studio works in Qorven. Popular options:
+
+| Model | Best for | Size |
+|---|---|---|
+| Llama 3.3 70B | General use, strong quality | ~40 GB |
+| Llama 3.2 3B | Fast, low-memory devices | ~2 GB |
+| Qwen 2.5 72B | Multilingual, coding | ~45 GB |
+| Mistral 7B | Fast general tasks | ~4 GB |
+| Phi-4 | Reasoning on smaller hardware | ~8 GB |
+| Gemma 3 27B | Google's open model | ~17 GB |
+| DeepSeek-R1 7B | Reasoning, distilled | ~5 GB |
+
+Use `ollama list` to see all models you've downloaded.
+
+## Trade-offs vs cloud models
+
+| | Local models | Cloud models |
+|---|---|---|
+| **Privacy** | Complete — data stays on your machine | Data sent to provider's servers |
+| **Cost** | Electricity only — no per-token billing | Pay per token / request |
+| **Quality** | Good to very good (depends on model size) | Best available (frontier models) |
+| **Speed** | Depends on your hardware | Fast, scalable |
+| **Setup** | Requires local hardware with sufficient RAM/VRAM | API key + done |
+| **Availability** | 100% uptime (no provider dependency) | Subject to provider outages |
+
+### Hardware requirements
+
+Most 7B–13B parameter models run well on a machine with 16 GB RAM (CPU inference). For larger models (70B+) or faster inference, a dedicated GPU with 16–80 GB VRAM is recommended.
+
+A common setup: dedicated Linux server on the same local network as your Qorven instance, with a consumer GPU (e.g. RTX 4090 for 30B models, or an A100/H100 for 70B+ models at full speed).
+
+<Info>
+  Local models are ideal for a "private by default" policy — use a local model as the default and only route specific tasks to cloud models when you need frontier-level capability.
+</Info>
+
+<CardGroup cols={2}>
+  <Card title="Provider keys" icon="key" href="/models/provider-keys">
+    Add your Ollama endpoint alongside other providers.
+  </Card>
+  <Card title="Cost budgets" icon="dollar-sign" href="/models/cost-budgets">
+    Mix local and cloud models to stay within budget.
+  </Card>
+</CardGroup>

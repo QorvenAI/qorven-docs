@@ -1,0 +1,90 @@
+---
+title: "Licensing"
+description: "Qorven is released under FSL‑1.1‑ALv2. What you can do, what you can't, plain English."
+sidebarTitle: "Licensing"
+icon: "file-text"
+---
+
+<Info>
+  Qorven is **source-available open-source** under the **Functional Source License 1.1 with Apache 2.0 Future Grant (FSL‑1.1‑ALv2)**. It's free forever for almost every use, converts to Apache 2.0 after two years, and has one restriction: you can't use it to host a competing managed Qorven service.
+</Info>
+
+## What you **can** do, full stop
+
+- Run Qorven for personal use
+- Run Qorven inside a company, for employees + contractors
+- Run Qorven for customers as a feature of *your* product (e.g. an agent platform that happens to use Qorven internally)
+- Modify the source, fork, extend, replace any part
+- Redistribute modified versions under the same license
+- Build commercial products on top of Qorven
+- Submit patches back upstream
+- Run Qorven on customer premises as a consulting engagement
+- Use Qorven in an SaaS product whose primary purpose isn't "hosted agent platform"
+
+## What you **can't** do
+
+- Launch **"AgentHost.io"** where you sell hosted Qorven as a subscription, competing with Qorven's own hosted tier
+- Repackage Qorven with minor changes as a different branded agent platform sold as SaaS
+- Resell access to a Qorven install you didn't deploy for the buyer
+
+The line is: **can you legitimately run it for yourself or a specific client, or are you running it as a service that competes with Qorven?** The latter is the carve-out; everything else is fine.
+
+## After two years
+
+Every release of Qorven becomes **Apache 2.0 licensed exactly two years after its release date**. No restrictions at all after that. If the company behind Qorven disappears, the software stays free and open.
+
+## Why FSL and not MIT / AGPL
+
+<AccordionGroup>
+  <Accordion title="MIT is too permissive">
+    Under MIT, day one you could take Qorven, rename it, and sell it as a hosted competitor. That kills the business model that funds development.
+  </Accordion>
+
+  <Accordion title="AGPL has copyleft grief">
+    AGPL forces source-disclosure of *anything* that talks to the software over a network. Teams can't use it in their internal stack without a compliance review.
+  </Accordion>
+
+  <Accordion title="FSL is the middle path">
+    Free for every legitimate use. Blocks only the hosted-competitor case. Converts to Apache in 2 years so the worst case (project dies) still leaves you with a permissive license.
+  </Accordion>
+</AccordionGroup>
+
+Sentry, ElasticSearch, Redis have all moved to similar source-available licenses for the same reasons.
+
+## Attribution
+
+When you distribute Qorven or derivatives, preserve the copyright header on each source file:
+
+```
+// Copyright 2026 Tekky AI Academy LLP. All rights reserved.
+// Use of this source code is governed by the FSL‑1.1‑ALv2 license
+// that can be found in the LICENSE file.
+```
+
+And keep the `LICENSE` and `NOTICE` files in your distribution.
+
+## License files
+
+- Full license text: [`LICENSE`](https://github.com/qorvenai/qorven/blob/main/LICENSE) in the repo
+- Third-party notices: [`NOTICE`](https://github.com/qorvenai/qorven/blob/main/NOTICE) in the repo
+- Commercial license for the prohibited use: see [`COMMERCIAL_LICENSE.md`](https://github.com/qorvenai/qorven/blob/main/COMMERCIAL_LICENSE.md)
+
+## Questions
+
+- Curious whether your use is OK? Open a GitHub Discussion — we're happy to clarify.
+- Want to use Qorven in a way the license doesn't cover? Reach out: `license@qorven.ai`.
+- Security issue? `security@qorven.ai` — please don't file a public issue.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Comparison" icon="scale" href="/reference/comparison">
+    Qorven vs. ChatGPT Teams, LangChain, AutoGen, CrewAI.
+  </Card>
+  <Card title="Privacy" icon="shield" href="/reference/privacy">
+    What Qorven sends out, what stays local.
+  </Card>
+  <Card title="Contributors" icon="users" href="/reference/contributors">
+    Who built this.
+  </Card>
+</CardGroup>

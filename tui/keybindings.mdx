@@ -1,0 +1,95 @@
+---
+title: "TUI Keybindings"
+description: "Complete keyboard shortcut reference for qorven chat."
+sidebarTitle: "Keybindings"
+icon: "keyboard"
+---
+
+<Info>
+  All keybindings work in `qorven chat`. Code mode has a few extra shortcuts — marked with *(code mode)* below.
+</Info>
+
+## Message input
+
+| Key | Action |
+|---|---|
+| `Enter` | Send message |
+| `Ctrl+J` | Insert a newline (multi-line messages) |
+| `Tab` | Autocomplete the current slash command |
+| `/` | Start a slash command |
+| `↑` | Load previous message from history (at empty prompt) |
+| `↓` | Load next message from history |
+
+## Screen and scroll
+
+| Key | Action |
+|---|---|
+| `PgUp` | Scroll messages up one page |
+| `PgDn` | Scroll messages down one page |
+| `↑` / `↓` | Scroll messages one line (when not at the prompt) |
+| `Ctrl+L` | Clear the screen and redraw |
+
+## Session control
+
+| Key | Action |
+|---|---|
+| `Ctrl+K` | Kill (cancel) the current agent response mid-stream |
+| `Ctrl+R` | Search message history (incremental, type to filter) |
+| `Ctrl+C` | Exit the TUI |
+
+## Code mode
+
+| Key | Action |
+|---|---|
+| `/code` | Enter / exit code mode |
+| `Tab` | Cycle focus: file tree → editor → chat |
+| `↑` / `↓` (in tree) | Navigate file tree |
+| `Enter` (in tree) | Open file in editor panel |
+| `[` | Previous modified file |
+| `]` | Next modified file |
+| `A` (on diff prompt) | Approve proposed file change |
+| `R` (on diff prompt) | Reject proposed file change |
+| `E` (on diff prompt) | Edit diff in `$EDITOR` before applying |
+| `S` (on diff prompt) | Approve all remaining changes without prompting |
+
+## Slash commands (quick reference)
+
+These are typed, not key combinations — listed here because they act like keyboard commands:
+
+| Command | Action |
+|---|---|
+| `/agent` | Open agent picker |
+| `/agent <name>` | Switch to named agent directly |
+| `/code` | Toggle code mode |
+| `/clear` | Clear conversation history for this session |
+| `/help` | List all slash commands |
+| `/exit` or `/quit` | Exit the TUI |
+
+Full slash command reference: [Slash commands →](/tui/slash-commands)
+
+## Tips
+
+<Tip>
+  `Ctrl+K` is useful when an agent is running a long task and you want to redirect it. The agent receives a cancellation signal and stops cleanly — it won't leave a half-written file.
+</Tip>
+
+<Tip>
+  `Ctrl+R` searches your full message history across sessions. Type a few words from something you said before, and the TUI will find and restore it to the prompt.
+</Tip>
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Slash commands" icon="terminal" href="/tui/slash-commands">
+    Full reference for all / commands.
+  </Card>
+  <Card title="Code mode" icon="code" href="/tui/code-mode">
+    Three-panel code mode in detail.
+  </Card>
+  <Card title="Agent picker" icon="brain" href="/tui/agent-picker">
+    Switching agents from the TUI.
+  </Card>
+  <Card title="TUI overview" icon="monitor" href="/tui/overview">
+    Getting started with qorven chat.
+  </Card>
+</CardGroup>

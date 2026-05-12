@@ -1,0 +1,60 @@
+---
+title: "Web Fetch"
+description: "Fetch raw content from any URL — HTML, JSON, XML, RSS, or plain text — without a browser."
+sidebarTitle: "Web Fetch"
+icon: "download"
+---
+
+The `web_fetch` tool makes a direct HTTP request to a URL and returns the raw response body. No browser, no JavaScript execution — just the content as the server returns it.
+
+It's the fastest of the web tools, and the right choice whenever you don't need JavaScript rendering.
+
+## What it does
+
+- Sends an HTTP GET request to the specified URL
+- Returns the raw response: HTML, JSON, XML, plain text, CSV — whatever the server sends
+- Follows redirects automatically
+- Returns HTTP status code, response headers, and body
+- Typically completes in under a second
+
+## When to use web_fetch vs other web tools
+
+| Tool | Best for |
+|------|----------|
+| `web_fetch` | APIs, RSS feeds, plain text files, raw HTML |
+| `scrape` | Article pages and content sites (needs JS or clean extraction) |
+| `crawl` | Multi-page ingestion across an entire site |
+
+Use `web_fetch` when you know the URL returns structured data (JSON, XML), when speed matters, or when the content is static HTML you can parse yourself.
+
+## Example uses
+
+- **"Check the current EUR/USD rate"** — fetch a JSON API that returns exchange rates
+- **"Get the latest posts from this RSS feed"** — fetch the RSS XML and parse the items
+- **"Download this CSV file so we can analyse it"** — fetch the raw CSV content
+- **"What's the HTTP status of this URL?"** — fetch and check the response code
+- **"Pull the raw HTML of this page"** — when you need the full HTML including `<head>` and navigation, not just cleaned body text
+
+## JavaScript limitation
+
+`web_fetch` does not execute JavaScript. If a page renders its content client-side (React, Vue, etc.), `web_fetch` will return the mostly-empty initial HTML — not the rendered content. Use `scrape` for those pages.
+
+## Inputs
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `url` | Yes | The URL to fetch |
+| `method` | No | HTTP method — defaults to GET |
+| `headers` | No | Key-value pairs to include in the request |
+| `body` | No | Request body (for POST/PUT requests) |
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Scrape" icon="file-text" href="/tools/built-in/scrape">
+    Clean content extraction with JavaScript support.
+  </Card>
+  <Card title="Crawl" icon="network" href="/tools/built-in/crawl">
+    Follow links across multiple pages.
+  </Card>
+</CardGroup>

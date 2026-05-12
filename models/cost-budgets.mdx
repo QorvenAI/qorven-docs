@@ -1,0 +1,73 @@
+---
+title: "Cost Budgets"
+description: "Set monthly spend limits per provider, get alerted before you hit them, and let agents gracefully downgrade when budgets are reached."
+sidebarTitle: "Cost Budgets"
+icon: "dollar-sign"
+---
+
+AI API costs can compound quickly across a busy team of agents. Cost budgets give you a hard ceiling per provider (or overall), automatic alerts as you approach the limit, and graceful degradation so agents keep working even when a budget is hit.
+
+## Setting a budget
+
+1. Go to **Settings → Models Hub → Budgets**
+2. Click **New budget**
+3. Choose scope: a specific provider (e.g. Anthropic only) or overall (all providers combined)
+4. Set the monthly spending limit in USD
+5. Configure alert thresholds — e.g. alert at 75% and 90% of budget
+6. Choose what happens when the budget is reached: **block** (stop using that provider) or **downgrade** (switch to a cheaper model)
+7. Click **Save**
+
+Budgets reset on the 1st of each month.
+
+## Alert thresholds
+
+Set up to three alert thresholds per budget. When spending crosses a threshold, Qorven:
+
+- Shows a banner in the dashboard
+- Sends a notification via your configured alert channel (Telegram, Slack, or email)
+
+This gives you time to react before the budget is fully consumed. Recommended: set alerts at 75% and 90%.
+
+## What happens when the budget is reached
+
+**Block mode** — all requests to that provider are refused. Agents that depend on that provider will fail until the next month or until you manually increase the budget. Use this for strict cost control.
+
+**Downgrade mode** — when the budget is hit, Qorven switches requests to a configured cheaper model. Agents keep working at reduced quality/capability. You define the downgrade target — for example, downgrade from Claude Sonnet to Claude Haiku when the Anthropic budget is reached.
+
+<Tip>
+  Downgrade mode is recommended for production workflows. Agents continue operating and users don't experience a hard stop — they just get slightly less capable responses until the budget resets.
+</Tip>
+
+## Viewing usage and cost
+
+Go to **Settings → Models Hub → Usage** to see:
+
+- **Total spend this month** by provider
+- **Cost by agent** — which agents are consuming the most tokens
+- **Cost by task type** — scheduled tasks, interactive sessions, background processing
+- **Token breakdown** — input vs output tokens (output tokens cost more with most providers)
+- **Daily trend** — spot unusual spikes
+
+You can also view usage in the [Audit Log](/workflows/audit) — every tool call that uses a model is logged with token counts.
+
+## Controlling costs without budgets
+
+If you don't want to use formal budgets, you can still reduce costs by:
+
+- Assigning cheaper models to high-volume agents (see [Per-agent model](/models/per-qor-model))
+- Using local models for private or cost-sensitive workloads (see [Local models](/models/local-models))
+- Reducing the frequency of scheduled tasks that run expensive prompts
+- Setting shorter context windows for agents that don't need full history
+
+<Warning>
+  Budgets in Qorven are enforced locally — they do not stop the provider from billing you if requests are made through other means. Providers may also have their own spending limits which you should configure separately in your provider account.
+</Warning>
+
+<CardGroup cols={2}>
+  <Card title="Per-agent model" icon="sliders" href="/models/per-qor-model">
+    Assign cheaper models to high-volume agents.
+  </Card>
+  <Card title="Local models" icon="server" href="/models/local-models">
+    Run models on your own hardware — zero API cost.
+  </Card>
+</CardGroup>

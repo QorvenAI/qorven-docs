@@ -1,0 +1,160 @@
+---
+title: "Channels"
+description: "Every surface your Qor can talk through. 20+ integrations covering chat, email, SMS, GitHub, generic webhooks."
+sidebarTitle: "All channels"
+icon: "message-square"
+---
+
+<Info>
+  Channels are the **surfaces** your Qor uses to reach users. Telegram, WhatsApp, Slack DM, Discord DM, email, SMS — each is a channel. Qorven supports 20+ out of the box, with consistent setup and a shared [unified-chat](/channels/unified-chat) model.
+</Info>
+
+## The catalog
+
+<CardGroup cols={3}>
+  <Card title="Web UI" icon="monitor" href="/channels/web">
+    The dashboard at `https://your-host`. Chat, tools, memory, all in one.
+  </Card>
+  <Card title="TUI" icon="terminal" href="/channels/tui">
+    Terminal UI with `/commands`. For SSH sessions and keyboard lovers.
+  </Card>
+  <Card title="Telegram" icon="send" href="/channels/telegram">
+    BotFather token. DMs and groups.
+  </Card>
+  <Card title="WhatsApp" icon="message-circle" href="/channels/whatsapp">
+    Meta Cloud API. Personal + business accounts.
+  </Card>
+  <Card title="Slack" icon="slack" href="/channels/slack">
+    Slack app + DM + in-channel mentions.
+  </Card>
+  <Card title="Discord" icon="gamepad-2" href="/channels/discord">
+    Discord bot. DMs, servers, slash commands.
+  </Card>
+  <Card title="Microsoft Teams" icon="users" href="/channels/teams">
+    M365 bot framework integration.
+  </Card>
+  <Card title="LINE" icon="message-circle" href="/channels/line">
+    Japan / Taiwan / Thailand. LINE Developers.
+  </Card>
+  <Card title="Signal" icon="shield" href="/channels/signal">
+    Via signal-cli. End-to-end encrypted.
+  </Card>
+  <Card title="iMessage" icon="message-circle" href="/channels/imessage">
+    Via Blue Bubbles server on a Mac.
+  </Card>
+  <Card title="Facebook Messenger" icon="facebook" href="/channels/facebook">
+    Meta Cloud API.
+  </Card>
+  <Card title="Matrix" icon="hexagon" href="/channels/matrix">
+    Federated, self-hostable.
+  </Card>
+  <Card title="Mattermost" icon="message-square" href="/channels/mattermost">
+    Self-hosted alternative to Slack.
+  </Card>
+  <Card title="Feishu / Lark" icon="message-circle" href="/channels/feishu">
+    Asia / Indonesia enterprise chat.
+  </Card>
+  <Card title="DingTalk" icon="message-circle" href="/channels/dingtalk">
+    Mainland China enterprise.
+  </Card>
+  <Card title="WeCom (WeChat Work)" icon="message-circle" href="/channels/wecom">
+    WeChat's B2B sibling.
+  </Card>
+  <Card title="Zalo" icon="message-circle" href="/channels/zalo">
+    Vietnam.
+  </Card>
+  <Card title="Embeddable webchat" icon="message-square" href="/channels/webchat">
+    Drop a `<script>` on any page for an instant Qor chat.
+  </Card>
+  <Card title="Email" icon="mail" href="/channels/email">
+    IMAP / SMTP. Threaded, subject lines, attachments.
+  </Card>
+  <Card title="SMS" icon="phone" href="/channels/sms">
+    Twilio.
+  </Card>
+  <Card title="GitHub" icon="github" href="/channels/github">
+    Issues, PRs, comments, check runs.
+  </Card>
+  <Card title="Generic webhook" icon="webhook" href="/channels/webhook">
+    Any HTTP client. Custom integrations.
+  </Card>
+</CardGroup>
+
+## Channel families
+
+Qorven treats channels differently based on family:
+
+<CardGroup cols={2}>
+  <Card title="Chat-family (merges into canonical chat)" icon="infinity">
+    web, tui, webchat, telegram, whatsapp, slack DM, discord DM, teams, line, signal, imessage, facebook, matrix, mattermost, feishu, dingtalk, wecom, zalo.
+
+    Every message lands in the Qor's single canonical chat, tagged by channel. The web/TUI sees everything; each channel sees only its own slice.
+
+    [Unified chat model →](/channels/unified-chat)
+  </Card>
+  <Card title="Non-chat (own sessions)" icon="folder">
+    email, sms, github, webhook.
+
+    These are genuinely different mediums — email has threads and subject lines, GitHub has issues and PRs, webhooks can be any shape. They get their own sessions and their own rendering.
+  </Card>
+</CardGroup>
+
+## Core concepts
+
+<CardGroup cols={2}>
+  <Card title="Unified chat" icon="infinity" href="/channels/unified-chat">
+    How chat-family channels merge into one thread per (user, Qor).
+  </Card>
+  <Card title="Groups vs DMs" icon="users" href="/channels/groups-vs-dms">
+    How group chats get their own sessions and memory scope.
+  </Card>
+  <Card title="Routing & overrides" icon="git-branch" href="/channels/routing">
+    Send VIPs to a different Qor. Route by keyword. Approval-gate by group.
+  </Card>
+  <Card title="Debounce" icon="clock" href="/channels/debounce">
+    How rapid-fire messages get batched so your Qor doesn't spam replies.
+  </Card>
+  <Card title="Quotas" icon="gauge" href="/channels/quotas">
+    Per-tenant and per-channel rate limits. How to raise them.
+  </Card>
+</CardGroup>
+
+## Setup at a glance
+
+The setup flow is the same for every channel:
+
+<Steps>
+  <Step title="Get credentials from the provider">
+    Telegram needs a bot token from `@BotFather`. WhatsApp needs a Meta app. Slack needs an OAuth app. Email needs IMAP + SMTP credentials. Per-channel pages walk you through each.
+  </Step>
+  <Step title="Add the channel in the UI">
+    **Settings → Channels → Add channel**. Pick the provider, paste credentials. Qorven encrypts them immediately.
+  </Step>
+  <Step title="Point the webhook at Qorven">
+    For providers that push events, set the webhook URL to `https://your-qorven/v1/webhooks/<channel>`. Use Cloudflare Tunnel or ngrok for dev.
+  </Step>
+  <Step title="Bind a Qor">
+    One channel → one Qor. That Qor handles inbound; it can delegate.
+  </Step>
+  <Step title="Send a test message">
+    Message from the channel. Watch it appear in the web UI canonical chat. Done.
+  </Step>
+</Steps>
+
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Unified chat deep-dive" icon="infinity" href="/channels/unified-chat">
+    Why there's one Qor and one chat, not many.
+  </Card>
+  <Card title="Channel routing" icon="git-branch" href="/channels/routing">
+    Rules for picking which Qor gets which message.
+  </Card>
+  <Card title="qorven channels CLI" icon="terminal" href="/cli/channels">
+    Scripted add / remove / status / test.
+  </Card>
+  <Card title="Email setup" icon="mail" href="/channels/email">
+    The most common non-chat channel. Worth its own deep-dive.
+  </Card>
+</CardGroup>

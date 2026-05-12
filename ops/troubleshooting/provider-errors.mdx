@@ -1,0 +1,174 @@
+---
+title: "Provider Errors"
+description: "Diagnose and fix common AI provider errors — invalid API keys, rate limits, model not found, and context length exceeded."
+sidebarTitle: "Provider Errors"
+icon: "alert-circle"
+---
+
+Provider errors appear when Qorven cannot communicate with an AI provider (OpenAI, Anthropic, etc.) or when the provider rejects a request. Most errors are configuration problems with quick fixes.
+
+## Testing a provider key
+
+Before diving into specific errors, verify the key works:
+
+```bash
+qorven providers test openai
+qorven providers test anthropic
+qorven providers test groq
+```
+
+```
+[ok] openai: key valid, model gpt-4o available
+[FAIL] anthropic: 401 Unauthorized — check your API key
+```
+
+---
+
+## "Invalid API key" / 401 Unauthorized
+
+**What it means:** The API key is wrong, or the wrong provider is selected for the model.
+
+**Common causes:**
+
+1. The key was entered with leading/trailing spaces.
+2. The key is for a different provider (e.g. an OpenAI key entered for an Anthropic agent).
+3. The key was revoked or regenerated in the provider's dashboard.
+4. The key is a test-mode key but you're trying to use a production-only model.
+
+**Fix:**
+
+Go to **Settings > Provider Keys**, delete the key, and re-enter it. Copy it directly from the provider's dashboard — do not type it manually.
+
+Verify the provider selected in the agent matches the key type.
+
+---
+
+## "Rate limit exceeded" / 429 Too Many Requests
+
+**What it means:** You are sending more requests to the provider than your plan allows.
+
+**Common causes:**
+
+1. Multiple agents running concurrently on a low-tier plan.
+2. A looping agent that calls the model repeatedly in a tight loop.
+3. Hitting per-minute token limits rather than request limits.
+
+**Fix:**
+
+Option 1 — Add a fallback model. If your primary model is rate-limited, Qorven tries the fallback automatically:
+
+```toml
+[[agents.fallback_models]]
+provider = "openai"
+model    = "gpt-4o-mini"
+```
+
+Option 2 — Upgrade your provider plan tier.
+
+Option 3 — Add a secondary API key for a different account to distribute load.
+
+Option 4 — Check the provider's rate limit dashboard and see whether you need to request a limit increase.
+
+---
+
+## "Model not found" / 404
+
+**What it means:** The model name is wrong, or the model is not available on your account.
+
+**Common causes:**
+
+1. Typo in the model name (e.g. `gpt4o` instead of `gpt-4o`).
+2. The model requires access approval (e.g. GPT-4 access is not automatic on some accounts).
+3. A model was deprecated and renamed.
+
+**Fix:**
+
+Check the correct model ID in the provider's documentation and update the agent configuration. Use `qorven providers list-models openai` to see available models:
+
+```bash
+qorven providers list-models openai
+```
+
+```
+gpt-4o             (available)
+gpt-4o-mini        (available)
+gpt-4-turbo        (available)
+o1                 (not available — requires separate access)
+```
+
+---
+
+## "Context length exceeded" / 400
+
+**What it means:** The conversation history is too long for the model's context window.
+
+**Common causes:**
+
+1. A very long session that has accumulated many messages.
+2. Agents reading large files into context repeatedly.
+3. A model with a small context window (e.g. 4k tokens) handling a long task.
+
+**Fix:**
+
+Option 1 — Enable session compaction. Qorven summarises old messages when the context approaches the limit:
+
+```toml
+[agent]
+auto_compact = true
+compact_threshold = 0.8   # compact at 80% of context window
+```
+
+Option 2 — Use a model with a larger context window (e.g. Claude 3.5 Sonnet has 200k tokens; GPT-4o has 128k).
+
+Option 3 — Start a new session. Long-running sessions accumulate context — for new tasks, start fresh.
+
+---
+
+## "Connection timeout" / network errors
+
+**What it means:** Qorven could not reach the provider's API endpoint.
+
+**Common causes:**
+
+1. Network connectivity issue from your server to the provider.
+2. Provider outage — check the provider's status page.
+3. Firewall or proxy blocking outbound HTTPS.
+
+**Diagnose:**
+
+```bash
+# Test connectivity to the provider from the server
+curl -v https://api.openai.com/v1/models -H "Authorization: Bearer $OPENAI_KEY"
+
+# For Anthropic
+curl -v https://api.anthropic.com/v1/messages
+```
+
+**Fix:**
+
+If the `curl` test fails, the problem is network-level. Check your firewall rules allow outbound HTTPS (port 443) to provider API domains.
+
+If the provider is having an outage, wait and retry. Check their status pages:
+- OpenAI: [status.openai.com](https://status.openai.com)
+- Anthropic: [status.anthropic.com](https://status.anthropic.com)
+
+---
+
+## "Insufficient quota" / 402
+
+**What it means:** Your provider account has run out of prepaid credits or hit a spending limit.
+
+**Fix:** Add credits or increase the spending limit in the provider's billing settings.
+
+---
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Common errors" icon="help-circle" href="/ops/troubleshooting/common-errors">
+    Quick reference for all error codes.
+  </Card>
+  <Card title="Rate limits" icon="gauge" href="/gateway/rate-limits">
+    Qorven-side rate limiting (separate from provider limits).
+  </Card>
+</CardGroup>

@@ -1,0 +1,120 @@
+---
+title: "Skills"
+description: "Skills are saved procedures that agents learn once and reuse forever — reliable, repeatable, no re-explaining required."
+sidebarTitle: "Skills"
+icon: "bookmark"
+---
+
+<Info>
+  A skill is a saved procedure an agent has worked out and stored. When a similar task comes up again, the agent finds the skill, follows the proven approach, and skips the trial-and-error. Teach once, use forever.
+</Info>
+
+## What a skill is
+
+When an agent solves a problem — figures out the right sequence of steps, the right tools, the right output format — it can save that solution as a skill. Skills live in the agent's memory store alongside facts and context, but they're structured specifically as procedures: a name, a trigger description, and a step-by-step method.
+
+A skill is not a script. It's closer to a recipe: the agent still reads it, interprets it, and adapts it to the current situation. But the hard thinking was done the first time; subsequent runs go faster and more consistently.
+
+## Examples
+
+| Skill name | What it captures |
+|---|---|
+| `format-weekly-sales-report` | Column order, number formats, which charts to include, where to save the file |
+| `deploy-to-production` | Pre-flight checks, build command, SSH sequence, health check URL, rollback step |
+| `draft-investor-update` | Opening line style, what metrics to lead with, tone, sign-off |
+| `triage-support-inbox` | Label taxonomy, escalation criteria, response templates for common issues |
+| `research-competitor` | Which sources to check, what fields to extract, output format |
+
+## How skills are created
+
+### Agent creates it automatically
+
+When an agent completes a task that took multiple steps or required figuring something out, it can save the approach. You'll see a message like:
+
+> "I've saved this as a skill: `deploy-to-production`. I'll use this approach next time you ask me to deploy."
+
+You can confirm or discard the save from the chat.
+
+### You teach it explicitly
+
+Tell the agent directly:
+
+> "Save what you just did as a skill called 'format-weekly-sales-report'."
+
+Or from the dashboard:
+
+1. Open the agent's **Memory** tab.
+2. Click **Add skill**.
+3. Give it a name and description. The agent will ask clarifying questions and draft the procedure.
+4. Review and save.
+
+### From YAML
+
+```yaml
+skills:
+  - name: deploy-to-production
+    trigger: "deploy, push to prod, release"
+    steps:
+      - run pre-flight checks (disk space, test suite)
+      - build with `make release-linux-amd64`
+      - SCP binary to ubuntu@13.127.58.6:/tmp/
+      - SSH: stop service, swap binary, start service
+      - verify health at :4200/health
+      - if health check fails, roll back and notify
+```
+
+## How agents use skills
+
+Before starting a new task, an agent searches its skills for a matching procedure. The search is semantic — it matches on meaning, not exact keywords. If a match is found with high confidence, the agent follows that procedure rather than working it out from scratch.
+
+You can see which skill an agent is using at the top of its response:
+
+> "Using skill: `format-weekly-sales-report`"
+
+If the agent deviates from the skill (because the situation requires it), it notes what changed and can update the skill if the deviation was an improvement.
+
+## Community marketplace
+
+Qorven's skill marketplace lets you import skills that the community has published. Browse at **Settings → Skills → Marketplace** or:
+
+```bash
+qorven skills search "deploy railway"
+qorven skills install railway/deploy-to-railway
+```
+
+Installed skills land in the agent's memory store. You can review and edit them before they're active.
+
+<Tip>
+  After installing a community skill, run it once on a test task and watch the agent's reasoning. Community skills are starting points — edit them to match your specific environment and conventions.
+</Tip>
+
+## Managing skills
+
+```bash
+qorven skills list --agent developer        # list skills for one agent
+qorven skills list                          # all agents
+qorven skills show deploy-to-production     # full procedure
+qorven skills edit deploy-to-production     # open in $EDITOR
+qorven skills delete deploy-to-production   # remove
+qorven skills export > my-skills.yml        # backup
+qorven skills import my-skills.yml          # restore
+```
+
+From the dashboard: **Settings → Agents → (agent) → Memory → Skills tab**.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Memory system" icon="database" href="/architecture/memory-system">
+    How skills are stored alongside facts and context in the agent's memory.
+  </Card>
+  <Card title="Agent tools" icon="wrench" href="/qors/tools">
+    The tools an agent can call when executing a skill.
+  </Card>
+  <Card title="Skills marketplace" icon="store" href="/marketplace/skills">
+    Community-published skills ready to import.
+  </Card>
+  <Card title="Memory compaction" icon="layers" href="/memory/compaction">
+    How old skills and memories are consolidated over time.
+  </Card>
+</CardGroup>

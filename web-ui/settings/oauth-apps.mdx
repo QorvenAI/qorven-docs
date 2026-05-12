@@ -1,0 +1,88 @@
+---
+title: "OAuth Apps"
+description: "Register OAuth credentials for third-party services so your agents can connect to them."
+sidebarTitle: "OAuth Apps"
+icon: "link"
+---
+
+Before you can connect services like Google, GitHub, or Notion via the Connectors page, you need to register an OAuth app in that service's developer portal and store the credentials here. This is a one-time setup per service.
+
+## Why this is required
+
+Qorven connects to external services on your behalf using OAuth 2.0. To do this, each service needs to know that your Qorven instance is an authorized application. You create that authorization by registering an app in the service's developer console and copying the resulting client ID and client secret into Qorven.
+
+All credentials are encrypted at rest on your server.
+
+## Supported services
+
+| Service | What it enables |
+|---|---|
+| **Google** | Gmail, Google Calendar, Google Drive |
+| **Microsoft** | Outlook email, Microsoft 365 Calendar, OneDrive |
+| **GitHub** | Repository access, issue management, pull requests |
+| **Notion** | Read and write pages and databases |
+| **Slack** | Send and receive messages |
+| **Dropbox** | File sync |
+
+## Adding credentials
+
+<Steps>
+  <Step title="Register an app with the service">
+    Go to the service's developer portal (e.g., [Google Cloud Console](https://console.cloud.google.com) for Google) and create a new OAuth application. Set the redirect URI to:
+    ```
+    https://your-qorven-domain.com/api/v1/oauth/callback
+    ```
+    Replace `your-qorven-domain.com` with your actual Qorven URL.
+  </Step>
+  <Step title="Copy the credentials">
+    The developer portal will give you a **Client ID** and a **Client Secret**. Copy both.
+  </Step>
+  <Step title="Enter them in Qorven">
+    In the OAuth Apps settings page, click **Add App**, choose the service, and paste the client ID and client secret.
+  </Step>
+  <Step title="Save">
+    Qorven encrypts and stores the credentials. The service now appears as available in the Connectors page.
+  </Step>
+</Steps>
+
+## Managing existing credentials
+
+Each registered app is listed with:
+
+- Service name and logo
+- Client ID (truncated for security)
+- Date added
+- Whether a live connection exists
+
+To update credentials (e.g., if you rotated your client secret), click **Edit** on the app row and enter the new values.
+
+To remove an app, click **Delete**. This also disconnects any active connectors using those credentials.
+
+<Warning>
+  Deleting an OAuth app immediately disconnects all users who authorized that service. Any in-progress agent tasks using those connectors will fail.
+</Warning>
+
+## Redirect URI reference
+
+When registering apps, use the following redirect URI format:
+
+```
+https://<your-qorven-host>/api/v1/oauth/callback
+```
+
+For local development or self-hosted instances without a domain:
+
+```
+http://localhost:4200/api/v1/oauth/callback
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Connectors" icon="link" href="/web-ui/connectors">
+    Connect services after adding their OAuth credentials here.
+  </Card>
+  <Card title="Provider Keys" icon="key" href="/web-ui/settings/provider-keys">
+    Add API keys for AI model providers.
+  </Card>
+</CardGroup>

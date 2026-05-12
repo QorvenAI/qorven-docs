@@ -1,0 +1,65 @@
+---
+title: "Safety"
+description: "Automatic content safety checks that prevent harmful or policy-violating agent outputs."
+sidebarTitle: "Safety"
+icon: "shield"
+---
+
+The `safety` tool runs content safety checks on agent outputs before they're returned to you or sent to external systems. It's a background safeguard — most users never need to configure it, and it never appears as a visible tool call in chat.
+
+## What it checks
+
+- **Harmful content** — instructions that could cause physical harm, self-harm content, or content promoting violence
+- **Policy violations** — outputs that violate Qorven's content policies or any custom rules you've defined
+- **Prompt injection** — attempts by malicious content in the environment (a webpage, an email, a document) to hijack the agent's behaviour
+- **Data exfiltration patterns** — outputs that look like they're trying to leak sensitive information to external recipients
+
+## How it works
+
+Safety runs automatically on outputs that are about to leave the system — before a message is sent, before a file is written, before an email goes out. If a check fails, the output is blocked and the agent is told why. You see the block in chat.
+
+For most interactions — asking questions, researching, summarising — the safety tool never activates because there's nothing to flag.
+
+## Configuring sensitivity
+
+The default sensitivity level works well for most teams. You can adjust it in `config.toml`:
+
+```toml
+[tools.safety]
+level = "standard"  # options: "strict", "standard", "permissive"
+```
+
+- **Strict** — additional checks for professional environments handling sensitive topics (legal, medical, financial)
+- **Standard** — the default; blocks clearly harmful content
+- **Permissive** — reduced false positives for creative writing or research agents that discuss difficult topics by necessity
+
+## Prompt injection defense
+
+When agents read external content (emails, web pages, documents), that content could contain instructions trying to redirect the agent. The safety tool detects and blocks these injection attempts before they affect behaviour.
+
+<Info>
+Prompt injection is the most common real-world attack on AI agents. The safety tool's injection detection runs on all external content reads, not just final outputs.
+</Info>
+
+## Custom rules
+
+You can add custom safety rules for your organisation's specific policies:
+
+```toml
+[[tools.safety.custom_rules]]
+name = "no_competitor_names"
+pattern = "mention of CompetitorX or CompetitorY in outbound content"
+action = "block"
+message = "Outbound content should not mention competitor names directly."
+```
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="SSRF Protection" icon="shield-off" href="/tools/built-in/ssrf">
+    Prevent agents from accessing internal network addresses.
+  </Card>
+  <Card title="Outbound Gate" icon="door-open" href="/tools/built-in/outbound-gate">
+    Control which external domains agents can reach.
+  </Card>
+</CardGroup>

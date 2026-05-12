@@ -1,0 +1,67 @@
+---
+title: "Environment variables"
+description: "Environment variables Qorven reads — gateway runtime, CLI client, setup automation."
+sidebarTitle: "Env vars"
+icon: "variable"
+---
+
+<Info>
+  Both the gateway and the CLI client read these. The gateway uses them at boot to override `config.toml`; the CLI uses them to pick a server and token without flags.
+</Info>
+
+## Runtime (gateway)
+
+| Variable | Purpose |
+|---|---|
+| `QORVEN_CONFIG` | Path to `config.toml`. Default: `/etc/qorven/config.toml` (root-owned install) or `~/.qorven/config.toml` (user install). |
+| `QORVEN_POSTGRES_DSN` | Override `[database].dsn` in config. Full libpq URL. |
+| `QORVEN_AUTH_TOKEN` | Override `[auth].token`. Useful for ephemeral test installs. |
+| `QORVEN_ENCRYPTION_KEY` | Override `[auth].encryption_key`. **Do not rotate via env without a migration plan.** |
+| `QORVEN_API_LISTEN` | `host:port` — overrides `[server].api_listen`. |
+| `QORVEN_WEB_LISTEN` | `host:port` — overrides `[server].web_listen`. |
+| `QORVEN_WEB_DIR` | Path to a custom web build — overrides `[server].web_dir`. |
+| `QORVEN_TLS_MODE` | `auto`, `acme`, `custom`, `off`. Overrides `[tls].mode`. |
+| `QORVEN_LOG_LEVEL` | `debug`, `info`, `warn`, `error`. Default: `info`. |
+| `AUTH_TOKEN` | Legacy alias for `QORVEN_AUTH_TOKEN`. |
+| `CORS_ORIGINS` | Comma-separated additional origins. |
+
+## CLI client
+
+| Variable | Purpose |
+|---|---|
+| `QORVEN_SERVER` | Gateway URL (`http://localhost:4200` default). |
+| `QORVEN_TOKEN` | Auth token. Overrides `~/.qorven/token_default`. |
+| `QORVEN_OUTPUT` | Default `--output` value. |
+
+## LLM providers
+
+| Variable | Used for |
+|---|---|
+| `OPENAI_API_KEY` | Bootstraps an OpenAI provider if none exists |
+| `ANTHROPIC_API_KEY` | Same for Anthropic |
+| `DEEPSEEK_API_KEY` | Same for DeepSeek |
+| `GEMINI_API_KEY` | Same for Gemini |
+| `GROQ_API_KEY` | Same for Groq |
+| `AWS_PROFILE` / `AWS_REGION` | For Bedrock |
+
+<Warning>
+  Env-var providers are **bootstrap-only**. Production installs should use Settings → Provider Keys so keys are encrypted at rest. [Provider keys →](/models/provider-keys)
+</Warning>
+
+## Release pipeline
+
+| Variable | Purpose |
+|---|---|
+| `QORVEN_RELEASE_REPO` | Override the GitHub repo `qorven update` pulls from. For forks. |
+| `GITHUB_TOKEN` | For private release repos. |
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="config.toml reference" icon="file-code" href="/gateway/config-toml">
+    Every key, what it does, defaults.
+  </Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">
+    Flags accepted by every subcommand.
+  </Card>
+</CardGroup>

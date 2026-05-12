@@ -1,0 +1,95 @@
+---
+title: "How Tools Work"
+description: "Understand how agents call tools, what you see in the chat, and how results flow back."
+sidebarTitle: "How Tools Work"
+icon: "wrench"
+---
+
+A tool is a capability the agent can call to act in the world. Think of tools as the hands of the agent: the agent can reason and plan, but tools are how it actually does things — reads a webpage, sends an email, runs a query, writes a file.
+
+## Anatomy of a tool
+
+Every tool has three parts:
+
+1. **Name** — a unique identifier like `web_search`, `send_email`, or `exec`
+2. **Input schema** — the parameters the agent must provide (e.g., `exec` requires a `command` string)
+3. **Execution logic** — the code that runs when the agent calls it
+
+When the agent decides a tool is needed, it constructs a call with the name and its chosen inputs, then submits it. Qorven executes the tool (or pauses for approval), and returns the result.
+
+## What you see in chat
+
+Every tool call is visible in the chat interface in real time. You'll see:
+
+- The tool name and its arguments (collapsed by default, expandable)
+- A spinner while it's running
+- The result once it completes
+
+This transparency means you always know what the agent is doing — no black boxes.
+
+## Two halves of a result
+
+Every tool returns two separate payloads:
+
+**ForLLM** — the text or structured data the agent reads. This is what informs the agent's next step. It's designed to be compact and machine-readable.
+
+**ForUser** — the widget shown in your chat. Some tools render rich UI: a weather card, a table of SQL results, a file diff, an email preview. This is for you, not the agent.
+
+The two halves can differ. A `web_search` might return 10 results as a navigable list for you, but just the top 3 URLs as text for the agent.
+
+## Tool calls in the audit log
+
+Every tool invocation — the tool name, arguments, result, timestamp, and which agent called it — is automatically written to the audit log. You can review the full history in **Settings → Audit Log**.
+
+## In-process vs shell-out tools
+
+Some tools run entirely inside the Qorven process (memory lookups, document parsing, internal API calls). Others shell out to external processes or make network requests.
+
+Shell-out tools (like `exec`) are subject to tighter controls: they appear in the approval queue by default, and can be sandboxed or denied entirely.
+
+## Tool assignment
+
+Tools are assigned per-agent. An agent can only call the tools you've given it. To change which tools an agent has access to, go to **Settings → Agents → [Agent Name] → Tools**.
+
+<Info>
+Built-in tools are available out of the box. You can also connect external tools via MCP servers or register custom tools directly.
+</Info>
+
+## Flow diagram
+
+```
+Agent decides to call a tool
+         ↓
+Qorven checks: is this tool on the deny list?
+    YES → return error to agent
+    NO  ↓
+Qorven checks: does this tool require approval?
+    YES → show approval card, wait for user
+         User rejects → return rejection to agent
+         User approves ↓
+    NO  ↓
+Tool executes
+         ↓
+Result (ForLLM + ForUser) returned
+         ↓
+Audit log entry written
+         ↓
+Agent continues with result
+```
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Approvals" icon="check-circle" href="/tools/approvals">
+    Which tools pause for sign-off and how to configure them.
+  </Card>
+  <Card title="Deny Lists" icon="x-circle" href="/tools/deny-lists">
+    Permanently block tools from running.
+  </Card>
+  <Card title="Custom Tools" icon="plug" href="/tools/custom/registering">
+    Register your own tools.
+  </Card>
+  <Card title="MCP Servers" icon="server" href="/tools/custom/mcp-servers">
+    Connect external tool providers.
+  </Card>
+</CardGroup>

@@ -1,0 +1,74 @@
+---
+title: "Memory"
+description: "How agents save and retrieve facts, preferences, and context across sessions."
+sidebarTitle: "Memory"
+icon: "brain"
+---
+
+The `memory` tool is how agents remember things. Without memory, every conversation starts from scratch. With it, agents accumulate context over time — your preferences, past decisions, ongoing projects, and anything else worth retaining.
+
+## Two operations
+
+**`save_memory`** — stores a piece of information with a label and optional tags. The agent calls this when it learns something it should remember: a preference you stated, a decision you made, a fact about your business.
+
+**`search_memory`** — retrieves memories relevant to the current context. Uses semantic search, so an agent looking for "client's preferred communication style" will find a memory saved as "John prefers concise bullet points over long paragraphs".
+
+## How agents use memory
+
+Agents call the memory tool automatically — you don't need to ask them to remember something. When you say "I prefer reports in bullet points", the agent saves that. When you ask for a report next week, the agent searches memory first and writes in your preferred style.
+
+Memory is also used for:
+- Facts about your team, clients, and projects
+- Preferences and working styles
+- Recurring tasks and their current status
+- Decisions and their rationale ("we decided not to use vendor X because...")
+- Anything the agent learns that's worth knowing again
+
+## Viewing and managing memories
+
+All saved memories are visible in the **Memories** page in your dashboard. You can:
+
+- Browse memories by agent or by topic
+- Edit a memory if it's outdated
+- Delete memories you no longer want
+- Search memories manually
+
+<Tip>
+If an agent seems to be acting on incorrect information, check the Memories page. You may find an outdated fact that needs to be corrected or deleted.
+</Tip>
+
+## Memory is per-agent
+
+Each agent has its own memory store. Writer's memories about your tone of voice don't automatically transfer to Developer. If you want shared context, Prime (the lead agent) can relay information between agents.
+
+## Memory vs session context
+
+Session context is the current conversation — everything said in this chat. Memory is persistent storage that survives session end. When a session ends, important facts can be saved to memory so they're available next time.
+
+## Inputs
+
+**save_memory:**
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `content` | Yes | The fact, preference, or context to save |
+| `label` | No | Short label for the memory |
+| `tags` | No | Tags for categorisation (e.g., `["client", "communication"]`) |
+
+**search_memory:**
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `query` | Yes | Natural language description of what to find |
+| `limit` | No | Max results to return (default: 5) |
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Sessions" icon="message-square" href="/tools/built-in/sessions">
+    How agents access conversation history.
+  </Card>
+  <Card title="Storage" icon="hard-drive" href="/tools/built-in/storage">
+    Save files, not just facts.
+  </Card>
+</CardGroup>

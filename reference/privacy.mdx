@@ -1,0 +1,96 @@
+---
+title: "Privacy"
+description: "What Qorven sends out, what stays local, and how to lock things down further if you need to."
+sidebarTitle: "Privacy"
+icon: "eye-off"
+---
+
+<Info>
+  Qorven's default: only the LLM calls **you** authorise leave your machine. Everything else — memory, sessions, vault, audit — lives on your Postgres.
+</Info>
+
+## What leaves your box by default
+
+| | When | To where |
+|---|---|---|
+| LLM prompt + completion | Every agent turn | The LLM provider you picked (OpenAI, Bedrock, …) |
+| `web_fetch`, `scrape`, `crawl` | When a Qor calls the tool | The URL the Qor is asking about |
+| `gh`, `research` | When a Qor calls | GitHub, Google, X, etc. |
+| OAuth callbacks | User authorising a connector | The connector's identity provider (one-time) |
+
+That's it. No phone-home, no anonymous metrics, no update-check without you running `qorven update`.
+
+## What you can turn off
+
+<CardGroup cols={2}>
+  <Card title="Disable outbound" icon="shield-alert" href="/security/ssrf-allowlist">
+    SSRF allowlist — restrict which hosts `web_fetch` can reach. Default-deny for private IPs; extend to public domains as needed.
+  </Card>
+  <Card title="Fully air-gap" icon="wifi-off">
+    Use Ollama or LM Studio as your sole provider. No outbound LLM calls. Disable OAuth connectors. Disable `web_fetch`. 100% local.
+  </Card>
+  <Card title="PII redaction" icon="eye-off" href="/security/pii-redaction">
+    Strip emails, phones, cards, SSNs from memory writes. Keeps the raw turn in `sessions.messages` but writes the redacted version into embeddings.
+  </Card>
+  <Card title="Outbound approval" icon="check-circle" href="/workflows/approvals">
+    Gate every destructive tool call behind a human approval prompt.
+  </Card>
+</CardGroup>
+
+## What Qorven never does
+
+- **Train on your data.** We don't have training infrastructure; your data wouldn't go anywhere even if we did.
+- **Share data between tenants.** Every table has RLS; every query runs in a tenant-scoped tx.
+- **Contact a license server.** You own the binary; there's no online check.
+- **Anonymous telemetry.** Zero. Not even version metrics.
+
+## Memory + privacy scopes
+
+Memories are scoped so a Qor in a public channel never retrieves private context. [Scope rules →](/memory/privacy).
+
+## Right to forget
+
+Operator flow for a data-subject request:
+
+```bash
+qorven memory purge --user <user_id>
+qorven sessions delete --user <user_id>
+qorven audit purge --user <user_id> --keep-action-summaries
+```
+
+Soft-deletes propagate to backups after the retention period expires.
+
+## Export
+
+Same shape as backup:
+
+```bash
+qorven backup --user <user_id> --output /tmp/user-export.tar.gz
+```
+
+Includes: sessions, memories, audit entries for that user. Machine-readable JSON, per-schema.
+
+## Compliance mapping (abridged)
+
+| Regulation | How Qorven helps |
+|---|---|
+| GDPR | Right to access (export), right to forget (purge), data processing transparency (audit log) |
+| CCPA | Same as GDPR essentially |
+| HIPAA | Self-hosted on your infra, encryption at rest; you're responsible for the BAAs with your LLM provider |
+| SOC2 | Audit log, access control, encryption, retention policies — the building blocks; you still need your own SOC2 |
+
+Full compliance packet on request: `compliance@qorven.ai`.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Security model" icon="shield" href="/architecture/security-model">
+    Threat model, encryption, tenant isolation.
+  </Card>
+  <Card title="PII redaction" icon="eye-off" href="/security/pii-redaction">
+    Configure what patterns to strip.
+  </Card>
+  <Card title="Licensing" icon="file-text" href="/reference/licensing">
+    How FSL-1.1-ALv2 interacts with deployment.
+  </Card>
+</CardGroup>

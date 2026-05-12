@@ -1,0 +1,203 @@
+---
+title: "Server Won't Start"
+description: "Diagnose and fix the five most common reasons Qorven fails to start."
+sidebarTitle: "Boot Fails"
+icon: "alert-triangle"
+---
+
+If Qorven refuses to start, run `qorven doctor` first. It checks the most common prerequisites and reports exactly what is wrong.
+
+```bash
+qorven doctor
+```
+
+```
+[ok]  database: connected (3ms)
+[ok]  pgvector: installed (0.7.0)
+[FAIL] migrations: failed — ERROR: column "embedding_dims" already exists
+[ok]  encryption key: present
+[ok]  port 443: available
+```
+
+If `qorven doctor` passes but the service still fails, check the logs:
+
+```bash
+sudo journalctl -u qorven -n 100
+```
+
+## Cause 1: Database not running or wrong connection string
+
+**Symptom:** `failed to connect to database: connection refused`
+
+**Diagnose:**
+
+```bash
+# Is PostgreSQL running?
+sudo systemctl status postgresql
+
+# Can you connect manually?
+psql -U qorven -d qorven -h localhost -c "SELECT 1;"
+```
+
+**Fix:**
+
+```bash
+# Start PostgreSQL if it's not running
+sudo systemctl start postgresql
+
+# If PostgreSQL is running but you can't connect:
+# Check the connection string in config.toml
+sudo cat /etc/qorven/config.toml | grep url
+```
+
+Common connection string mistakes:
+- Wrong password
+- Wrong port (default is 5432)
+- Wrong host (use `localhost` not `127.0.0.1` if `listen_addresses` is configured that way in `pg_hba.conf`)
+- SSL mode mismatch — add `?sslmode=disable` for local connections or `?sslmode=require` for remote
+
+---
+
+## Cause 2: Port already in use
+
+**Symptom:** `listen tcp :443: bind: address already in use`
+
+**Diagnose:**
+
+```bash
+# Find what is using port 443
+sudo ss -tlnp | grep ':443'
+# or
+sudo lsof -i :443
+```
+
+**Fix:**
+
+Stop the conflicting service, or change Qorven's `web_listen` port:
+
+```toml
+[server]
+web_listen = ":8443"
+```
+
+If nginx or another web server is on port 443, see [Reverse proxy](/gateway/reverse-proxy) to run Qorven behind it.
+
+---
+
+## Cause 3: Encryption key missing or malformed
+
+**Symptom:** `encryption key is required but not set` or `invalid encryption key: must be 64 hex characters`
+
+**Diagnose:**
+
+```bash
+sudo grep encryption_key /etc/qorven/config.toml
+```
+
+**Fix:**
+
+If the key is missing, generate one:
+
+```bash
+openssl rand -hex 32
+```
+
+Add it to `config.toml`:
+
+```toml
+[security]
+encryption_key = "<64-hex-char key>"
+```
+
+If you have a backup of the original key, use that. A newly generated key will not decrypt secrets encrypted with the old key — those will need to be re-entered.
+
+---
+
+## Cause 4: Migration failed
+
+**Symptom:** `migration 0043_add_embedding_dims.sql: ERROR: column already exists` or similar
+
+**Diagnose:**
+
+```bash
+qorven migrate status
+journalctl -u qorven -n 50 | grep -i migrat
+```
+
+**Fix:**
+
+Most migration failures are caused by a previous interrupted migration that left the schema in a partial state. Options:
+
+1. **Resume the migration manually:**
+   ```bash
+   qorven migrate up --force
+   ```
+   This skips already-applied steps and continues from where it stopped.
+
+2. **Restore from backup** (safest if you're not sure what state the schema is in):
+   ```bash
+   sudo systemctl stop qorven
+   # Follow the restore procedure at /gateway/backup-restore
+   ```
+
+3. **For a fresh install with no data to lose:**
+   ```bash
+   qorven factory-reset --confirm
+   ```
+   This drops and recreates the schema and runs all migrations from scratch.
+
+---
+
+## Cause 5: Binary permission issue
+
+**Symptom:** `permission denied` or `exec format error`
+
+**Diagnose:**
+
+```bash
+# Check permissions
+ls -la /usr/local/bin/qorven
+
+# Check the binary architecture
+file /usr/local/bin/qorven
+```
+
+**Fix:**
+
+```bash
+# Fix permissions
+sudo chmod +x /usr/local/bin/qorven
+
+# If "exec format error": you're running the wrong architecture binary
+# Build machine vs production: arm64 vs amd64
+# Download the correct binary for your platform
+uname -m   # prints x86_64 (amd64) or aarch64 (arm64)
+```
+
+Download the correct binary and replace it.
+
+---
+
+## Still stuck?
+
+```bash
+# Full debug output — run Qorven directly to see all output
+QORVEN_SERVER_LOG_LEVEL=debug /usr/local/bin/qorven start 2>&1 | head -100
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="qorven doctor" icon="stethoscope" href="/cli/doctor">
+    Prerequisite checker.
+  </Card>
+  <Card title="Database errors" icon="database" href="/ops/troubleshooting/database-errors">
+    PostgreSQL connection and schema errors.
+  </Card>
+  <Card title="Migrations" icon="database" href="/gateway/migrations">
+    How migrations work and how to run them manually.
+  </Card>
+  <Card title="Backup and restore" icon="archive" href="/gateway/backup-restore">
+    Restore from a backup after a failed migration.
+  </Card>
+</CardGroup>

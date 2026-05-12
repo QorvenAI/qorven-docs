@@ -1,0 +1,125 @@
+---
+title: "CLI reference"
+description: "Every `qorven` subcommand. Auto-generated from the live binary; refreshed on each release."
+sidebarTitle: "Overview"
+icon: "terminal"
+---
+
+<Info>
+  Qorven ships as a single binary (`qorven`) at `/usr/local/bin/qorven`. Every subcommand is documented here; every page is regenerated from `qorven <cmd> --help` output so it never drifts from the code.
+</Info>
+
+## Anatomy of a command
+
+```bash
+qorven [global flags] <command> [subcommand] [flags] [args]
+```
+
+Most commands follow the **list / get / create / update / delete** pattern:
+
+```bash
+qorven agents list                    # all agents for this tenant
+qorven agents get b2a19...            # one agent
+qorven agents create --name Prime …   # create
+qorven agents update b2a19 --model …  # update
+qorven agents delete b2a19            # delete
+```
+
+## Common patterns
+
+<CardGroup cols={2}>
+  <Card title="Use --output json for scripting" icon="code">
+    ```bash
+    qorven agents list --output json | jq '.[].name'
+    ```
+  </Card>
+  <Card title="Point at a different gateway" icon="server">
+    ```bash
+    qorven --server https://qorven.acme.com \
+           --token $QORVEN_TOKEN \
+           agents list
+    ```
+  </Card>
+  <Card title="Skip confirmation prompts" icon="fast-forward">
+    ```bash
+    qorven sessions delete <id> --yes
+    ```
+  </Card>
+  <Card title="Enable verbose logging" icon="search">
+    ```bash
+    qorven --verbose doctor
+    ```
+  </Card>
+</CardGroup>
+
+## Categories
+
+<CardGroup cols={2}>
+  <Card title="Setup & lifecycle" icon="play" href="/cli/init">
+    `init`, `setup`, `start`, `doctor`, `status`, `version`, `update`, `backup`, `migrate`, `restore`.
+  </Card>
+  <Card title="Day-to-day" icon="play-circle" href="/cli/chat">
+    `chat`, `agents`, `sessions`, `rooms`, `teams`, `cron`, `tasks`, `memory`, `tools`, `providers`, `channels`, `workflows`.
+  </Card>
+  <Card title="Ops" icon="wrench" href="/cli/gateway">
+    `gateway`, `tls`, `logs`, `debug`, `config`, `mcp`, `vault`, `admin`.
+  </Card>
+  <Card title="Security" icon="shield" href="/cli/auth">
+    `auth`, `scan`, `read`, `research`.
+  </Card>
+</CardGroup>
+
+## Complete list
+
+| Command | Purpose |
+|---|---|
+| [`admin`](/cli/admin) | Administrative actions (dangerous; requires root token) |
+| [`agent`](/cli/agent) | Agent-developer tooling (DX scaffolds, local only) |
+| [`agents`](/cli/agents) | Manage Qors — list, create, update, delete |
+| [`auth`](/cli/auth) | Tokens, sessions, log in/out |
+| [`backup`](/cli/backup) | Export config + agents + sessions + memories + skills |
+| [`channels`](/cli/channels) | Messaging channel setup (Telegram, WhatsApp, Slack, …) |
+| [`chat`](/cli/chat) | Send a message to a Qor from the CLI |
+| [`collapse-sessions`](/cli/collapse-sessions) | Merge extra sessions into the canonical chat (Phase 4 migration) |
+| [`config`](/cli/config) | Show / edit `config.toml` |
+| [`cron`](/cli/cron) | Scheduled jobs — list, enable, disable, trigger |
+| [`debug`](/cli/debug) | Quick diagnostics dump (config + DB + gateway + providers + channels) |
+| [`doctor`](/cli/doctor) | Health check — runs before you ask for help |
+| [`gateway`](/cli/gateway) | Gateway service lifecycle: start/stop/restart |
+| [`health`](/cli/health) | Quick `/health` endpoint check |
+| [`init`](/cli/init) | Initial setup wizard (first-run) |
+| [`logs`](/cli/logs) | Tail / search logs |
+| [`mcp`](/cli/mcp) | Manage MCP servers you've connected |
+| [`memory`](/cli/memory) | Inspect / edit / search agent memories |
+| [`migrate`](/cli/migrate) | Apply database migrations |
+| [`models`](/cli/models) | Search the model registry (1700+ models with costs) |
+| [`providers`](/cli/providers) | LLM provider setup + key management |
+| [`read`](/cli/read) | Read a URL (any platform) into a consumable summary |
+| [`research`](/cli/research) | Social-platform research query |
+| [`restore`](/cli/restore) | Restore from a `qorven backup` archive |
+| [`rooms`](/cli/rooms) | Multi-Qor rooms |
+| [`scan`](/cli/scan) | Scan text for prompt injection (Defender) |
+| [`sessions`](/cli/sessions) | List / get / delete sessions |
+| [`setup`](/cli/setup) | Interactive first-run wizard |
+| [`start`](/cli/start) | Start the gateway server (what systemd runs) |
+| [`status`](/cli/status) | Gateway status + metadata |
+| [`tasks`](/cli/tasks) | Background task queue |
+| [`teams`](/cli/teams) | Team management |
+| [`tls`](/cli/tls) | TLS: generate, install CA, show fingerprint, regenerate |
+| [`tools`](/cli/tools) | List + toggle built-in tools |
+| [`update`](/cli/update) | Self-update to the latest release (SHA-256 verified) |
+| [`usage`](/cli/usage) | Token + cost analytics |
+| [`vault`](/cli/vault) | Obsidian-compatible knowledge vault |
+| [`version`](/cli/version) | Version string + build info |
+| [`workflows`](/cli/workflows) | Workflows — list, run, disable |
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">
+    `--server`, `--token`, `--output`, `--verbose`, `--yes`.
+  </Card>
+  <Card title="Environment variables" icon="variable" href="/cli/env-vars">
+    `QORVEN_SERVER`, `QORVEN_TOKEN`, `QORVEN_CONFIG`, `QORVEN_POSTGRES_DSN`.
+  </Card>
+</CardGroup>

@@ -1,0 +1,206 @@
+---
+title: "Architecture diagrams"
+description: "Reference diagrams for Qorven's architecture — request path, delegation, memory, deployment shapes."
+sidebarTitle: "Diagrams"
+icon: "layout"
+---
+
+<Info>
+  Copy-paste-friendly diagrams for slide decks, onboarding, and design reviews. All Mermaid; render anywhere.
+</Info>
+
+## High-level shape
+
+```mermaid
+flowchart LR
+    subgraph User["User"]
+      Web[Web UI]
+      TUI[TUI]
+      Phone["Telegram / WhatsApp / Slack"]
+    end
+
+    subgraph Gateway["Qorven Gateway (one Go binary)"]
+      API[/HTTP API/]
+      WS[WebSocket hub]
+      Loop[Agent loop]
+      Tools[80+ tools]
+      Sched[Scheduler]
+    end
+
+    subgraph Storage["Postgres + pgvector"]
+      DB[(Sessions, memories,<br/>audit, vault)]
+    end
+
+    subgraph LLM["LLM providers"]
+      OpenAI[OpenAI]
+      Anthropic[Anthropic]
+      Ollama[Ollama]
+    end
+
+    Web -->|TLS| API
+    TUI -->|TLS| API
+    Phone -->|Webhook| API
+    API --> Loop
+    WS <--> Loop
+    Loop --> Tools
+    Loop --> LLM
+    Tools --> DB
+    Loop --> DB
+```
+
+## Request path (simple case)
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant GW as Gateway
+    participant AL as Agent loop
+    participant LLM as LLM
+    participant Tool as Tool
+
+    U->>GW: POST /v1/chat/completions
+    GW->>AL: Load Qor + history + memory
+    AL->>LLM: Prompt (streaming)
+    LLM-->>AL: Token stream
+    AL-->>GW: Stream tokens via WS
+    GW-->>U: SSE chunks
+
+    Note over AL,LLM: LLM decides to call tool
+    LLM-->>AL: {tool:"web_fetch", args:...}
+    AL->>Tool: Execute
+    Tool-->>AL: Result
+    AL->>LLM: Resume with result
+    LLM-->>AL: Final tokens
+    AL-->>U: Done
+```
+
+## Delegation
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant P as Prime
+    participant R as Researcher
+    participant C as Coder
+    participant S as Sender
+
+    U->>P: "Research flights + draft email"
+    par Delegate in parallel
+      P->>R: delegate_to_soul(research flights)
+      P->>C: delegate_to_soul(draft email)
+    end
+    R-->>P: Flight options
+    C-->>P: Draft markdown
+    P->>S: send_email(draft)
+    S-->>P: Sent
+    P-->>U: Done (flights + email sent)
+```
+
+## Memory stack
+
+```mermaid
+flowchart TB
+    subgraph L5["5. Working context (sent to LLM)"]
+      W[Rolling window + top-K memories]
+    end
+    subgraph L4["4. Bulletins (cached summaries)"]
+      B[(bulletins)]
+    end
+    subgraph L3["3. Knowledge graph"]
+      E[(entities)]
+      Ed[(memory_edges)]
+    end
+    subgraph L2["2. Typed memories"]
+      M[(memories + pgvector)]
+    end
+    subgraph L1["1. Raw message history"]
+      R[(sessions.messages)]
+    end
+
+    R --> M
+    M --> Ed
+    M --> E
+    M --> B
+    M --> W
+    B --> W
+```
+
+## One-Qor-one-chat
+
+```mermaid
+flowchart LR
+    subgraph Channels["Chat-family channels"]
+      W[Web]
+      T[Telegram]
+      WA[WhatsApp]
+      S[Slack DM]
+    end
+
+    Canon[(Canonical session)]
+
+    subgraph Views["Per-channel views"]
+      VW[Web sees all]
+      VT[Telegram sees telegram tag]
+      VWA[WhatsApp sees whatsapp tag]
+      VS[Slack sees slack_dm tag]
+    end
+
+    W --> Canon
+    T --> Canon
+    WA --> Canon
+    S --> Canon
+
+    Canon --> VW
+    Canon --> VT
+    Canon --> VWA
+    Canon --> VS
+```
+
+## Deployment shapes
+
+### Single-node (default)
+
+```mermaid
+flowchart LR
+    subgraph Box["One VPS / Raspberry Pi / Mac"]
+      Q[qorven]
+      PG[(Postgres)]
+      Q <--> PG
+    end
+    Internet -->|HTTPS :443| Q
+```
+
+### Behind a reverse proxy
+
+```mermaid
+flowchart LR
+    Internet -->|HTTPS :443| Proxy[Nginx / Caddy / Traefik]
+    Proxy -->|HTTP :4200| Q[qorven]
+    Q <--> PG[(Postgres)]
+```
+
+### Split API + UI (production)
+
+```mermaid
+flowchart LR
+    Users -->|HTTPS| LB[Load balancer]
+    LB -->|:443| UI[Qorven web listener]
+    LB -->|:4200 internal| API[Qorven API listener]
+    UI -.read-only.-> PG
+    API <--> PG[(Postgres primary)]
+    PG --> Replica[(Read replica)]
+```
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Architecture overview" icon="layers" href="/architecture/overview">
+    Narrative version of the diagrams.
+  </Card>
+  <Card title="Security model" icon="shield" href="/architecture/security-model">
+    Trust boundaries deep-dive.
+  </Card>
+  <Card title="HTTP API" icon="server" href="/reference/http-api">
+    The endpoints behind the request-path diagram.
+  </Card>
+</CardGroup>

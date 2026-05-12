@@ -1,0 +1,146 @@
+---
+title: "pgvector"
+description: "pgvector enables semantic memory search in Qorven. How to install it, verify it, and understand what breaks without it."
+sidebarTitle: "pgvector"
+icon: "search"
+---
+
+pgvector is a PostgreSQL extension that adds vector similarity search. Qorven uses it to power agent memory: when an agent looks up relevant context, it searches by semantic meaning rather than keyword matching.
+
+The one-line installer enables pgvector automatically. This page covers manual installation and troubleshooting.
+
+## Why it is required
+
+Without pgvector, Qorven's memory system falls back to basic keyword (full-text) search. This works but produces worse results — an agent looking for memories about "contract renewal" will miss entries that say "subscription expires next month."
+
+With pgvector, memories are stored as embedding vectors. The agent finds semantically similar memories even when the exact words differ.
+
+<Info>
+  `qorven doctor` checks whether pgvector is installed and reports which version is active.
+</Info>
+
+## Installing pgvector
+
+### Ubuntu / Debian
+
+```bash
+# For PostgreSQL 16
+sudo apt install -y postgresql-16-pgvector
+
+# For PostgreSQL 15
+sudo apt install -y postgresql-15-pgvector
+
+# For PostgreSQL 14
+sudo apt install -y postgresql-14-pgvector
+```
+
+If the package is not found, add the PostgreSQL apt repository first:
+
+```bash
+sudo apt install -y postgresql-common
+sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
+```
+
+### RHEL / CentOS / Amazon Linux
+
+```bash
+# Enable PGDG repository (if not already added)
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+
+# Install pgvector for PostgreSQL 16
+sudo dnf install -y pgvector_16
+```
+
+### From source
+
+If a pre-built package is not available for your platform:
+
+```bash
+sudo apt install postgresql-server-dev-16 build-essential git
+
+git clone https://github.com/pgvector/pgvector.git
+cd pgvector
+make
+sudo make install
+```
+
+### Enable in the database
+
+After installing the package, enable the extension inside the Qorven database:
+
+```bash
+sudo -u postgres psql -d qorven -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+
+## Verifying the installation
+
+```bash
+qorven doctor
+```
+
+```
+[ok] pgvector: installed (0.7.0)
+```
+
+Or check directly in psql:
+
+```sql
+SELECT extname, extversion FROM pg_extension WHERE extname = 'vector';
+```
+
+Expected output:
+
+```
+ extname | extversion
+---------+------------
+ vector  | 0.7.0
+```
+
+## Minimum version
+
+Qorven requires pgvector 0.5.0 or later. Version 0.7.0+ is recommended for best performance on large memory stores.
+
+```bash
+# Check your installed version
+sudo -u postgres psql -d qorven -c "SELECT extversion FROM pg_extension WHERE extname = 'vector';"
+```
+
+If you have an older version, upgrade it:
+
+```bash
+sudo apt upgrade postgresql-16-pgvector
+sudo -u postgres psql -d qorven -c "ALTER EXTENSION vector UPDATE;"
+```
+
+## What breaks without pgvector
+
+| Feature | Without pgvector | With pgvector |
+|---|---|---|
+| Memory search | Keyword match only | Semantic similarity search |
+| Agent context retrieval | Returns exact phrase matches | Returns conceptually related memories |
+| Memory relevance ranking | By recency only | By embedding similarity + recency |
+
+The degraded mode works — agents still have memory — but retrieval quality is noticeably worse for anything beyond simple recall.
+
+## Embedding model
+
+By default, Qorven generates memory embeddings using the same AI provider you have configured for chat. If you are using OpenAI, it uses `text-embedding-3-small`. Anthropic does not offer a dedicated embedding model, so Qorven falls back to a local sentence-transformer model for embeddings when using Claude.
+
+To use a specific embedding model:
+
+```toml
+[memory]
+embedding_model   = "text-embedding-3-small"
+embedding_dims    = 1536
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="PostgreSQL setup" icon="database" href="/ops/postgres-setup">
+    Full database setup including pgvector.
+  </Card>
+  <Card title="Database errors" icon="alert-circle" href="/ops/troubleshooting/database-errors">
+    Diagnosing "extension not found" errors.
+  </Card>
+</CardGroup>

@@ -1,0 +1,12 @@
+{
+  "name": "qorven-docs",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "mint dev --port 3002",
+    "build": "mint build"
+  },
+  "devDependencies": {
+    "mint": "^4"
+  }
+}

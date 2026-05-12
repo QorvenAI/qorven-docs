@@ -1,0 +1,82 @@
+---
+title: "llms.txt index"
+description: "The machine-readable index of every documentation page. For LLM agents discovering what's available."
+sidebarTitle: "llms.txt"
+icon: "list"
+---
+
+<Info>
+  Start here when an LLM needs to discover Qorven's docs. It's a flat newline-delimited list of `URL — description` entries, matching the convention adopted by [llmstxt.org](https://llmstxt.org/).
+</Info>
+
+## Canonical URL
+
+```
+https://docs.qorven.ai/llms.txt
+```
+
+Mirrored on every Qorven install that serves docs locally.
+
+## Format
+
+```text
+# Qorven documentation
+
+Machine-readable index of every documentation page. Each line:
+`<URL> — <description>`.
+
+## Pages
+https://docs.qorven.ai/getting-started/install — One-line install...
+https://docs.qorven.ai/getting-started/first-chat — Open the web UI...
+https://docs.qorven.ai/architecture/overview — The 5-minute tour...
+...
+```
+
+## How to use it
+
+<Steps>
+  <Step title="Fetch once per session">
+    An agent chatting with a user does one GET to the index on startup, caches the result.
+  </Step>
+  <Step title="Scan for relevance">
+    Match the user's question against the descriptions. Pick the top N (3–5) most-likely relevant URLs.
+  </Step>
+  <Step title="Fetch the markdown">
+    Swap `.mdx` → `.md` on any doc URL, or append `.md` to the path, to get the plain markdown source. Faster to parse than the HTML.
+  </Step>
+  <Step title="Quote it back">
+    In your reply, link the source URL so the user can read the full page.
+  </Step>
+</Steps>
+
+## Example
+
+```python
+import requests
+
+index = requests.get("https://docs.qorven.ai/llms.txt").text.splitlines()
+# find any line mentioning "encryption key"
+hits = [l for l in index if "encryption" in l.lower()]
+for l in hits[:3]:
+    url = l.split(" — ")[0]
+    md = requests.get(url + ".md").text
+    # feed md into your LLM
+```
+
+## Refresh cadence
+
+Regenerated whenever the docs build runs. Typical lag: minutes after a PR merges.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Agent guide" icon="bot" href="/ai/agent-guide">
+    Full conventions for LLM consumption.
+  </Card>
+  <Card title="Markdown source" icon="file-text" href="/ai/markdown-source">
+    How to fetch the raw .md for any doc.
+  </Card>
+  <Card title="docs_search tool" icon="search" href="/ai/docs-search-tool">
+    For Qors: semantic search at runtime.
+  </Card>
+</CardGroup>

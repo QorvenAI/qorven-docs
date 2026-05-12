@@ -1,0 +1,89 @@
+---
+title: "Preferences"
+description: "Personal settings for your Qorven workspace — theme, language, timezone, notifications, and agent defaults."
+sidebarTitle: "Preferences"
+icon: "settings"
+---
+
+Preferences covers your personal workspace settings. Changes here apply to your account only and do not affect other users on the same Qorven instance.
+
+## Appearance
+
+| Setting | Options |
+|---|---|
+| **Theme** | Dark, Light, System (follows your OS setting) |
+| **Accent color** | Choose from preset colors or enter a hex value |
+| **Font size** | Small, Medium (default), Large |
+| **Layout density** | Comfortable (more spacing) or Compact (more content per screen) |
+
+For detailed theme options, see [Theme Settings](/web-ui/settings/theme).
+
+## Localization
+
+| Setting | Description |
+|---|---|
+| **Language** | Interface language. Currently supported: English, Spanish, French, German, Mandarin, Japanese |
+| **Timezone** | Used for schedule times, log timestamps, and calendar display. Defaults to your browser's timezone. |
+| **Date format** | DD/MM/YYYY or MM/DD/YYYY |
+| **Time format** | 12-hour or 24-hour |
+
+## Default agent
+
+Choose which agent responds when you open a new chat without specifying one. Default is **Prime**.
+
+## Auto-approve settings
+
+Some agent actions can be approved automatically without a manual confirmation step. Configure which action types you're comfortable auto-approving:
+
+- **Web searches** — almost always safe to auto-approve
+- **File reads** — safe for most use cases
+- **Draft creation** — auto-approve draft creation (not sending)
+- **Calendar reads** — checking your availability without making changes
+- **Email sends** — off by default; turn on only if you trust the Email Agent's judgment fully
+
+<Warning>
+  Auto-approving email sends or file deletions means agents will act without asking. Only enable these for action types you've validated through manual review first.
+</Warning>
+
+## Notification preferences
+
+| Setting | Description |
+|---|---|
+| **Dashboard notifications** | Always on — notifications always appear in the dashboard |
+| **Telegram delivery** | Send notifications to your Telegram bot |
+| **Slack delivery** | Post notifications to a Slack channel |
+| **Email digest** | Receive a summary email (choose: immediate, hourly, daily) |
+| **Approval alerts only** | Only notify for actions that require your approval |
+
+## Voice settings
+
+| Setting | Description |
+|---|---|
+| **Voice mode** | Push-to-talk or Voice-activated |
+| **TTS voice** | Select voice, accent, and gender for text-to-speech responses |
+| **Speaking speed** | 0.75× to 2× normal speed |
+| **Auto-mute in meetings** | Pause voice listening when a calendar event is active |
+
+## Keyboard shortcuts
+
+The Preferences page lists all active keyboard shortcuts. Click any shortcut to reassign it. Default shortcuts:
+
+| Action | Default shortcut |
+|---|---|
+| New chat | `Ctrl+K` / `Cmd+K` |
+| Focus search | `/` |
+| Open notifications | `Ctrl+N` / `Cmd+N` |
+| Toggle sidebar | `[` |
+| Submit message | `Enter` |
+| New line in message | `Shift+Enter` |
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Theme" icon="palette" href="/web-ui/settings/theme">
+    Focused view of appearance settings.
+  </Card>
+  <Card title="Privacy" icon="shield" href="/web-ui/settings/privacy">
+    Memory retention and PII redaction settings.
+  </Card>
+</CardGroup>

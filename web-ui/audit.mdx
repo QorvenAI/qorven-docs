@@ -1,0 +1,59 @@
+---
+title: "Audit Log"
+description: "A complete, searchable record of every action taken by your agents."
+sidebarTitle: "Audit Log"
+icon: "history"
+---
+
+Every tool call, message sent, model invocation, and approval decision your agents make is written to the Audit Log in real time. Nothing is excluded.
+
+## What gets logged
+
+| Entry type | Examples |
+|---|---|
+| Tool calls | Web search, email sent, file read, code executed |
+| Model calls | Which agent, which model, token counts |
+| Approvals | Approved/rejected by whom, at what time |
+| Channel messages | Inbound and outbound via Telegram, Slack, email, etc. |
+| Agent task start/stop | Task ID, triggering agent, duration |
+| System events | Agent enabled/disabled, memory written, connector added |
+
+Each entry records the agent name, action type, timestamp, and outcome (success or error).
+
+## Searching and filtering
+
+Use the filter bar at the top of the page to narrow entries by:
+
+- **Agent** — show activity for a single agent
+- **Action type** — tool calls only, approvals only, model calls only, etc.
+- **Date range** — pick a start and end date
+- **Keyword** — free-text search across entry descriptions
+
+Results update as you type. Click any row to expand the full entry, including the exact inputs and outputs of the action.
+
+## Exporting
+
+Click **Export CSV** in the top-right corner to download the current filtered view as a CSV file. The export includes all fields shown in the expanded row view.
+
+<Tip>
+  Filter to a specific agent and date range before exporting if you want a focused audit report.
+</Tip>
+
+## Tamper evidence
+
+Audit entries are append-only. No agent or user action can modify or delete individual log entries from the dashboard. The only way to clear the audit log is through the [Danger Zone](/web-ui/settings/system) factory-reset flow, which itself writes a final log entry before wiping.
+
+<Warning>
+  Factory reset logs a "reset initiated" entry before clearing. If you need a forensic record, export before resetting.
+</Warning>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Memories" icon="database" href="/web-ui/memories">
+    What your agents have remembered over time.
+  </Card>
+  <Card title="Notifications" icon="bell" href="/web-ui/notifications">
+    Alerts for pending approvals and completed tasks.
+  </Card>
+</CardGroup>

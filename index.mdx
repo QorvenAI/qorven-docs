@@ -1,0 +1,82 @@
+---
+title: "Qorven"
+description: "A self-hosted AI team that codes, researches, writes, schedules, and remembers — on your machine."
+sidebarTitle: "Welcome"
+mode: "wide"
+---
+
+<Info>
+  Qorven is the open-source, self-hosted alternative to fragmented AI assistants. Install once, own everything, and give each of your Qors — your specialised agents — the channels, memory, and tools to actually get work done.
+</Info>
+
+## Pick your start
+
+<CardGroup cols={2}>
+  <Card title="Install in 60 seconds" icon="rocket" href="/getting-started/install">
+    One `curl` command sets up Postgres, TLS, and the web UI behind HTTPS.
+  </Card>
+  <Card title="Have a first chat" icon="message-circle" href="/getting-started/first-chat">
+    Meet **Prime**, your chief-of-staff Qor, and watch it delegate.
+  </Card>
+  <Card title="How it's built" icon="layers" href="/architecture/overview">
+    The 5-minute tour: agents, channels, memory, tools, gateway.
+  </Card>
+  <Card title="Channels" icon="message-square" href="/channels/index">
+    Telegram, WhatsApp, Slack, Discord, Email — 20+ surfaces.
+  </Card>
+</CardGroup>
+
+## What makes Qorven different
+
+<CardGroup cols={3}>
+  <Card title="One Qor, one chat" icon="infinity" href="/architecture/one-qor-one-chat">
+    No more juggling threads. A Qor holds one chat per user, merged across every channel you message it on.
+  </Card>
+  <Card title="Memory that remembers" icon="brain" href="/memory/overview">
+    pgvector + knowledge graph + periodic dreaming. Compaction turns old turns into searchable facts.
+  </Card>
+  <Card title="Zero telemetry" icon="shield" href="/security/threat-model">
+    No phone-home, per-install encryption key, TLS on by default. The only network calls you didn't authorise are zero.
+  </Card>
+</CardGroup>
+
+## Who is this for
+
+<AccordionGroup>
+  <Accordion title="Solo operator" icon="user">
+    Self-host on a `$5` VPS or a mini PC. One `curl | sh` install. Your Qor handles email, research, code, scheduling — all through one chat on the channel of your choice.
+  </Accordion>
+  <Accordion title="Small team" icon="users">
+    Multi-tenant Postgres with row-level security. Each teammate has their own Qors; shared rooms for joint work. Free forever for self-hosted.
+  </Accordion>
+  <Accordion title="Enterprise" icon="building">
+    On-prem deploy, SSO, per-install encryption, audit log, prompt-injection defence, PII redaction, approval-gated destructive tools. Run it air-gapped if you want.
+  </Accordion>
+</AccordionGroup>
+
+## Stack at a glance
+
+<Steps>
+  <Step title="Go backend, Next.js frontend">
+    One binary (~160 MB) with the web UI embedded via `go:embed`. No Node runtime needed at deploy time.
+  </Step>
+  <Step title="PostgreSQL + pgvector">
+    Sessions, memories, audit log, tenant data — all in one Postgres. Embeddings live next to metadata, no separate vector DB.
+  </Step>
+  <Step title="TLS by default">
+    Local CA generated at first boot. `sudo qorven tls install-ca` → browsers show the green lock on localhost + every LAN IP.
+  </Step>
+  <Step title="Your choice of LLM">
+    OpenAI, Anthropic, Bedrock, DeepSeek, Gemini, Groq, Mistral, Ollama, LM Studio. BYO keys, rotate automatically on rate-limits, fall back across providers.
+  </Step>
+</Steps>
+
+## Licensing
+
+Qorven is released under [FSL‑1.1‑ALv2](/reference/licensing). Free for everyone, including commercial use, with one restriction: you can't take Qorven and sell it as a competing hosted service.
+
+---
+
+<Note>
+  **For AI agents reading these docs:** there's an [agent guide](/ai/agent-guide) with the canonical markdown endpoints, `llms.txt` index, and the `docs_search` tool your Qor can call to consult these pages at runtime.
+</Note>

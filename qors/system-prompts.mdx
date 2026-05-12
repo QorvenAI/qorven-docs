@@ -1,0 +1,114 @@
+---
+title: "Writing Agent Instructions"
+description: "The instructions you write determine everything your agent does. Here's how to write instructions that make agents work reliably."
+sidebarTitle: "Agent Instructions"
+icon: "file-text"
+---
+
+<Info>
+  Agent instructions are plain English. You don't need special syntax, tags, or formatting. Write how you'd explain a job to a new hire on their first day.
+</Info>
+
+## The basics
+
+Instructions tell the agent:
+- What its job is
+- How it should respond
+- What tone to use
+- Any rules it should follow
+- What to do in specific situations
+
+A two-sentence instruction is better than none. A well-written paragraph is better than two sentences. The more clearly you describe the job, the more reliably the agent does it.
+
+## Structure that works
+
+Most effective instructions follow this pattern:
+
+```
+[Who the agent is and what it does]
+[Tone and style]
+[Specific rules or behaviours]
+[What to do in edge cases]
+```
+
+**Example — a research agent:**
+
+> You are a research specialist. When asked a question, you search the web, read relevant sources in full, and compile a structured answer with key findings, notable quotes, and your own assessment of confidence level.
+>
+> Write clearly and factually. No filler. When you're uncertain, say so.
+>
+> Always cite your sources at the end of your response.
+
+**Example — a support agent:**
+
+> You are a friendly customer support agent for Acme Corp. You help customers with product questions, billing issues, and account problems.
+>
+> Be warm, direct, and concise. Don't use corporate jargon.
+>
+> For billing disputes, direct the customer to billing@acme.com. For technical issues you can't resolve, tell the customer a human will follow up within one business day.
+
+## Things that make instructions better
+
+**Be specific about tone.** "Professional" means different things to different people. "Concise, no filler, no exclamation marks" is more useful.
+
+**Describe edge cases.** What should the agent do if it doesn't know the answer? If the customer is angry? If the information is outdated? Agents handle these situations better when they're already covered in the instructions.
+
+**Give examples if the format matters.** If you want summaries in bullet points, show an example bullet. If you want reports in a specific structure, outline that structure.
+
+**Include relevant context.** An agent that handles customer email for a software company should know what the product does, roughly how the company works, and what counts as an urgent issue.
+
+## What to avoid
+
+**Don't make instructions too long.** There's no hard limit, but instructions that run to many pages of detail often hurt performance — the agent loses track of the important parts. Keep instructions focused.
+
+**Don't repeat yourself.** If you say "always be concise" three times, it doesn't help more than saying it once.
+
+**Don't list every possible scenario.** Cover the important cases; trust the agent to handle the rest with good judgment. Overspecification produces rigid agents that break when reality doesn't match the list.
+
+**Don't contradict yourself.** If the instructions say both "always provide a detailed answer" and "be as brief as possible," the agent will be inconsistent. Pick one direction.
+
+## Instructions for Prime
+
+Prime's instructions shape how it coordinates your whole team. By default, Prime knows about all your agents and can delegate to them. You can customize Prime to:
+
+- Prioritise certain agents for certain types of work
+- Set a communication style for all responses
+- Define what "urgent" means for your workflow
+- Add context about your business that all work should take into account
+
+```
+You are Prime, my AI Chief of Staff. I'm [name], the founder of a logistics company.
+
+I work best with direct, brief responses. When something is urgent, flag it clearly.
+
+My team: Researcher handles market intelligence; Developer handles our codebase; Email Agent handles my inbox.
+
+I care most about: operational issues, customer problems, and anything that affects our on-time delivery rate.
+```
+
+## Using memory in instructions
+
+You can reference things agents will learn over time:
+
+> "When you're not sure what I prefer, check your memory first — I've usually told you in a previous conversation."
+
+> "Remember my preferences about communication style. Ask me if you're uncertain, and save the answer to memory."
+
+This makes agents progressively more personalised as they work with you.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Creating an agent" icon="plus" href="/qors/creating-a-qor">
+    Put your instructions to work.
+  </Card>
+  <Card title="Agent memory" icon="database" href="/memory/overview">
+    What agents remember and how to manage it.
+  </Card>
+  <Card title="Tools" icon="wrench" href="/qors/tools">
+    Choose what capabilities your agent has.
+  </Card>
+  <Card title="Scheduling" icon="calendar" href="/workflows/cron">
+    Run your agent automatically on a schedule.
+  </Card>
+</CardGroup>

@@ -1,0 +1,95 @@
+---
+title: "Mistral"
+description: "Configure Mistral as an LLM backend for your Qors. Setup, models, rate limits, common issues."
+sidebarTitle: "Mistral"
+icon: "wind"
+---
+
+<div className="mb-6 flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+  <img src="/images/logos/providers/mistral.svg" alt="Mistral logo" width={40} height={40} />
+  <div>
+    <div className="text-sm font-semibold">Mistral</div>
+  </div>
+</div>
+
+
+<Info>
+  Mistral is available as a provider in Qorven. Add your API key once; rotate across keys automatically on rate-limits.
+</Info>
+
+## At a glance
+
+| | |
+|---|---|
+| **Category** | openai-compat |
+| **API base** | `https://api.mistral.ai/v1` |
+| **Key env var** | `MISTRAL_API_KEY` |
+| **Provider type** | OpenAI-compatible |
+
+## Setup
+
+<Steps>
+  <Step title="Get credentials from Mistral">
+    Create an API key in the Mistral console.
+  </Step>
+  <Step title="Add the key in Qorven">
+    **Settings → Provider Keys → Add provider → Mistral → paste key → Save.**
+
+    The key is AES-256-GCM encrypted with your install's encryption key before it hits the database.
+  </Step>
+  <Step title="Mark a default model">
+    **Models Hub → Models →** pick which Mistral model is the default for new Qors.
+  </Step>
+  <Step title="Test">
+    Ask Prime any question. In the LLM trace you'll see `provider=mistral`.
+  </Step>
+</Steps>
+
+## Popular models
+
+<Note>
+  The full model list is in the [models catalog](/models/overview). Qorven's catalog keeps costs + context windows + capability flags up to date weekly from the providers.
+</Note>
+
+## Rate limits & failover
+
+Qorven supports multiple keys per provider. When one rate-limits, the next is tried automatically. When all keys on a provider are exhausted, failover moves to the next provider in your priority list. [Failover →](/models/failover)
+
+## Common issues
+
+<AccordionGroup>
+  <Accordion title="401 Invalid key">
+    Key is wrong, expired, or from the wrong org. Test with `qorven providers verify mistral`.
+  </Accordion>
+  <Accordion title="429 Rate-limited">
+    Provider is throttling. Add another key, or lower your Qor's model to a less-busy tier. Failover handles this automatically if configured.
+  </Accordion>
+  <Accordion title="402 Insufficient balance">
+    Usually a missed top-up. Check the provider's billing dashboard. Qorven will fail over to the next provider; flag loudly if all are exhausted.
+  </Accordion>
+  <Accordion title="Timeout">
+    Check your `QORVEN_OUTBOUND_TIMEOUT` (default 120s). Some local models need more. For Mistral specifically: check your network egress allows the provider's domain.
+  </Accordion>
+</AccordionGroup>
+
+
+<Note>
+  Logo displayed under nominative fair use. See [trademarks & attribution](/reference/brand-trademarks) for owner, source library, and removal requests.
+</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Provider keys" icon="key" href="/models/provider-keys">
+    Full key management UI + CLI.
+  </Card>
+  <Card title="Models overview" icon="cloud" href="/models/overview">
+    Catalog, defaults, cost.
+  </Card>
+  <Card title="Failover" icon="arrow-right" href="/models/failover">
+    Multi-key, multi-provider rotation.
+  </Card>
+  <Card title="qorven providers CLI" icon="terminal" href="/cli/providers">
+    Scripted provider management.
+  </Card>
+</CardGroup>

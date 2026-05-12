@@ -1,0 +1,65 @@
+---
+title: "OAuth Apps"
+description: "How Qorven stores and manages OAuth credentials for Google, GitHub, and other connected services."
+sidebarTitle: "OAuth Apps"
+icon: "link"
+---
+
+## Overview
+
+To connect services like Google Drive, Gmail, Google Calendar, or GitHub, you register an OAuth 2.0 application with that provider and enter the client credentials in Qorven. Qorven then uses those credentials to obtain access tokens on behalf of your users.
+
+All OAuth credentials — both the app-level client secret and per-user access/refresh tokens — are stored encrypted at rest using your install's [per-install encryption key](/security/per-install-encryption).
+
+## Registering an OAuth app
+
+<Steps>
+  <Step title="Create the app with the provider">
+    Go to the provider's developer console and create an OAuth application. The exact steps vary by provider — each connector's setup guide walks you through it.
+
+    Set the redirect URI to:
+    ```
+    https://your-qorven-host/v1/oauth/callback/{provider}
+    ```
+  </Step>
+  <Step title="Enter the credentials in Qorven">
+    In **Settings → Channels**, find the connector and click **Configure**. Enter the Client ID and Client Secret. Qorven encrypts the secret immediately on save — it is never stored in plaintext.
+  </Step>
+  <Step title="Authorize users">
+    Each user who wants to use the connector visits **Settings → Connected Accounts** and clicks **Connect**. They are redirected to the provider's consent screen. After approval, Qorven stores the resulting access and refresh tokens, encrypted, tied to that user.
+  </Step>
+</Steps>
+
+## Token lifecycle
+
+- **Access tokens** are short-lived (typically 1 hour). Qorven refreshes them automatically using the stored refresh token before they expire.
+- **Refresh token rotation** — some providers (Google, GitHub) issue a new refresh token on each use. Qorven updates the stored token atomically so the old one is never used again.
+- **Revocation** — if a refresh token is invalidated at the provider (e.g. the user revoked access in their Google account settings), the next API call will fail with a 401. Qorven marks the connection as expired and prompts the user to re-authorize.
+
+## Revoking a connector
+
+To disconnect a service:
+
+**In the UI:** Settings → Connected Accounts → Disconnect next to the service.
+
+**Via CLI:**
+```bash
+qorven channels revoke --user <user-id> --provider google
+```
+
+This deletes the stored tokens from Qorven. It does not revoke access at the provider level — to fully revoke, the user should also visit the provider's account settings and remove the app from their authorized applications.
+
+## Security considerations
+
+- The client secret for each OAuth app is visible only to admins. Users cannot see it.
+- If you suspect a client secret has been compromised, rotate it immediately in the provider console and update it in Qorven under Settings → Channels.
+- OAuth credentials are tenant-scoped in multi-tenant mode — each tenant's connector credentials and user tokens are isolated from other tenants.
+
+<CardGroup cols={2}>
+  <Card title="Per-install encryption" icon="key" href="/security/per-install-encryption">
+    How credentials are encrypted at rest.
+  </Card>
+  <Card title="Tenant isolation" icon="users" href="/security/tenant-isolation">
+    OAuth credentials in multi-tenant mode.
+  </Card>
+</CardGroup>

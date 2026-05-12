@@ -1,0 +1,143 @@
+---
+title: "HTTP API reference"
+description: "Every /v1/* endpoint Qorven exposes. Auth, rate limits, JSON shapes, examples."
+sidebarTitle: "HTTP API"
+icon: "server"
+---
+
+<Info>
+  Qorven's API lives at `/v1/*` (with `/api` as an alias for browser clients coming through the UI's rewrite chain). Every endpoint requires a bearer token unless noted. All request + response bodies are JSON.
+</Info>
+
+## Auth
+
+```bash
+curl https://your-qorven/v1/agents \
+  -H "Authorization: Bearer $QORVEN_TOKEN"
+```
+
+Tokens are created at install time. Rotate via **Settings → Admin → Tokens** or `qorven auth rotate-token`.
+
+## Endpoint families
+
+<CardGroup cols={2}>
+  <Card title="/v1/chat/completions" icon="message-circle">
+    OpenAI-compatible chat. `POST` with `{session_id, agent_id, message, stream}` → streamed SSE with tokens + tool events.
+  </Card>
+  <Card title="/v1/agents" icon="brain">
+    CRUD for Qors. `GET` list, `POST` create, `GET/{id}` read, `PATCH/{id}` update, `DELETE/{id}` soft-delete.
+  </Card>
+  <Card title="/v1/sessions" icon="list">
+    Session management. Idempotent `POST` returns the canonical session for chat-family channels.
+  </Card>
+  <Card title="/v1/messages" icon="message-square">
+    Per-session message list. Filterable by channel.
+  </Card>
+  <Card title="/v1/memory/search" icon="search">
+    `POST {scope, agent_id, query, max_results}` → ranked memory list with `relevance` scores.
+  </Card>
+  <Card title="/v1/memory/save" icon="save">
+    Write a memory directly (bypasses the agent loop — for admin use).
+  </Card>
+  <Card title="/v1/tools" icon="wrench">
+    List + inspect tools. `POST /v1/tools/{id}/invoke` bypasses the agent loop (admin only).
+  </Card>
+  <Card title="/v1/rooms" icon="users">
+    Multi-agent rooms. Create, post messages, decide.
+  </Card>
+  <Card title="/v1/channels" icon="message-square">
+    Channel binding CRUD + `/status` + `/test-routing`.
+  </Card>
+  <Card title="/v1/models" icon="cpu">
+    Model catalog, selected models, default model.
+  </Card>
+  <Card title="/v1/providers" icon="cloud">
+    LLM provider CRUD; `/keys` for keys.
+  </Card>
+  <Card title="/v1/webhooks/{channel}" icon="webhook">
+    Per-channel inbound webhooks. Signature-verified by the channel's own spec.
+  </Card>
+  <Card title="/ws" icon="radio">
+    WebSocket hub. Subscribe to session events + Qor activity.
+  </Card>
+  <Card title="/health, /livez, /readyz" icon="activity">
+    Health probes. `/livez` = process up, `/readyz` = deps warmed.
+  </Card>
+</CardGroup>
+
+## OpenAPI spec
+
+The machine-readable spec is at `/openapi.json` on every install. Import into Postman, Bruno, or use with typed clients.
+
+## Rate limits
+
+| Scope | Default | Response on breach |
+|---|---|---|
+| Per-IP | 10 req/sec, burst 20 | 429 + `Retry-After` |
+| Per-tenant | 600 req/min | 429 + `Retry-After` |
+| Per-tenant concurrent | 5 plan-runs | 503 + `Retry-After` |
+
+[Tuning rate limits →](/gateway/rate-limits)
+
+## Pagination
+
+List endpoints support cursor-based pagination:
+
+```
+GET /v1/agents?limit=50&after=<cursor>
+```
+
+Response headers:
+
+```
+X-Next-Cursor: eyJpZCI6InVyaW4uLi4ifQ==
+X-Total: 120
+```
+
+## Errors
+
+Machine-readable:
+
+```json
+{
+  "error": {
+    "code": "provider_rate_limited",
+    "message": "OpenAI rate-limited this key; all keys exhausted",
+    "details": { "provider": "openai", "retry_after": 14 }
+  }
+}
+```
+
+[Error codes →](/help/error-codes)
+
+## SDKs (unofficial)
+
+The API is OpenAI-compatible at the chat level. Any OpenAI SDK works for chat:
+
+```python
+from openai import OpenAI
+client = OpenAI(base_url="https://your-qorven/v1", api_key=os.environ["QORVEN_TOKEN"])
+resp = client.chat.completions.create(
+    model="prime",
+    messages=[{"role":"user","content":"Plan my week"}],
+)
+```
+
+For Qorven-specific endpoints (memory, rooms, delegation), use the HTTP API directly or the Go client in `backend/cmd/client/`.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Environment variables" icon="variable" href="/cli/env-vars">
+    `QORVEN_SERVER`, `QORVEN_TOKEN` for client apps.
+  </Card>
+  <Card title="Auth middleware" icon="key" href="/gateway/auth-middleware">
+    How tokens are validated.
+  </Card>
+  <Card title="Rate limits" icon="gauge" href="/gateway/rate-limits">
+    Tuning for scale.
+  </Card>
+  <Card title="Error codes" icon="alert-octagon" href="/help/error-codes">
+    Every error.code string.
+  </Card>
+</CardGroup>

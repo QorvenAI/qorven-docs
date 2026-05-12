@@ -1,0 +1,121 @@
+---
+title: "Common Errors"
+description: "Quick reference for Qorven error codes and messages with fix instructions."
+sidebarTitle: "Common Errors"
+icon: "help-circle"
+---
+
+Quick reference for the most common errors. For detailed diagnosis, see the linked pages.
+
+## HTTP error codes
+
+| Code | Message | Cause | Fix |
+|---|---|---|---|
+| `401` | `unauthorized` | Missing or invalid auth token | Include `Authorization: Bearer <token>` header |
+| `401` | `account locked` | Account locked after failed login attempts | Unlock via admin panel or wait for lockout to expire |
+| `403` | `admin role required` | Endpoint requires admin, user is not admin | Use an admin account, or promote the user |
+| `429` | `rate limit exceeded` | Too many requests | Wait and retry; see [Rate limits](/gateway/rate-limits) |
+| `503` | `database not available` | PostgreSQL is down or unreachable | Check PostgreSQL; see [Database errors](/ops/troubleshooting/database-errors) |
+| `503` | `service starting` | Qorven is still starting up | Wait 10–30 seconds and retry |
+
+## Auth token errors
+
+| Error | Fix |
+|---|---|
+| "token expired" | Re-authenticate; session tokens expire after 24 hours by default |
+| "token not found" | Token was deleted or rotated; generate a new one in Settings > API Keys |
+| "invalid token format" | Token is malformed — must start with `qvt_live_` |
+
+## Database errors
+
+| Error | Fix |
+|---|---|
+| "database not available" | PostgreSQL is not running or connection was lost — see [Database errors](/ops/troubleshooting/database-errors) |
+| "connection refused" | PostgreSQL not running — `sudo systemctl start postgresql` |
+| "extension vector not found" | Install pgvector — see [pgvector](/ops/pgvector) |
+| "too many connections" | Reduce `max_connections` in config or deploy PgBouncer |
+| "migration failed" | Run `qorven migrate up` or restore from backup |
+
+## WebSocket errors
+
+| Error | Fix |
+|---|---|
+| WebSocket connection drops immediately | Reverse proxy missing `Upgrade` header — see [Reverse proxy](/gateway/reverse-proxy) |
+| "WebSocket handshake failed" | TLS certificate not trusted by the browser — install the local CA |
+| Chat messages don't stream | Proxy `proxy_read_timeout` too short — increase to 300s |
+| "connection closed unexpectedly" | Idle timeout — configure `[server] websocket_idle_timeout = "10m"` |
+
+## Memory search not returning results
+
+| Cause | Fix |
+|---|---|
+| pgvector not installed | Install pgvector — see [pgvector](/ops/pgvector) |
+| No memories stored yet | Agent must run some tasks before memories accumulate |
+| Embedding model mismatch | If you changed models, re-index: `qorven memories reindex` |
+| Similarity threshold too high | Lower `[memory] min_similarity = 0.5` (default 0.7) |
+
+## Agent not responding on channels
+
+| Cause | Fix |
+|---|---|
+| No provider key configured | Add an API key in Settings > Provider Keys |
+| Provider key invalid | Test with `qorven providers test <provider>` |
+| Agent not assigned to channel | In the channel config, set the active agent |
+| Webhook not registered | Run `qorven channels reconfigure <channel>` |
+| Channel disabled | Enable the channel in Settings > Channels |
+
+## File and workspace errors
+
+| Error | Fix |
+|---|---|
+| "workspace directory not writable" | `sudo chown -R qorven:qorven /var/lib/qorven` |
+| "disk quota exceeded" | Free disk space; set `[agent] max_workspace_mb` to limit usage |
+| "file too large" | Increase `[server] max_upload_size_mb` (default 50) |
+
+## Startup errors
+
+See [Boot fails](/ops/troubleshooting/boot-fails) for detailed diagnosis. Quick reference:
+
+| Error | Cause |
+|---|---|
+| `connection refused` at startup | PostgreSQL not running |
+| `address already in use` | Another process on port 443 |
+| `encryption key is required` | Missing `[security] encryption_key` in config.toml |
+| `migration failed` | Schema in inconsistent state — run `qorven migrate up` |
+| `exec format error` | Wrong binary architecture |
+| `permission denied` on binary | Run `chmod +x /usr/local/bin/qorven` |
+
+## Getting more information
+
+When stuck on an error not listed here:
+
+```bash
+# Enable debug logging temporarily
+QORVEN_SERVER_LOG_LEVEL=debug sudo systemctl restart qorven
+
+# Follow logs
+journalctl -u qorven -f
+
+# Run diagnostics
+qorven doctor
+
+# Check system resources
+free -m && df -h && uptime
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Boot fails" icon="alert-triangle" href="/ops/troubleshooting/boot-fails">
+    Detailed startup failure diagnosis.
+  </Card>
+  <Card title="Database errors" icon="database" href="/ops/troubleshooting/database-errors">
+    PostgreSQL errors in depth.
+  </Card>
+  <Card title="Provider errors" icon="alert-circle" href="/ops/troubleshooting/provider-errors">
+    AI provider API errors.
+  </Card>
+  <Card title="Channel errors" icon="message-square" href="/ops/troubleshooting/channel-errors">
+    Telegram, WhatsApp, email, webhook errors.
+  </Card>
+</CardGroup>

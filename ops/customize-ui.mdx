@@ -1,0 +1,119 @@
+---
+title: "Customise the UI"
+description: "Set a custom name and logo, serve a fully custom Next.js build, or run the web UI in dev mode against a live backend."
+sidebarTitle: "Customise UI"
+icon: "palette"
+---
+
+Qorven's web UI is a Next.js application. You can customise it without touching the backend: change the name, logo, and colours through config, or serve a completely custom-built UI.
+
+## Basic customisation (config.toml)
+
+Set a custom product name and logo without rebuilding anything:
+
+```toml
+[ui]
+name     = "Acme AI"
+logo_url = "https://acme.example.com/assets/logo.svg"
+```
+
+The name appears in the browser tab, login page, and header. The logo replaces the default Qorven logo. The logo URL can point to any publicly accessible image.
+
+For a self-hosted logo, place it in a static assets directory and set `logo_url` to a path under your domain.
+
+### Custom accent colour
+
+```toml
+[ui]
+accent_color = "#6366f1"   # indigo — used for primary buttons and highlights
+```
+
+## Advanced: serve a custom-built UI
+
+You can replace the entire UI with your own Next.js application. The backend serves whatever is in the configured directory.
+
+### Build your custom UI
+
+The Qorven web UI lives in the `web/` directory of the repository. Fork the repository, modify the Next.js app, then build:
+
+```bash
+cd web
+pnpm install
+pnpm build
+```
+
+This produces a static export in `web/out/`.
+
+### Tell Qorven to serve it
+
+```toml
+[server]
+web_dir = "/path/to/your/custom-build/out"
+```
+
+Restart the service. Qorven now serves your build from `web_dir` instead of the embedded default UI.
+
+<Info>
+  You only need to fork the frontend. The backend binary stays the same — all API contracts remain identical. You can update Qorven's backend by replacing the binary without touching your custom UI.
+</Info>
+
+## Dev mode: live-reload against a running backend
+
+For active UI development, run Next.js in development mode. It hot-reloads on every file change and proxies API calls to the running backend.
+
+```bash
+cd web
+pnpm dev
+```
+
+The dev server starts at `http://localhost:3000`. API requests to `/api/v1/` are automatically proxied to the Qorven backend at `http://localhost:443` (or wherever your backend is running).
+
+To point the dev server at a remote backend:
+
+```bash
+QORVEN_API_URL=https://your-qorven-host pnpm dev
+```
+
+### Dev server configuration
+
+The proxy target is set in `web/next.config.js`:
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.QORVEN_API_URL || 'http://localhost:443'}/api/:path*`,
+      },
+    ];
+  },
+};
+```
+
+## What you can safely customise
+
+- Logo, name, colours — config.toml, no rebuild needed.
+- Page layout, typography, component styles — edit `web/` and rebuild.
+- Add new pages (e.g. custom dashboards) — extend the Next.js app.
+- Replace the entire UI with your own application — set `web_dir`.
+
+## What requires backend changes
+
+- New API endpoints — requires modifying `backend/`.
+- Changing authentication behaviour — requires modifying `backend/`.
+- Adding new agent tools — requires modifying `backend/`.
+
+For these changes, see the [contribution guide](https://github.com/qorvenai/qorven/blob/main/CONTRIBUTING.md).
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Hosting options" icon="server" href="/ops/hosting-options">
+    Where to run your custom Qorven instance.
+  </Card>
+  <Card title="API vs Web Listen" icon="network" href="/gateway/api-vs-web-listen">
+    The port that serves the web UI.
+  </Card>
+</CardGroup>

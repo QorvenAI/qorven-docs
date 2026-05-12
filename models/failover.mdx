@@ -1,0 +1,71 @@
+---
+title: "Model Failover"
+description: "Configure fallback chains so agents automatically switch providers when one goes down or hits a rate limit."
+sidebarTitle: "Model Failover"
+icon: "arrow-right-left"
+---
+
+AI providers go down. Rate limits get hit. Keys expire at inconvenient moments. Model failover ensures your agents keep working when the primary provider isn't available — automatically switching to a backup without manual intervention.
+
+## How failover works
+
+You configure a fallback chain: an ordered list of models to try in sequence. When a request to the primary model fails (provider error, rate limit, timeout), Qorven automatically retries with the next model in the chain.
+
+Example chain:
+```
+1. Claude Sonnet 4.5 (primary)
+2. GPT-4o (first fallback)
+3. Gemini 2.5 Flash (second fallback)
+```
+
+If Claude returns an error, the request goes to GPT-4o. If that also fails, it goes to Gemini. Agents continue working transparently.
+
+## Setting up a failover chain
+
+1. Go to **Settings → Models Hub**
+2. Click **Failover chains**
+3. Click **New chain**
+4. Add models in priority order — drag to reorder
+5. Assign the chain to an agent, a task type, or set it as the workspace-wide failover
+6. Click **Save**
+
+You can create multiple chains and assign them differently — for example, a high-availability chain for critical agents and a cost-optimized chain for background tasks.
+
+## Automatic vs manual failover
+
+**Automatic failover** (default) — Qorven detects the error and switches providers silently. The agent's response may be slightly slower on the first retry, but no human action is required.
+
+**Manual failover** — Qorven alerts you when the primary provider fails and waits for your input before switching. Useful if you want visibility into provider health or need to authorize the use of a different provider (e.g. for compliance reasons).
+
+Switch between automatic and manual in **Settings → Models Hub → Failover → Mode**.
+
+## What triggers a failover
+
+Failover is triggered by:
+
+- **HTTP 500 / 503 errors** from the provider (server-side failure)
+- **Rate limit errors (HTTP 429)** — provider is throttling your requests
+- **Timeout** — the provider takes longer than the configured threshold to respond
+- **Authentication errors** — key expired or permissions changed
+
+Failover is NOT triggered by:
+- Model refusing a request due to content policy
+- Invalid request parameters
+- Billing-related blocks (treat these as errors to fix, not to route around)
+
+## Monitoring failover events
+
+Every failover event is recorded in the [Audit Log](/workflows/audit) with the original provider, the fallback used, and the reason for the switch. Use this to spot patterns — if a provider is failing frequently, it may indicate a key issue or a reliability problem worth addressing.
+
+<Info>
+  Failover adds resilience but doesn't eliminate provider dependency. If a provider outage is prolonged, check the audit log to understand the impact and consider updating your default model until the outage is resolved.
+</Info>
+
+<CardGroup cols={2}>
+  <Card title="Per-agent model" icon="sliders" href="/models/per-qor-model">
+    Assign primary models to individual agents.
+  </Card>
+  <Card title="Cost budgets" icon="dollar-sign" href="/models/cost-budgets">
+    Set spend limits so failover doesn't create unexpected costs.
+  </Card>
+</CardGroup>

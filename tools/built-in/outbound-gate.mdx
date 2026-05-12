@@ -1,0 +1,92 @@
+---
+title: "Outbound Gate"
+description: "Control which external domains agents can make requests to — whitelist mode or audit-only logging."
+sidebarTitle: "Outbound Gate"
+icon: "door-open"
+---
+
+The Outbound Gate intercepts all outbound HTTP requests made by agents and applies a policy: either log them (audit mode) or enforce a whitelist of approved domains.
+
+It answers the question: "Which external services should my agents be allowed to contact?"
+
+## Two modes
+
+**Audit mode (default)** — all outbound requests are logged with the domain, URL, and which agent made the call. Nothing is blocked. Use this to understand your agents' network behaviour before enforcing a policy.
+
+**Whitelist mode** — only requests to explicitly approved domains are allowed. Everything else is blocked and logged. Use this for production environments where you want tight control.
+
+## Configuring the mode
+
+```toml
+[tools.outbound_gate]
+mode = "whitelist"   # "audit" (default) or "whitelist"
+
+allowed_domains = [
+  "api.openai.com",
+  "api.anthropic.com",
+  "news.ycombinator.com",
+  "*.wikipedia.org",
+  "api.github.com"
+]
+```
+
+Wildcards (`*.example.com`) match any subdomain.
+
+## Why this matters
+
+Without an outbound gate, a compromised or misbehaving agent could:
+
+- **Exfiltrate data** — send your company's documents or database contents to an attacker-controlled server
+- **Contact unexpected services** — make requests to external APIs you haven't approved
+- **Bypass other controls** — use an external relay to circumvent your network policies
+
+With whitelist mode enabled, even if an agent is manipulated by a prompt injection attack, it can't send data anywhere that isn't on your approved list.
+
+## Example: research agent whitelist
+
+```toml
+[[agents]]
+name = "Researcher"
+
+  [agents.tools.outbound_gate]
+  mode = "whitelist"
+  allowed_domains = [
+    "*.wikipedia.org",
+    "news.ycombinator.com",
+    "arxiv.org",
+    "pubmed.ncbi.nlm.nih.gov",
+    "*.reuters.com",
+    "*.bbc.com"
+  ]
+```
+
+This agent can only reach approved research sources. Even if a malicious prompt tells it to "send this document to pastebin.com", that request is blocked.
+
+## Viewing the outbound log
+
+All outbound requests — allowed or blocked — appear in **Settings → Audit Log** under the "Network" filter. You can see exactly which domains each agent has contacted and when.
+
+## Blocked requests
+
+When a request is blocked in whitelist mode, the tool receives an error: `Outbound gate: domain 'example.com' is not in the allowed list`. The agent is informed it can't reach that address and can handle the situation (ask the user to add the domain, or try an alternative).
+
+## Relationship to SSRF protection
+
+| | Outbound Gate | SSRF Protection |
+|--|---------------|-----------------|
+| Target | External domains (internet) | Internal addresses (your network) |
+| Default | Audit mode | Always blocking |
+| Configurable? | Yes — whitelist or audit | Yes — allowlist specific internal addresses |
+
+Both are active simultaneously. Use SSRF protection to block internal access, and Outbound Gate to control external access.
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="SSRF Protection" icon="shield-off" href="/tools/built-in/ssrf">
+    Block requests to internal network addresses.
+  </Card>
+  <Card title="Deny Lists" icon="x-circle" href="/tools/deny-lists">
+    Prevent specific tools from running at all.
+  </Card>
+</CardGroup>

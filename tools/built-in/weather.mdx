@@ -1,0 +1,42 @@
+---
+title: "Weather"
+description: "Get current weather and forecasts for any city or location — no API key required."
+sidebarTitle: "Weather"
+icon: "cloud"
+---
+
+The `weather` tool returns current conditions and forecasts for any city or location. Agents call it automatically when a task involves travel planning, scheduling outdoor events, or answering questions about current conditions.
+
+## What it returns
+
+- **Current conditions** — temperature (°C and °F), weather description (sunny, cloudy, rain, etc.), wind speed and direction, humidity, visibility, and UV index
+- **Hourly forecast** — conditions for the next 24–48 hours
+- **Daily forecast** — high/low temperatures and conditions for up to 7 days ahead
+- **Location confirmation** — the resolved city and country, so the agent knows it found the right place
+
+## No API key required
+
+Weather data works out of the box. There's nothing to configure.
+
+## Example uses
+
+- **"Is it a good day to fly into Tokyo next Thursday?"** — the agent fetches the forecast and gives a useful answer
+- **"What should I pack for a trip to London this weekend?"** — the agent checks the multi-day forecast and recommends clothing
+- **"Is it currently raining in our Sydney office?"** — the agent returns current conditions
+- **"Schedule the outdoor team event for the best day this week"** — the agent checks the weekly forecast and recommends the day with the best conditions
+
+## How agents use it
+
+When you ask anything that involves weather or conditions at a specific place and time, agents call this tool automatically. You'll see the weather card appear in chat with the data the agent used.
+
+## Inputs
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `location` | Yes | City name, city + country, or coordinates (`lat,lon`) |
+| `days` | No | Number of forecast days (1–7, defaults to 3) |
+| `units` | No | `metric` (°C) or `imperial` (°F) — defaults to metric |
+
+## In chat
+
+The result displays as a weather card with current conditions and a compact forecast. The agent also receives the underlying data to use in its reasoning.

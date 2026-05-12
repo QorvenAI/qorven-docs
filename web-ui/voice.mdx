@@ -1,0 +1,81 @@
+---
+title: "Voice"
+description: "Real-time voice chat with your agents, hands-free, on any device on your local network."
+sidebarTitle: "Voice"
+icon: "mic"
+---
+
+Voice lets you talk to your agents out loud and hear their responses spoken back to you — useful when you're away from a keyboard, driving between tasks, or just want a more natural conversation style.
+
+## How it works
+
+Voice uses your device's microphone and speaker. Your speech is transcribed locally, sent to the agent as text, and the agent's response is converted to speech and played back. The full conversation also appears as text in the chat panel so you have a written record.
+
+## Activating voice
+
+<Steps>
+  <Step title="Open Voice">
+    Click **Voice** in the sidebar.
+  </Step>
+  <Step title="Allow microphone access">
+    Your browser will ask for microphone permission. Grant it. This is a one-time prompt.
+  </Step>
+  <Step title="Choose an agent">
+    Select which agent you want to speak with. The default is Prime.
+  </Step>
+  <Step title="Start talking">
+    Use push-to-talk (hold the spacebar or the on-screen button) or switch to voice-activated mode in settings.
+  </Step>
+</Steps>
+
+## Push-to-talk vs. voice-activated
+
+<Tabs>
+  <Tab title="Push-to-talk">
+    Hold **Space** (desktop) or press and hold the microphone button (mobile) while speaking. Release to send. This mode reduces accidental activations and works well in noisy environments.
+  </Tab>
+  <Tab title="Voice-activated">
+    The system listens continuously and starts recording when it detects your voice. Useful for hands-free use — walking around the office, driving, or cooking. Enable in Voice preferences.
+  </Tab>
+</Tabs>
+
+## Text-to-speech responses
+
+Agent responses are read aloud using your configured voice and accent. You can:
+
+- Choose from multiple voice options (neutral, male, female, regional accents)
+- Adjust speaking speed
+- Mute speech and read responses as text only
+
+Set your preferred voice in [Preferences](/web-ui/settings/preferences) under the Voice section.
+
+## Using voice on mobile
+
+The Voice page is fully functional in a mobile browser. For best results:
+
+- Use the page while connected to the same local network as your Qorven server
+- Add the Qorven URL to your home screen for quick access
+- Use push-to-talk mode on mobile for better battery life
+
+<Info>
+  Voice does not require a native app. Any device with a browser and microphone access can use it.
+</Info>
+
+## Wake word (optional)
+
+If your admin has enabled wake word detection, you can say the configured phrase (default: "Hey Qorven") from anywhere on the Voice page to begin a request without pressing any button. Wake word detection runs locally on your device.
+
+## Privacy
+
+Voice input is transcribed on your server. Audio is not stored — only the transcribed text is retained in the conversation history. No audio ever leaves your network.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Preferences" icon="settings" href="/web-ui/settings/preferences">
+    Configure voice, accent, and speed settings.
+  </Card>
+  <Card title="Agents" icon="brain" href="/web-ui/qors-page">
+    Choose which agents are available via voice.
+  </Card>
+</CardGroup>

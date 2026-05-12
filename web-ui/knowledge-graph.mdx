@@ -1,0 +1,82 @@
+---
+title: "Knowledge Graph"
+description: "A visual map of everything your agents have learned — people, companies, projects, and the connections between them."
+sidebarTitle: "Knowledge Graph"
+icon: "network"
+---
+
+As your agents work, they build up a structured picture of the world relevant to your business: who your clients are, which projects they relate to, what topics matter to your team, and how all of these things connect. The Knowledge Graph makes that accumulated knowledge visible and navigable.
+
+## What you see
+
+The graph displays **nodes** and **edges**:
+
+- **Nodes** represent entities — a person, company, project, topic, document, or concept
+- **Edges** represent relationships — "works at," "mentioned in," "related to," "is a client of"
+
+The size of a node reflects how often it appears in agent activity. The more your agents reference a person or project, the more prominent it becomes.
+
+## Navigating the graph
+
+- **Click a node** to open its detail panel, which shows all known facts about that entity and its connections
+- **Drag** to pan around the graph
+- **Scroll** to zoom in and out
+- **Search** using the search box to jump directly to a named entity
+
+The detail panel for any node shows:
+- Entity type and name
+- All facts agents have recorded about it
+- A list of connected nodes with relationship labels
+- The source context (which conversation or task the fact came from)
+
+## How the graph is built
+
+Agents populate the Knowledge Graph automatically as they work. You do not need to configure anything. When an agent:
+
+- Reads an email from a new contact, it may add that person as a node
+- Researches a company, it records what it learned about them
+- Completes a task for a project, it links that task to the project node
+
+The graph grows continuously in the background.
+
+<Info>
+  The Knowledge Graph reflects what agents have learned from your actual interactions and research — it is not a manually curated database. Entries may be incomplete or occasionally incorrect.
+</Info>
+
+## Editing and correcting the graph
+
+You can edit any node directly:
+
+- **Rename** an entity if the agent used a non-canonical name
+- **Add notes** to a node to give agents better context
+- **Delete a node** to remove incorrect or irrelevant entries
+- **Merge nodes** when agents have created duplicates for the same entity
+
+Changes you make to the graph are reflected immediately in agent behavior — if you correct a company name, agents will use the corrected name going forward.
+
+## Filtering the view
+
+Use the filter panel to limit the graph to:
+
+- A specific entity type (people only, companies only, projects only)
+- Entities touched by a specific agent
+- A date range (entities learned in the last 30 days, for example)
+
+## Privacy note
+
+The Knowledge Graph contains inferred information derived from your communications and agent activity. All data lives on your server. Nothing is sent to external services.
+
+<Tip>
+  The Knowledge Graph is most useful after your agents have been running for a few weeks. The more they work, the richer and more accurate the graph becomes.
+</Tip>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Memories" icon="database" href="/web-ui/memories">
+    Browse and manage individual remembered facts.
+  </Card>
+  <Card title="Agents" icon="brain" href="/web-ui/qors-page">
+    See which agents are contributing to the graph.
+  </Card>
+</CardGroup>

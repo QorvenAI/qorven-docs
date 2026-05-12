@@ -1,0 +1,105 @@
+---
+title: "CLI Reference"
+description: "Overview of all Qorven CLI command groups. Run qorven --help or qorven <command> --help for the always-up-to-date reference."
+sidebarTitle: "CLI Reference"
+icon: "terminal"
+---
+
+The `qorven` CLI is the primary way to manage a Qorven install, run administrative tasks, and interact with the system from scripts and automation.
+
+<Tip>
+  `qorven --help` and `qorven <command> --help` always reflect the version you have installed. This page is an overview — the CLI's built-in help is the authoritative reference.
+</Tip>
+
+## Command groups
+
+### System
+
+| Command | Description |
+|---|---|
+| `qorven start` | Start the Qorven server |
+| `qorven setup` | Run the interactive first-time setup wizard |
+| `qorven doctor` | Check system health and print what's wrong |
+| `qorven status` | Show current server status (running, version, uptime) |
+| `qorven version` | Print version, commit hash, and build time |
+| `qorven update` | Check for and install updates |
+
+### Data & migrations
+
+| Command | Description |
+|---|---|
+| `qorven backup` | Create a backup of the database and config |
+| `qorven migrate` | Run pending database migrations |
+
+### Configuration
+
+| Command | Description |
+|---|---|
+| `qorven config` | View and edit `config.toml` |
+| `qorven tls` | Manage TLS certificates (status, renew, regenerate) |
+
+### Users & security
+
+| Command | Description |
+|---|---|
+| `qorven admin` | Administrative operations (users, tenants, resets) |
+
+### AI & agents
+
+| Command | Description |
+|---|---|
+| `qorven chat` | Open an interactive chat session in the terminal |
+| `qorven agents` | List, create, edit, and delete agents |
+| `qorven sessions` | View and manage conversation sessions |
+| `qorven tasks` | View and manage background tasks |
+| `qorven memory` | Inspect and manage agent memory |
+| `qorven tools` | List available tools and their status |
+| `qorven providers` | Manage AI model providers and API keys |
+
+### Channels & integrations
+
+| Command | Description |
+|---|---|
+| `qorven channels` | Configure inbound/outbound channels (email, Slack, etc.) |
+| `qorven mcp` | Manage MCP (Model Context Protocol) server connections |
+
+### Infrastructure
+
+| Command | Description |
+|---|---|
+| `qorven gateway` | Manage the API gateway (routes, middleware) |
+| `qorven cron` | View and manage scheduled jobs |
+| `qorven logs` | Stream, filter, and export logs |
+
+## Global flags
+
+These flags work on every command:
+
+```
+--config string   Path to config.toml (default: /etc/qorven/config.toml)
+--json            Output as JSON instead of human-readable text
+--quiet           Suppress non-error output
+--verbose         Enable debug output
+```
+
+## Examples
+
+```bash
+# Check if everything is healthy
+qorven doctor
+
+# Tail live logs filtered to errors only
+qorven logs tail --level error
+
+# List all agents
+qorven agents list
+
+# Open a chat with a specific agent
+qorven chat --agent my-agent
+
+# Check for and install updates
+qorven update
+
+# Export audit log for the last 30 days
+qorven logs audit --since 30d --format csv > audit.csv
+```

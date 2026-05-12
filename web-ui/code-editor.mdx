@@ -1,0 +1,74 @@
+---
+title: "Code Editor"
+description: "A browser-based IDE connected to your Developer agent — review diffs, approve changes, and watch the agent work in real time."
+sidebarTitle: "Code Editor"
+icon: "code"
+---
+
+The Code Editor gives you a VS Code-like development environment in your browser, wired directly to your Developer agent. Instead of the agent making changes you can't see, every proposed edit shows up as a diff you can review and approve before it's applied.
+
+## Interface overview
+
+The editor is split into three panels:
+
+- **File tree** (left) — browse all files in your project directory
+- **Editor** (center) — view and edit file contents; diffs appear highlighted here
+- **Agent chat** (right) — give instructions to your Developer agent and see its responses
+
+## How agent-assisted editing works
+
+<Steps>
+  <Step title="Open a project">
+    Select a folder from your Drive or connect a Git repository. The file tree populates with your project files.
+  </Step>
+  <Step title="Give the agent an instruction">
+    Type a task in the chat panel: "Add input validation to the login form" or "Refactor this function to use async/await."
+  </Step>
+  <Step title="Review proposed changes">
+    The agent highlights its proposed edits as a diff — green for additions, red for removals. You can see exactly what will change before anything is written.
+  </Step>
+  <Step title="Approve or reject">
+    Click **Apply** to accept the change, **Reject** to discard it, or edit the diff directly before applying. You can approve file by file or all at once.
+  </Step>
+</Steps>
+
+## Multi-file editing
+
+The Developer agent can propose changes across multiple files in a single task. Each file appears as a separate diff card. You can approve them individually or use **Apply All** when you're satisfied with the full changeset.
+
+<Tip>
+  Use **Apply All** after reviewing all diffs, not before. The agent sometimes stages changes in a specific order — applying them file by file in sequence avoids surprises.
+</Tip>
+
+## Live output
+
+When the agent runs commands (tests, build scripts, linters), the output streams in real time in the chat panel. You see errors and warnings as they happen, not after the fact.
+
+## Editing files yourself
+
+You can edit any file directly in the editor — click a file in the tree to open it. Your changes are saved automatically. The agent can see your manual edits and will take them into account when you give it a follow-up instruction.
+
+## Git integration
+
+If your project is a Git repository, the editor shows:
+
+- Current branch name
+- Uncommitted changes (marked in the file tree)
+- Diff against the last commit for any open file
+
+The agent can commit, create branches, and push — but will ask for your approval before any destructive Git operation.
+
+<Warning>
+  Force pushes, branch deletions, and history rewrites always require explicit approval. The agent will never do these automatically.
+</Warning>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Drive" icon="hard-drive" href="/web-ui/drive">
+    Upload and manage files your agents can access.
+  </Card>
+  <Card title="Agents" icon="brain" href="/web-ui/qors-page">
+    Configure your Developer agent's instructions and tools.
+  </Card>
+</CardGroup>

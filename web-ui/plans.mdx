@@ -1,0 +1,102 @@
+---
+title: "Plans"
+description: "Approval-gated DAGs that Prime proposes before executing complex multi-step work."
+sidebarTitle: "Plans"
+icon: "git-branch"
+---
+
+<Info>
+  Plans live inside the **Code** workspace (`/code` → Plans tab). They are not a standalone page — they're Prime's way of showing you what it intends to do before it does it.
+</Info>
+
+## What is a Plan?
+
+When you ask Prime to do something complex, it doesn't start immediately. Instead it drafts a **Plan**: a directed acyclic graph (DAG) of work nodes, each with a description, owner, and conditional edges (`always`, `on_success`, `on_error`, `approved`, `rejected`).
+
+Plans are **ephemeral**: they live for the duration of a project. Once all nodes are done (or the project is abandoned), the plan is archived.
+
+## Plan lifecycle
+
+```
+draft → pending_approval → approved → running → done | failed
+```
+
+- **draft** — Prime is still generating nodes
+- **pending_approval** — waiting for you to approve the plan (or specific nodes)
+- **approved** — you've approved; Prime begins executing from the first node
+- **running** — one or more nodes are actively in progress
+- **done / failed** — all paths terminated
+
+## Approval model
+
+You can approve at two granularities:
+
+**Whole-plan approval** — approve the entire plan in one click. Prime executes all nodes in dependency order.
+
+**Per-node approval** — some nodes are flagged `requires_approval: true`. Prime pauses before each flagged node and waits for your Approve / Reject / Revise decision.
+
+<Tip>
+  For exploratory work, approve the whole plan. For destructive operations (database migrations, deploys, emails to real users), use per-node approval.
+</Tip>
+
+## Viewing plans
+
+Open the **Code** workspace → **Plans** tab. You'll see:
+
+- A list of active and recent plans
+- For each plan: a node tree with status indicators (pending, running, done, failed)
+- Approval inbox: nodes waiting for your decision, with context and an Approve / Reject / Revise toolbar
+
+## Approval actions
+
+| Action | What happens |
+|---|---|
+| **Approve** | Node transitions to `approved`; Prime begins execution |
+| **Reject** | Node is skipped; edges from `rejected` are followed |
+| **Revise** | You add a comment; node returns to `draft` so Prime can rewrite it |
+
+## Plans vs. Workflows vs. Hubs
+
+| | Plan | Workflow | Hub |
+|---|---|---|---|
+| **Created by** | Prime | You | You |
+| **Purpose** | Propose + gate specific work | Reusable automation | Group collaboration |
+| **Lifetime** | Project-scoped | Permanent | Ongoing |
+| **Where** | `/code` → Plans tab | `/workflows` | `/rooms` |
+
+## API
+
+```bash
+# List plans
+GET /v1/plans
+
+# Get a plan with its nodes
+GET /v1/plans/{id}
+
+# Approve a plan
+POST /v1/plans/{id}/approve
+
+# Reject a plan
+POST /v1/plans/{id}/reject
+
+# Request revision
+POST /v1/plans/{id}/revise
+{ "comment": "Add a rollback step before the migration" }
+```
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Hubs" icon="users" href="/web-ui/rooms">
+    Group workspaces where Plans often originate.
+  </Card>
+  <Card title="Workflows" icon="workflow" href="/web-ui/workflows">
+    Durable reusable automations — different from Plans.
+  </Card>
+  <Card title="Approvals" icon="check-circle" href="/web-ui/code-editor">
+    The full approval inbox in the Code workspace.
+  </Card>
+  <Card title="Audit log" icon="history" href="/web-ui/audit">
+    Every plan decision is logged and searchable.
+  </Card>
+</CardGroup>

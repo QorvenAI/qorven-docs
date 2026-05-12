@@ -1,0 +1,134 @@
+---
+title: "Channel routing"
+description: "Override which Qor handles which inbound message. Route VIPs, keywords, groups, and time windows."
+sidebarTitle: "Routing"
+icon: "git-branch"
+---
+
+<Info>
+  By default every channel is bound to one Qor. Routing rules let you override that per-sender, per-keyword, per-group, per-time-window — without writing any code.
+</Info>
+
+## Where rules live
+
+Routing rules are TOML or YAML in `/etc/qorven/routing.yml` (or the equivalent under `~/.qorven/`). The file is hot-reloaded; no restart required.
+
+```yaml
+# /etc/qorven/routing.yml
+rules:
+
+  # VIP senders go to the CEO's personal Qor
+  - match:
+      channel: telegram
+      from_username: priya
+    qor: ceo-personal
+
+  # Keyword routing
+  - match:
+      keyword: ["URGENT", "outage", "on-call"]
+    qor: oncall
+    priority: high
+
+  # Group-based
+  - match:
+      channel: slack
+      group: "#engineering"
+    qor: engineering-bot
+
+  # Time windows (after-hours support goes to the night Qor)
+  - match:
+      channel: whatsapp
+      time: "22:00-08:00 IST"
+    qor: night-support
+
+  # Default fallback
+  - match: all
+    qor: prime
+```
+
+## Match operators
+
+| Key | Type | Matches |
+|---|---|---|
+| `channel` | string | Channel ID (`telegram`, `slack`, `whatsapp`, …) |
+| `from` | string | Sender identity (email, phone, username, user ID) |
+| `from_username` | string | Provider-specific username |
+| `group` | string | Group name / ID for multi-party channels |
+| `keyword` | string[] | Any of these substrings in the message |
+| `regex` | string | Match against message content (PCRE) |
+| `time` | string | Time range in operator's timezone (`"22:00-08:00 IST"`) |
+| `schedule` | string | Cron expression for dates/days |
+| `language` | string | Detected language code |
+
+Rules are evaluated top-to-bottom. First match wins. `match: all` as the final rule is the idiomatic fallback.
+
+## Rule actions
+
+Beyond routing to a different Qor, rules can:
+
+```yaml
+- match:
+    keyword: ["delete", "drop", "destroy"]
+  qor: prime
+  require_approval: true         # destructive → human approval
+  notify: priya@acme.com         # alert someone
+
+- match:
+    channel: webchat
+    from: anonymous
+  qor: support
+  rate_limit: "5/minute"          # anti-abuse
+  max_session_length: 20          # cap turns
+  fallback_to: "https://acme.com/contact"
+```
+
+## Priority Qors
+
+When multiple specialists are viable, `priority: high` makes the message skip the queue:
+
+```yaml
+- match:
+    keyword: ["emergency", "fire", "outage"]
+  qor: oncall
+  priority: high   # bypasses normal delegation queue
+```
+
+## Per-channel defaults
+
+If you don't want a whole `routing.yml`, each channel binding has three built-in overrides in the UI:
+
+1. **Primary Qor** — who handles this channel
+2. **Fallback Qor** — if primary is busy or down
+3. **Silent mode** — don't reply unless mentioned
+
+Set them in **Settings → Channels → (channel) → Routing**.
+
+## Testing rules
+
+```bash
+qorven channels test-routing \
+  --channel telegram \
+  --from priya \
+  --message "URGENT server down"
+# → matched rule: { match: { keyword: ["URGENT"] } }
+# → would route to: oncall
+# → priority: high
+```
+
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Groups vs DMs" icon="users" href="/channels/groups-vs-dms">
+    How group-scoped routing interacts with memory scopes.
+  </Card>
+  <Card title="Approvals" icon="check-circle" href="/workflows/approvals">
+    When a routed message triggers a destructive action.
+  </Card>
+  <Card title="Debounce" icon="clock" href="/channels/debounce">
+    Batching rapid messages before routing.
+  </Card>
+  <Card title="Quotas" icon="gauge" href="/channels/quotas">
+    Per-tenant and per-channel rate limits.
+  </Card>
+</CardGroup>

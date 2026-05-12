@@ -1,0 +1,112 @@
+---
+title: "Environment Variables"
+description: "Every config.toml setting has a QORVEN_ environment variable equivalent — useful for Docker, Kubernetes, and CI/CD."
+sidebarTitle: "Environment Variables"
+icon: "terminal"
+---
+
+## How it works
+
+Every key in `config.toml` can be set (or overridden) using an environment variable. The format is:
+
+```
+QORVEN_<SECTION>_<KEY>=value
+```
+
+Both the section name and key name are uppercased. For example:
+
+| config.toml | Environment variable |
+|---|---|
+| `[server] log_level` | `QORVEN_SERVER_LOG_LEVEL` |
+| `[database] url` | `QORVEN_DB_URL` |
+| `[security] encryption_key` | `QORVEN_ENCRYPTION_KEY` |
+| `[auth] token` | `QORVEN_AUTH_TOKEN` |
+| `[auth] jwt_secret` | `QORVEN_AUTH_JWT_SECRET` |
+
+**Environment variables take precedence over `config.toml`** — if a value is set in both, the environment variable wins.
+
+## Most commonly used
+
+| Variable | Description |
+|---|---|
+| `QORVEN_DB_URL` | Full PostgreSQL connection string |
+| `QORVEN_ENCRYPTION_KEY` | Base64-encoded 32-byte encryption key |
+| `QORVEN_AUTH_TOKEN` | Master bearer token (single-tenant mode) |
+| `QORVEN_AUTH_JWT_SECRET` | JWT signing secret |
+| `QORVEN_SERVER_PORT` | Port to listen on (default: `4200`) |
+| `QORVEN_SERVER_LOG_LEVEL` | Log verbosity: `debug`, `info`, `warn`, `error` |
+| `QORVEN_AUTH_MULTI_TENANT` | `"true"` to enable multi-tenant mode |
+| `QORVEN_TLS_MODE` | `"local_ca"`, `"self_signed"`, `"acme"`, or `"manual"` |
+| `QORVEN_TLS_ACME_EMAIL` | Let's Encrypt registration email |
+| `QORVEN_TLS_ACME_DOMAIN` | Domain for ACME certificate |
+
+## Docker Compose example
+
+```yaml
+services:
+  qorven:
+    image: ghcr.io/qorvenai/qorven:latest
+    environment:
+      QORVEN_DB_URL: postgres://qorven:secret@db:5432/qorven?sslmode=disable
+      QORVEN_ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      QORVEN_AUTH_TOKEN: ${AUTH_TOKEN}
+      QORVEN_AUTH_JWT_SECRET: ${JWT_SECRET}
+      QORVEN_SERVER_PORT: "4200"
+      QORVEN_SERVER_LOG_LEVEL: info
+    ports:
+      - "4200:4200"
+```
+
+Store secrets in a `.env` file (never committed to git) and reference them with `${VAR}` in the Compose file.
+
+## Kubernetes secret example
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: qorven-secrets
+type: Opaque
+stringData:
+  QORVEN_ENCRYPTION_KEY: "your-base64-key"
+  QORVEN_AUTH_TOKEN: "your-auth-token"
+  QORVEN_AUTH_JWT_SECRET: "your-jwt-secret"
+  QORVEN_DB_URL: "postgres://..."
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  template:
+    spec:
+      containers:
+        - name: qorven
+          envFrom:
+            - secretRef:
+                name: qorven-secrets
+```
+
+## Boolean values
+
+For boolean config keys, use `"true"` or `"false"` (string):
+
+```bash
+QORVEN_AUTH_MULTI_TENANT=true
+QORVEN_PRIVACY_PII_REDACTION=true
+```
+
+## List values
+
+For list config keys (like `ssrf_allowlist`), use a comma-separated string:
+
+```bash
+QORVEN_SECURITY_SSRF_ALLOWLIST="*.google.com,api.github.com,dhl.com"
+```
+
+<CardGroup cols={2}>
+  <Card title="Config keys reference" icon="settings" href="/reference/config-keys">
+    Full list of all config.toml settings.
+  </Card>
+  <Card title="Per-install encryption" icon="key" href="/security/per-install-encryption">
+    Handle the encryption key safely in Docker.
+  </Card>
+</CardGroup>

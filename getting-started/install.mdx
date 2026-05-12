@@ -1,0 +1,154 @@
+---
+title: "Install Qorven"
+description: "One command installs everything — PostgreSQL, the binary, TLS, and a systemd service. You'll be chatting with your AI team in under five minutes."
+sidebarTitle: "Install"
+icon: "rocket"
+---
+
+<Tip>
+  The installer handles everything automatically — it detects your OS, installs PostgreSQL if needed, downloads the Qorven binary, generates encryption keys, sets up HTTPS, and registers a system service. No manual configuration required.
+</Tip>
+
+## What you need
+
+<Info>
+  **Minimum:**
+  - A 64-bit Linux or macOS machine (`x86_64` or `arm64`)
+  - Root access (sudo) — the installer writes to `/usr/local/bin` and creates a system user
+  - ~2 GB RAM, ~5 GB disk, outbound internet access
+
+  **Recommended for teams:**
+  - 4 GB RAM or more
+  - A domain name if you want a valid HTTPS certificate (optional — a local CA works fine)
+</Info>
+
+## Quick install
+
+<Tabs>
+  <Tab title="Linux / macOS">
+    ```bash
+    curl -fsSL https://get.qorven.ai | sudo bash
+    ```
+
+    What the installer does:
+
+    <Steps>
+      <Step title="Detects your OS">
+        Identifies your package manager (`apt`, `dnf`, `pacman`, `brew`, or `apk`) and prints exactly what it's about to do.
+      </Step>
+      <Step title="Installs PostgreSQL">
+        Only if PostgreSQL isn't already installed. Uses the native package manager — nothing unexpected.
+      </Step>
+      <Step title="Creates a system user">
+        Adds a locked-down `qorven` user with no shell or password. All data is stored under `/var/lib/qorven`.
+      </Step>
+      <Step title="Downloads the binary">
+        Pulls the correct `qorven` binary for your OS and architecture from GitHub Releases and verifies its SHA-256 checksum.
+      </Step>
+      <Step title="Generates config and secrets">
+        Writes `/etc/qorven/config.toml` with a fresh encryption key and an auth token. These are unique to your install.
+      </Step>
+      <Step title="Sets up HTTPS">
+        Generates a local TLS certificate and installs a local CA so your browser shows a green lock on first visit.
+      </Step>
+      <Step title="Registers a system service">
+        Creates a hardened `systemd` unit, enables it, and starts Qorven immediately.
+      </Step>
+      <Step title="Opens the browser">
+        Waits for the health check, then prints the URL and your admin token so you can log in right away.
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Windows (PowerShell)">
+    Run PowerShell as Administrator:
+
+    ```powershell
+    iwr -useb https://get.qorven.ai/win | iex
+    ```
+
+    The Windows installer sets up WSL2, installs PostgreSQL inside it, downloads the binary, and opens the setup wizard in your default browser.
+  </Tab>
+
+  <Tab title="Docker Compose">
+    ```bash
+    curl -fsSL https://get.qorven.ai/docker -o docker-compose.yml
+    export QORVEN_DB_PASSWORD=$(openssl rand -hex 16)
+    docker compose up -d
+    ```
+
+    One container runs the full Qorven server (API + web UI). PostgreSQL runs in a separate container. The web UI is available at `https://localhost`.
+  </Tab>
+
+  <Tab title="Build from source">
+    ```bash
+    git clone https://github.com/qorvenai/qorven
+    cd qorven
+    make build              # → dist/qorven
+    ./dist/qorven start
+    ```
+
+    Prerequisites: Go 1.22+, Node.js 22+, pnpm, PostgreSQL 14+ with pgvector.
+
+    See [developer setup](/ops/customize-ui#developer-mode) for hot-reload instructions.
+  </Tab>
+</Tabs>
+
+## Verify the install
+
+```bash
+sudo systemctl status qorven    # should show: active (running)
+sudo qorven doctor              # runs health checks on all components
+curl -k https://localhost/health # → {"status":"ok","version":"..."}
+```
+
+## What was written to disk
+
+<Accordion title="Files created by the installer" icon="folder">
+```
+/usr/local/bin/qorven                  # the main binary
+/etc/qorven/config.toml                # your configuration (keep this backed up)
+/etc/qorven/tls/                       # HTTPS certificate and private key
+/var/lib/qorven/                       # all data (sessions, agent memory, uploads)
+/etc/systemd/system/qorven.service     # the system service unit
+```
+</Accordion>
+
+<Accordion title="Your encryption key" icon="key">
+During install, two 256-bit secrets are generated from `/dev/urandom`:
+
+- **auth_token** — used to authenticate API requests and log into the web UI
+- **encryption_key** — protects your AI provider keys, OAuth tokens, and other secrets stored in the database
+
+The encryption key is stored only in `/etc/qorven/config.toml`. **If you lose it, any encrypted data in the database cannot be recovered.** Back up this file.
+</Accordion>
+
+## Uninstall
+
+```bash
+curl -fsSL https://get.qorven.ai | sudo bash -s -- --uninstall
+```
+
+This removes the binary, config, and service. Your database is left intact — drop it manually when you're ready:
+
+```bash
+sudo -u postgres psql -c "DROP DATABASE qorven; DROP USER qorven;"
+sudo rm -rf /var/lib/qorven /var/log/qorven
+```
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="First chat" icon="message-circle" href="/getting-started/first-chat">
+    Open Qorven in your browser and say hello to Prime.
+  </Card>
+  <Card title="Setup wizard" icon="terminal" href="/getting-started/wizard">
+    Prefer the terminal? `qorven setup` walks the same flow.
+  </Card>
+  <Card title="Add an AI provider" icon="key" href="/web-ui/settings/provider-keys">
+    Connect your OpenAI, Anthropic, or other API key.
+  </Card>
+  <Card title="Configure HTTPS" icon="shield" href="/security/tls-best-practices">
+    Install the local CA on other devices that will access Qorven.
+  </Card>
+</CardGroup>

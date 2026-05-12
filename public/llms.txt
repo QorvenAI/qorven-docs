@@ -1,0 +1,299 @@
+# Qorven documentation
+
+Machine-readable index of every documentation page. Each line: `<URL> — <description>`.
+
+**Canonical HTML:** append the path to `https://docs.qorven.ai/`.
+**Canonical Markdown:** append `.md` to any path.
+
+## Pages
+
+https://docs.qorven.ai/index — A self-hosted AI team that codes, researches, writes, schedules, and remembers — on your machine.
+https://docs.qorven.ai/getting-started/install — One-line install on Linux/macOS, Docker one-liner, or build from source. PostgreSQL, HTTPS, systemd — all handled.
+https://docs.qorven.ai/getting-started/first-chat — Open the web UI, meet Prime, and watch your first delegation happen.
+https://docs.qorven.ai/getting-started/wizard — `qorven setup` — interactive first-run configuration from the terminal. Same outcome as the browser wizard, faster for SSH sessions.
+https://docs.qorven.ai/getting-started/next-steps — Guided menu of everything worth exploring in your first hour with Qorven.
+https://docs.qorven.ai/architecture/overview — The 5-minute tour. How Qorven's components fit together: gateway, Qors, memory, tools, channels.
+https://docs.qorven.ai/architecture/one-qor-one-chat — Qorven's unified-chat model — why there's no 'new session' button and how messages from every channel merge into one conversation.
+https://docs.qorven.ai/architecture/delegation — How a single user message turns into a coordinated multi-Qor task. The delegation mechanism, when it fires, and how to watch it happen.
+https://docs.qorven.ai/architecture/memory-system — How Qors remember: typed memories, pgvector search, compaction, knowledge graph, dreaming. The full stack in one page.
+https://docs.qorven.ai/architecture/security-model — The full threat model: per-install encryption, tenant isolation, audit trail, prompt-injection defence, and what Qorven does NOT defend against.
+https://docs.qorven.ai/qors/what-is-a-qor — The mental model: what a Qor actually is in Qorven, what it owns, and how it's not a process.
+https://docs.qorven.ai/qors/creating-a-qor — Creating a Qor — reference and how-to for Qorven operators.
+https://docs.qorven.ai/qors/system-prompts — System Prompts — reference and how-to for Qorven operators.
+https://docs.qorven.ai/qors/models — Models — reference and how-to for Qorven operators.
+https://docs.qorven.ai/qors/tools — Tools — reference and how-to for Qorven operators.
+https://docs.qorven.ai/qors/skills — Skills — reference and how-to for Qorven operators.
+https://docs.qorven.ai/qors/heartbeat — Heartbeat — reference and how-to for Qorven operators.
+https://docs.qorven.ai/qors/qoros-proactive — Qoros Proactive — reference and how-to for Qorven operators.
+https://docs.qorven.ai/qors/dreaming — Dreaming — reference and how-to for Qorven operators.
+https://docs.qorven.ai/qors/delegation — Delegation — reference and how-to for Qorven operators.
+https://docs.qorven.ai/memory/overview — How Qors remember: typed memories, hybrid search, compaction, the knowledge graph, and dreaming.
+https://docs.qorven.ai/memory/types — Types — reference and how-to for Qorven operators.
+https://docs.qorven.ai/memory/compaction — Compaction — reference and how-to for Qorven operators.
+https://docs.qorven.ai/memory/search — Search — reference and how-to for Qorven operators.
+https://docs.qorven.ai/memory/knowledge-graph — Knowledge Graph — reference and how-to for Qorven operators.
+https://docs.qorven.ai/memory/dreaming — Dreaming — reference and how-to for Qorven operators.
+https://docs.qorven.ai/memory/privacy — Privacy — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/overview — The dashboard at a glance — every page, what it does, when you'd visit.
+https://docs.qorven.ai/web-ui/chat — Chat — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/qors-page — Qors Page — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/rooms — Rooms — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/code-editor — Code Editor — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/connectors — Connectors — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/drive — Drive — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/mail — Mail — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/calendar — Calendar — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/schedule — Schedule — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/memories — Memories — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/knowledge-graph — Knowledge Graph — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/models-hub — Models Hub — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/marketplace — Marketplace — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/audit — Audit — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/notifications — Notifications — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/terminal — Terminal — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/sandbox — Sandbox — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/voice — Voice — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/settings/preferences — Preferences — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/settings/provider-keys — Provider Keys — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/settings/oauth-apps — Oauth Apps — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/settings/privacy — Privacy — reference and how-to for Qorven operators.
+https://docs.qorven.ai/web-ui/settings/theme — Theme — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tui/overview — The Qorven terminal UI — chat with your Qors from SSH, no browser needed.
+https://docs.qorven.ai/tui/slash-commands — Every slash command in the Qorven TUI, what it does, when to use it.
+https://docs.qorven.ai/tui/keybindings — Keybindings — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tui/code-mode — Code Mode — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tui/agent-picker — Agent Picker — reference and how-to for Qorven operators.
+https://docs.qorven.ai/channels/index — Every surface your Qor can talk through. 20+ integrations covering chat, email, SMS, GitHub, generic webhooks.
+https://docs.qorven.ai/channels/web — Connect Web UI to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/tui — Connect TUI to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/telegram — Connect Telegram to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/whatsapp — Connect WhatsApp to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/slack — Connect Slack (DM) to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/discord — Connect Discord (DM) to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/teams — Connect Microsoft Teams to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/line — Connect LINE to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/signal — Connect Signal to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/imessage — Connect iMessage to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/facebook — Connect Facebook Messenger to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/matrix — Connect Matrix to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/mattermost — Connect Mattermost to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/feishu — Connect Feishu / Lark to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/dingtalk — Connect DingTalk to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/wecom — Connect WeCom (WeChat Work) to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/zalo — Connect Zalo to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/webchat — Connect Embeddable webchat to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/email — Connect Email (IMAP/SMTP) to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/sms — Connect SMS (Twilio) to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/github — Connect GitHub to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/webhook — Connect Generic webhook to your Qor. Setup, webhook URL, message shape, common issues.
+https://docs.qorven.ai/channels/unified-chat — How Qorven merges chat-family channels (Telegram, WhatsApp, Slack DM, etc.) into a single canonical thread per Qor.
+https://docs.qorven.ai/channels/groups-vs-dms — How Qorven handles multi-party channels (Slack channels, Telegram groups, Discord servers) differently from 1:1 DMs.
+https://docs.qorven.ai/channels/routing — Override which Qor handles which inbound message. Route VIPs, keywords, groups, and time windows.
+https://docs.qorven.ai/channels/debounce — How Qorven batches rapid inbound messages so your Qor doesn't fire off five replies to five near-simultaneous messages.
+https://docs.qorven.ai/channels/quotas — How Qorven caps per-tenant and per-channel throughput, and how to raise the limits when you need to.
+https://docs.qorven.ai/models/overview — How Qorven picks which model runs each turn — provider catalog, per-Qor model, failover, local models.
+https://docs.qorven.ai/models/provider-keys — Provider Keys — reference and how-to for Qorven operators.
+https://docs.qorven.ai/models/default-model — Default Model — reference and how-to for Qorven operators.
+https://docs.qorven.ai/models/per-qor-model — Per Qor Model — reference and how-to for Qorven operators.
+https://docs.qorven.ai/models/failover — Failover — reference and how-to for Qorven operators.
+https://docs.qorven.ai/models/cost-budgets — Cost Budgets — reference and how-to for Qorven operators.
+https://docs.qorven.ai/models/local-models — Local Models — reference and how-to for Qorven operators.
+https://docs.qorven.ai/models/providers/openai — Configure OpenAI as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/anthropic — Configure Anthropic (Claude) as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/bedrock — Configure AWS Bedrock as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/deepseek — Configure DeepSeek as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/gemini — Configure Google Gemini as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/groq — Configure Groq (fast inference) as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/mistral — Configure Mistral as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/together — Configure Together AI as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/fireworks — Configure Fireworks as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/ollama — Configure Ollama (local) as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/lmstudio — Configure LM Studio (local) as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/perplexity — Configure Perplexity (search) as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/dashscope — Configure Alibaba DashScope / Qwen as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/models/providers/openrouter — Configure OpenRouter (aggregator) as an LLM backend for your Qors. Setup, models, rate limits, common issues.
+https://docs.qorven.ai/tools/index — Tools are how Qors act in the world — from running shell commands to sending emails. 80+ built-in, plus MCP, plus custom.
+https://docs.qorven.ai/tools/how-tools-work — How Tools Work — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/approvals — Approvals — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/deny-lists — Deny Lists — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/research — Research — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/scrape — Scrape — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/crawl — Crawl — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/web-fetch — Web Fetch — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/weather — Weather — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/flight-search — Flight Search — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/coding/filesystem — Filesystem — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/coding/exec — Exec — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/coding/apply-patch — Apply Patch — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/coding/lsp-bridge — Lsp Bridge — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/coding/codebase-digest — Codebase Digest — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/coding/project-registry — Project Registry — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/coding/glob-grep — Glob Grep — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/browser/overview — Overview — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/browser/primitive-tools — Primitive Tools — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/browser/browse-and-act — Browse and Act — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/browser/computer-use — Computer Use — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/browser/live-stream — Live Stream — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/media/tts — Tts — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/media/stt — Stt — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/media/image-generation — Image Generation — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/media/image-understanding — Image Understanding — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/media/screen-share — Screen Share — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/sql-query — Sql Query — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/read-document — Read Document — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/storage — Storage — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/email — Email — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/memory — Memory — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/sessions — Sessions — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/delegation/delegate-to-soul — Delegate To Soul — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/delegation/manage-agents — Manage Agents — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/delegation/room — Room — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/delegation/room-dynamic — Room Dynamic — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/safety — Safety — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/ssrf — Ssrf — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/outbound-gate — Outbound Gate — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/policy — Policy — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/built-in/sandbox-mode — Sandbox Mode — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/custom/registering — Registering — reference and how-to for Qorven operators.
+https://docs.qorven.ai/tools/custom/mcp-servers — Mcp Servers — reference and how-to for Qorven operators.
+https://docs.qorven.ai/workflows/cron — Cron — reference and how-to for Qorven operators.
+https://docs.qorven.ai/workflows/schedule — Schedule — reference and how-to for Qorven operators.
+https://docs.qorven.ai/workflows/heartbeat — Heartbeat — reference and how-to for Qorven operators.
+https://docs.qorven.ai/workflows/rooms — Rooms — reference and how-to for Qorven operators.
+https://docs.qorven.ai/workflows/teams — Teams — reference and how-to for Qorven operators.
+https://docs.qorven.ai/workflows/pipelines — Pipelines — reference and how-to for Qorven operators.
+https://docs.qorven.ai/workflows/scenarios — Scenarios — reference and how-to for Qorven operators.
+https://docs.qorven.ai/workflows/goals — Goals — reference and how-to for Qorven operators.
+https://docs.qorven.ai/workflows/approvals — Approvals — reference and how-to for Qorven operators.
+https://docs.qorven.ai/workflows/audit — Audit — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/index — Index — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/oauth-setup — Oauth Setup — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/bring-your-own-app — Bring Your Own App — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/google-drive — Google Drive — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/gmail — Gmail — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/google-calendar — Google Calendar — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/notion — Notion — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/airtable — Airtable — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/asana — Asana — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/linear — Linear — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/jira — Jira — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/trello — Trello — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/confluence — Confluence — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/github — Github — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/gitlab — Gitlab — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/bitbucket — Bitbucket — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/sentry — Sentry — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/vercel — Vercel — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/slack — Slack — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/discord — Discord — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/zoom — Zoom — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/teams — Teams — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/stripe — Stripe — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/shopify — Shopify — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/hubspot — Hubspot — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/salesforce — Salesforce — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/snowflake — Snowflake — reference and how-to for Qorven operators.
+https://docs.qorven.ai/connectors/postgres — Postgres — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/overview — The single Go binary that runs Qorven — what it does, how it's configured, and how to manage it.
+https://docs.qorven.ai/gateway/config-toml — Every key in config.toml — what it controls, defaults, safe values, and examples.
+https://docs.qorven.ai/gateway/api-vs-web-listen — Api vs Web Listen — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/tls — Tls — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/rate-limits — Rate Limits — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/ssrf-allowlist — Ssrf Allowlist — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/auth-middleware — Auth Middleware — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/multi-tenant-rls — Multi Tenant Rls — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/audit-log — Audit Log — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/health-endpoints — Health Endpoints — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/systemd — Systemd — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/docker — Docker — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/reverse-proxy — Reverse Proxy — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/backup-restore — Backup Restore — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/logging — Logging — reference and how-to for Qorven operators.
+https://docs.qorven.ai/gateway/migrations — Migrations — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/hosting-options — Hosting Options — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/postgres-setup — Postgres Setup — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/pgvector — Pgvector — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/encryption-key — Encryption Key — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/customize-ui — Customize Ui — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/upgrading — Upgrading — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/monitoring — Monitoring — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/troubleshooting/boot-fails — Boot Fails — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/troubleshooting/provider-errors — Provider Errors — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/troubleshooting/database-errors — Database Errors — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/troubleshooting/channel-errors — Channel Errors — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/troubleshooting/browser-automation — Browser Automation — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ops/troubleshooting/common-errors — Common Errors — reference and how-to for Qorven operators.
+https://docs.qorven.ai/cli/index — Every `qorven` subcommand. Auto-generated from the live binary; refreshed on each release.
+https://docs.qorven.ai/cli/global-flags — Flags accepted by every `qorven` subcommand.
+https://docs.qorven.ai/cli/env-vars — Environment variables Qorven reads — gateway runtime, CLI client, setup automation.
+https://docs.qorven.ai/cli/init — Interactive setup wizard for first-time Qorven configuration.
+https://docs.qorven.ai/cli/setup — Interactive first-run setup wizard
+https://docs.qorven.ai/cli/start — Start the Qorven gateway server
+https://docs.qorven.ai/cli/doctor — Full health check of Qorven installation.
+https://docs.qorven.ai/cli/status — Show gateway status and metadata
+https://docs.qorven.ai/cli/version — Print version information
+https://docs.qorven.ai/cli/update — Self-update Qorven from its GitHub Releases page.
+https://docs.qorven.ai/cli/backup — Create a portable backup of your Qorven instance.
+https://docs.qorven.ai/cli/migrate — Apply, roll back, or force-mark database migrations.
+https://docs.qorven.ai/cli/chat — Chat with an agent interactively or send a single message.
+https://docs.qorven.ai/cli/agents — Manage agents
+https://docs.qorven.ai/cli/agent — Commands for developers (human or AI) building on top of Qorven.
+https://docs.qorven.ai/cli/sessions — Manage chat sessions
+https://docs.qorven.ai/cli/collapse-sessions — Collapses chat-family sessions per Qor into a single canonical chat row.
+https://docs.qorven.ai/cli/rooms — Manage chat rooms
+https://docs.qorven.ai/cli/teams — Manage agent teams
+https://docs.qorven.ai/cli/cron — Manage scheduled jobs
+https://docs.qorven.ai/cli/tasks — Manage background tasks
+https://docs.qorven.ai/cli/memory — Manage agent memory
+https://docs.qorven.ai/cli/tools — Manage tools
+https://docs.qorven.ai/cli/providers — Manage LLM providers and API keys
+https://docs.qorven.ai/cli/channels — Manage messaging channels
+https://docs.qorven.ai/cli/workflows — Manage workflows
+https://docs.qorven.ai/cli/gateway — Manage the Qorven gateway service
+https://docs.qorven.ai/cli/tls — Manage TLS certificates
+https://docs.qorven.ai/cli/logs — View gateway logs
+https://docs.qorven.ai/cli/debug — Print a complete system diagnostics snapshot.
+https://docs.qorven.ai/cli/config — Manage configuration
+https://docs.qorven.ai/cli/mcp — Manage MCP servers
+https://docs.qorven.ai/cli/vault — Manage your personal knowledge vault (Obsidian-compatible markdown).
+https://docs.qorven.ai/cli/admin — Administration commands
+https://docs.qorven.ai/cli/auth — Manage authentication
+https://docs.qorven.ai/cli/scan — Run the Tool Result Defender on input text.
+https://docs.qorven.ai/cli/read — Fetch and display clean content from any URL.
+https://docs.qorven.ai/cli/research — Search Reddit, HN, GitHub, and more in parallel. Score by engagement.
+https://docs.qorven.ai/security/threat-model — Threat Model — reference and how-to for Qorven operators.
+https://docs.qorven.ai/security/per-install-encryption — Per Install Encryption — reference and how-to for Qorven operators.
+https://docs.qorven.ai/security/tenant-isolation — Tenant Isolation — reference and how-to for Qorven operators.
+https://docs.qorven.ai/security/audit-trail — Audit Trail — reference and how-to for Qorven operators.
+https://docs.qorven.ai/security/oauth-apps — Oauth Apps — reference and how-to for Qorven operators.
+https://docs.qorven.ai/security/rbac-permissions — Rbac Permissions — reference and how-to for Qorven operators.
+https://docs.qorven.ai/security/prompt-injection-defense — Prompt Injection Defense — reference and how-to for Qorven operators.
+https://docs.qorven.ai/security/pii-redaction — Pii Redaction — reference and how-to for Qorven operators.
+https://docs.qorven.ai/security/tls-best-practices — Tls Best Practices — reference and how-to for Qorven operators.
+https://docs.qorven.ai/reference/http-api — Every /v1/* endpoint Qorven exposes. Auth, rate limits, JSON shapes, examples.
+https://docs.qorven.ai/reference/cli-reference — Cli Reference — reference and how-to for Qorven operators.
+https://docs.qorven.ai/reference/config-keys — Config Keys — reference and how-to for Qorven operators.
+https://docs.qorven.ai/reference/environment-vars — Environment Vars — reference and how-to for Qorven operators.
+https://docs.qorven.ai/reference/database-schema — Database Schema — reference and how-to for Qorven operators.
+https://docs.qorven.ai/reference/glossary — Glossary — reference and how-to for Qorven operators.
+https://docs.qorven.ai/reference/architecture-diagrams — Reference diagrams for Qorven's architecture — request path, delegation, memory, deployment shapes.
+https://docs.qorven.ai/reference/comparison — Honest comparison with ChatGPT, LangChain, AutoGen, CrewAI, Letta, OpenClaw, and others. Where each fits, where we differ.
+https://docs.qorven.ai/reference/privacy — What Qorven sends out, what stays local, and how to lock things down further if you need to.
+https://docs.qorven.ai/reference/licensing — Qorven is released under FSL‑1.1‑ALv2. What you can do, what you can't, plain English.
+https://docs.qorven.ai/reference/brand-trademarks — How Qorven uses third-party brand names and logos, and who owns them. Nominative fair use with disclaimer.
+https://docs.qorven.ai/reference/contributors — Contributors — reference and how-to for Qorven operators.
+https://docs.qorven.ai/reference/changelog — Changelog — reference and how-to for Qorven operators.
+https://docs.qorven.ai/ai/agent-guide — Guide for any LLM agent (including Qors themselves) to consume Qorven's documentation: endpoints, conventions, how to search.
+https://docs.qorven.ai/ai/llms-txt — The machine-readable index of every documentation page. For LLM agents discovering what's available.
+https://docs.qorven.ai/ai/markdown-source — Every docs page is also available as plain Markdown — same URL, swap .mdx for .md.
+https://docs.qorven.ai/ai/docs-search-tool — A built-in Qor tool that lets agents query the Qorven docs at runtime. Semantic + keyword, top-K results.
+https://docs.qorven.ai/help/faq — Common questions about Qorven — install, licensing, models, data, deployment, limits.
+https://docs.qorven.ai/help/debugging — Logs, tools, and runbooks for the 95% of issues you'll hit in the first month.
+https://docs.qorven.ai/help/log-locations — Log Locations — reference and how-to for Qorven operators.
+https://docs.qorven.ai/help/getting-help — Getting Help — reference and how-to for Qorven operators.
+https://docs.qorven.ai/help/error-codes — Error Codes — reference and how-to for Qorven operators.
+
+## Dynamic endpoints
+
+https://docs.qorven.ai/docs/api/search — POST {query,max_results} → top-K matches
+https://docs.qorven.ai/openapi.json — OpenAPI spec for the /v1/* HTTP API

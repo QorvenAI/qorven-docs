@@ -1,0 +1,208 @@
+---
+title: "Database Errors"
+description: "Fix PostgreSQL connection errors, missing extensions, SSL issues, and schema corruption in Qorven."
+sidebarTitle: "Database Errors"
+icon: "database"
+---
+
+Database errors usually fall into one of four categories: connection errors, permission errors, missing extensions, or schema problems. This page covers all of them.
+
+Start with a quick check:
+
+```bash
+qorven doctor
+```
+
+## "Connection refused" / "dial tcp: connect: connection refused"
+
+**What it means:** Qorven can't connect to PostgreSQL. Either PostgreSQL is not running, or it's not listening on the expected host/port.
+
+**Diagnose:**
+
+```bash
+# Is PostgreSQL running?
+sudo systemctl status postgresql
+
+# What port is it listening on?
+sudo ss -tlnp | grep postgres
+```
+
+**Fix:**
+
+```bash
+# Start PostgreSQL
+sudo systemctl start postgresql
+
+# Enable auto-start
+sudo systemctl enable postgresql
+```
+
+If PostgreSQL is running but Qorven still can't connect, check the host in the connection string. PostgreSQL may be listening on `127.0.0.1` but your connection string uses `localhost` (or vice versa):
+
+```toml
+[database]
+url = "postgres://qorven:password@127.0.0.1:5432/qorven?sslmode=disable"
+```
+
+---
+
+## "role does not exist" / "password authentication failed"
+
+**What it means:** The database user in the connection string doesn't exist, or the password is wrong.
+
+**Diagnose:**
+
+```bash
+sudo -u postgres psql -c "\du" | grep qorven
+```
+
+**Fix:**
+
+If the user doesn't exist:
+
+```bash
+sudo -u postgres psql -c "CREATE USER qorven WITH PASSWORD 'your-password';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE qorven TO qorven;"
+```
+
+If the password is wrong, reset it:
+
+```bash
+sudo -u postgres psql -c "ALTER USER qorven WITH PASSWORD 'new-password';"
+```
+
+Then update the connection string in `config.toml`.
+
+---
+
+## "extension 'vector' not found" / "type 'vector' does not exist"
+
+**What it means:** The pgvector extension is not installed in the `qorven` database.
+
+**Fix:**
+
+```bash
+# Install the pgvector package
+sudo apt install postgresql-16-pgvector
+
+# Enable it in the database
+sudo -u postgres psql -d qorven -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+
+See [pgvector](/ops/pgvector) for installation on other platforms.
+
+---
+
+## "SSL required" / "no pg_hba.conf entry"
+
+**What it means:** PostgreSQL requires SSL connections but the connection string doesn't specify SSL mode.
+
+**Fix:**
+
+Add `?sslmode=require` to the connection string:
+
+```toml
+[database]
+url = "postgres://qorven:password@localhost:5432/qorven?sslmode=require"
+```
+
+For local connections where SSL is not needed:
+
+```toml
+[database]
+url = "postgres://qorven:password@localhost:5432/qorven?sslmode=disable"
+```
+
+If you get `no pg_hba.conf entry for host`, the PostgreSQL `pg_hba.conf` file doesn't have a rule for your connection type. Check the PostgreSQL logs:
+
+```bash
+sudo journalctl -u postgresql -n 50
+```
+
+Edit `pg_hba.conf` to add the appropriate rule:
+
+```
+# Allow local connections
+local   all   qorven   md5
+# Allow TCP connections from localhost
+host    all   qorven   127.0.0.1/32   md5
+```
+
+Reload PostgreSQL after editing:
+
+```bash
+sudo systemctl reload postgresql
+```
+
+---
+
+## Schema corruption / "relation does not exist"
+
+**What it means:** The database schema is incomplete or corrupted — usually from an interrupted migration or a manual schema change.
+
+**Diagnose:**
+
+```bash
+qorven migrate status
+```
+
+If it shows pending or failed migrations, try re-running them:
+
+```bash
+qorven migrate up
+```
+
+**If migrations fail:** The schema is in an inconsistent state. The safest recovery is to restore from a backup.
+
+For a development environment with no important data, a factory reset is faster:
+
+```bash
+qorven factory-reset --confirm
+```
+
+This drops the entire schema and re-runs all migrations from scratch.
+
+---
+
+## "too many connections"
+
+**What it means:** PostgreSQL has reached its `max_connections` limit. Qorven's connection pool is requesting more connections than PostgreSQL allows.
+
+**Diagnose:**
+
+```bash
+sudo -u postgres psql -c "SHOW max_connections;"
+sudo -u postgres psql -c "SELECT count(*) FROM pg_stat_activity;"
+```
+
+**Fix:**
+
+Option 1 — Reduce Qorven's pool size:
+
+```toml
+[database]
+max_connections = 10
+```
+
+Option 2 — Increase PostgreSQL's `max_connections` (in `postgresql.conf`) and restart PostgreSQL.
+
+Option 3 — Deploy PgBouncer in transaction-mode pooling in front of PostgreSQL.
+
+---
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="PostgreSQL setup" icon="database" href="/ops/postgres-setup">
+    Full setup guide.
+  </Card>
+  <Card title="pgvector" icon="search" href="/ops/pgvector">
+    Installing the vector extension.
+  </Card>
+  <Card title="Boot fails" icon="alert-triangle" href="/ops/troubleshooting/boot-fails">
+    Server startup failures including DB errors.
+  </Card>
+  <Card title="Backup and restore" icon="archive" href="/gateway/backup-restore">
+    Restoring from a backup after schema corruption.
+  </Card>
+</CardGroup>

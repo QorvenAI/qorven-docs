@@ -1,0 +1,712 @@
+{
+  "theme": "mint",
+  "name": "Qorven",
+  "description": "Self-hosted multi-agent AI platform. A team of specialists that code, research, handle email, browse, and manage tasks together \u2014 on your machine.",
+  "logo": {
+    "light": "/images/logo/qorven-mark.svg",
+    "dark": "/images/logo/qorven-mark.svg",
+    "href": "https://qorven.ai"
+  },
+  "favicon": "/images/logo/favicon.svg",
+  "colors": {
+    "primary": "#845EC2",
+    "light": "#B093FD",
+    "dark": "#5B21B6"
+  },
+  "appearance": {
+    "default": "dark",
+    "strict": false
+  },
+  "fonts": {
+    "heading": {
+      "family": "Inter",
+      "weight": 700
+    },
+    "body": {
+      "family": "Inter",
+      "weight": 400
+    }
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": "dark"
+  },
+  "background": {
+    "decoration": "grid"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/qorvenai/qorven",
+        "icon": "github"
+      },
+      {
+        "label": "Community",
+        "href": "https://qorven.ai/community",
+        "icon": "message-circle"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Install",
+      "href": "https://qorven.ai#install"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/qorvenai/qorven",
+      "x": "https://x.com/qorvenai"
+    },
+    "links": [
+      {
+        "header": "Product",
+        "items": [
+          {
+            "label": "Home",
+            "href": "https://qorven.ai"
+          },
+          {
+            "label": "Features",
+            "href": "https://qorven.ai/features"
+          },
+          {
+            "label": "Pricing",
+            "href": "https://qorven.ai/pricing"
+          }
+        ]
+      },
+      {
+        "header": "Docs",
+        "items": [
+          {
+            "label": "Install",
+            "href": "/getting-started/install"
+          },
+          {
+            "label": "Architecture",
+            "href": "/architecture/overview"
+          },
+          {
+            "label": "CLI",
+            "href": "/cli/index"
+          },
+          {
+            "label": "API",
+            "href": "/reference/http-api"
+          }
+        ]
+      },
+      {
+        "header": "Community",
+        "items": [
+          {
+            "label": "GitHub",
+            "href": "https://github.com/qorvenai/qorven"
+          },
+          {
+            "label": "Discord",
+            "href": "https://qorven.ai/community"
+          },
+          {
+            "label": "Issues",
+            "href": "https://github.com/qorvenai/qorven/issues"
+          }
+        ]
+      },
+      {
+        "header": "Legal",
+        "items": [
+          {
+            "label": "License",
+            "href": "/reference/licensing"
+          },
+          {
+            "label": "Security",
+            "href": "/security/threat-model"
+          },
+          {
+            "label": "Privacy",
+            "href": "/reference/privacy"
+          },
+          {
+            "label": "Trademarks & attribution",
+            "href": "/reference/brand-trademarks"
+          }
+        ]
+      }
+    ]
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity"
+    ],
+    "display": "header"
+  },
+  "seo": {
+    "indexing": "all",
+    "metatags": {
+      "og:site_name": "Qorven Docs",
+      "og:type": "website",
+      "twitter:card": "summary_large_image"
+    }
+  },
+  "errors": {
+    "404": {
+      "redirect": false,
+      "title": "Page not found",
+      "description": "That page isn't here yet. Try the sidebar or [search](/)."
+    }
+  },
+  "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/qorvenai/qorven",
+          "icon": "github"
+        },
+        {
+          "anchor": "Community",
+          "href": "https://qorven.ai/community",
+          "icon": "message-circle"
+        },
+        {
+          "anchor": "Changelog",
+          "href": "/reference/changelog",
+          "icon": "history"
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Start here",
+            "icon": "rocket",
+            "pages": [
+              "index",
+              "getting-started/install",
+              "getting-started/first-chat",
+              "getting-started/wizard",
+              "getting-started/next-steps"
+            ]
+          },
+          {
+            "group": "Architecture",
+            "icon": "layers",
+            "pages": [
+              "architecture/overview",
+              "architecture/one-qor-one-chat",
+              "architecture/delegation",
+              "architecture/memory-system",
+              "architecture/security-model"
+            ]
+          },
+          {
+            "group": "Agents",
+            "icon": "brain",
+            "pages": [
+              "qors/what-is-a-qor",
+              "qors/creating-a-qor",
+              "qors/system-prompts",
+              "qors/models",
+              "qors/tools",
+              "qors/skills",
+              "qors/delegation"
+            ]
+          },
+          {
+            "group": "Memory",
+            "icon": "database",
+            "pages": [
+              "memory/overview",
+              "memory/types",
+              "memory/compaction",
+              "memory/search",
+              "memory/knowledge-graph",
+              "memory/dreaming",
+              "memory/privacy"
+            ]
+          },
+          {
+            "group": "Web UI",
+            "icon": "monitor",
+            "pages": [
+              "web-ui/overview",
+              "web-ui/chat",
+              "web-ui/qors-page",
+              "web-ui/code-editor",
+              "web-ui/connectors",
+              "web-ui/drive",
+              "web-ui/mail",
+              "web-ui/calendar",
+              "web-ui/schedule",
+              "web-ui/memories",
+              "web-ui/knowledge-graph",
+              "web-ui/models-hub",
+              "web-ui/marketplace",
+              "web-ui/audit",
+              "web-ui/notifications",
+              "web-ui/terminal",
+              "web-ui/voice",
+              "web-ui/settings/preferences",
+              "web-ui/settings/provider-keys",
+              "web-ui/settings/oauth-apps",
+              "web-ui/settings/privacy",
+              "web-ui/settings/theme"
+            ]
+          },
+          {
+            "group": "TUI",
+            "icon": "terminal",
+            "pages": [
+              "tui/overview",
+              "tui/slash-commands",
+              "tui/keybindings",
+              "tui/code-mode",
+              "tui/agent-picker"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Channels",
+        "groups": [
+          {
+            "group": "Chat surfaces",
+            "icon": "message-square",
+            "pages": [
+              "channels/index",
+              "channels/telegram",
+              "channels/whatsapp",
+              "channels/slack",
+              "channels/discord",
+              "channels/teams",
+              "channels/line",
+              "channels/signal",
+              "channels/imessage",
+              "channels/facebook",
+              "channels/matrix",
+              "channels/mattermost",
+              "channels/feishu",
+              "channels/dingtalk",
+              "channels/wecom",
+              "channels/zalo",
+              "channels/webchat"
+            ]
+          },
+          {
+            "group": "Other surfaces",
+            "icon": "inbox",
+            "pages": [
+              "channels/email",
+              "channels/sms",
+              "channels/github",
+              "channels/webhook"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "icon": "git-merge",
+            "pages": [
+              "channels/unified-chat",
+              "channels/routing",
+              "channels/quotas"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Models",
+        "groups": [
+          {
+            "group": "Getting set up",
+            "icon": "key",
+            "pages": [
+              "models/overview",
+              "models/provider-keys",
+              "models/default-model",
+              "models/per-qor-model",
+              "models/failover",
+              "models/cost-budgets",
+              "models/local-models"
+            ]
+          },
+          {
+            "group": "Providers",
+            "icon": "cloud",
+            "pages": [
+              "models/providers/openai",
+              "models/providers/anthropic",
+              "models/providers/bedrock",
+              "models/providers/deepseek",
+              "models/providers/gemini",
+              "models/providers/groq",
+              "models/providers/mistral",
+              "models/providers/together",
+              "models/providers/fireworks",
+              "models/providers/ollama",
+              "models/providers/lmstudio",
+              "models/providers/perplexity",
+              "models/providers/dashscope",
+              "models/providers/openrouter"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tools",
+        "groups": [
+          {
+            "group": "Tool basics",
+            "icon": "wrench",
+            "pages": [
+              "tools/index",
+              "tools/how-tools-work",
+              "tools/approvals",
+              "tools/deny-lists"
+            ]
+          },
+          {
+            "group": "Research & web",
+            "icon": "search",
+            "pages": [
+              "tools/built-in/research",
+              "tools/built-in/scrape",
+              "tools/built-in/crawl",
+              "tools/built-in/web-fetch",
+              "tools/built-in/weather",
+              "tools/built-in/flight-search"
+            ]
+          },
+          {
+            "group": "Filesystem & code",
+            "icon": "file-code",
+            "pages": [
+              "tools/coding/filesystem",
+              "tools/coding/exec",
+              "tools/coding/apply-patch",
+              "tools/coding/lsp-bridge",
+              "tools/coding/codebase-digest",
+              "tools/coding/project-registry",
+              "tools/coding/glob-grep"
+            ]
+          },
+          {
+            "group": "Browser",
+            "icon": "globe",
+            "pages": [
+              "tools/browser/overview",
+              "tools/browser/primitive-tools",
+              "tools/browser/browse-and-act",
+              "tools/browser/computer-use",
+              "tools/browser/live-stream"
+            ]
+          },
+          {
+            "group": "Media",
+            "icon": "image",
+            "pages": [
+              "tools/media/tts",
+              "tools/media/stt",
+              "tools/media/image-generation",
+              "tools/media/image-understanding",
+              "tools/media/screen-share"
+            ]
+          },
+          {
+            "group": "Data",
+            "icon": "database",
+            "pages": [
+              "tools/built-in/sql-query",
+              "tools/built-in/read-document",
+              "tools/built-in/storage",
+              "tools/built-in/email",
+              "tools/built-in/memory",
+              "tools/built-in/sessions"
+            ]
+          },
+          {
+            "group": "Delegation",
+            "icon": "users",
+            "pages": [
+              "tools/delegation/manage-agents"
+            ]
+          },
+          {
+            "group": "Safety",
+            "icon": "shield",
+            "pages": [
+              "tools/built-in/safety",
+              "tools/built-in/ssrf",
+              "tools/built-in/outbound-gate",
+              "tools/built-in/policy",
+              "tools/built-in/sandbox-mode"
+            ]
+          },
+          {
+            "group": "Custom tools",
+            "icon": "plus",
+            "pages": [
+              "tools/custom/registering",
+              "tools/custom/mcp-servers"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Automation",
+        "groups": [
+          {
+            "group": "Scheduling",
+            "icon": "calendar",
+            "pages": [
+              "workflows/cron",
+              "workflows/schedule"
+            ]
+          },
+          {
+            "group": "Approvals & audit",
+            "icon": "check-circle",
+            "pages": [
+              "workflows/approvals",
+              "workflows/audit"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Gateway",
+        "groups": [
+          {
+            "group": "Config",
+            "icon": "settings",
+            "pages": [
+              "gateway/overview",
+              "gateway/config-toml",
+              "gateway/api-vs-web-listen",
+              "gateway/tls",
+              "gateway/rate-limits",
+              "gateway/ssrf-allowlist",
+              "gateway/auth-middleware",
+              "gateway/multi-tenant-rls",
+              "gateway/audit-log",
+              "gateway/health-endpoints"
+            ]
+          },
+          {
+            "group": "Runtime",
+            "icon": "cpu",
+            "pages": [
+              "gateway/systemd",
+              "gateway/docker",
+              "gateway/reverse-proxy",
+              "gateway/backup-restore",
+              "gateway/logging",
+              "gateway/migrations"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Operations",
+        "groups": [
+          {
+            "group": "Running Qorven",
+            "icon": "server",
+            "pages": [
+              "ops/hosting-options",
+              "ops/postgres-setup",
+              "ops/pgvector",
+              "ops/encryption-key",
+              "ops/customize-ui",
+              "ops/upgrading",
+              "ops/monitoring"
+            ]
+          },
+          {
+            "group": "Troubleshooting",
+            "icon": "life-buoy",
+            "pages": [
+              "ops/troubleshooting/boot-fails",
+              "ops/troubleshooting/provider-errors",
+              "ops/troubleshooting/database-errors",
+              "ops/troubleshooting/channel-errors",
+              "ops/troubleshooting/browser-automation",
+              "ops/troubleshooting/common-errors"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "CLI",
+        "groups": [
+          {
+            "group": "Overview",
+            "icon": "terminal",
+            "pages": [
+              "cli/index",
+              "cli/global-flags",
+              "cli/env-vars"
+            ]
+          },
+          {
+            "group": "Setup & lifecycle",
+            "icon": "play",
+            "pages": [
+              "cli/init",
+              "cli/setup",
+              "cli/start",
+              "cli/doctor",
+              "cli/status",
+              "cli/version",
+              "cli/update",
+              "cli/backup",
+              "cli/migrate"
+            ]
+          },
+          {
+            "group": "Day-to-day",
+            "icon": "play-circle",
+            "pages": [
+              "cli/chat",
+              "cli/agents",
+              "cli/agent",
+              "cli/sessions",
+              "cli/collapse-sessions",
+              "cli/rooms",
+              "cli/teams",
+              "cli/cron",
+              "cli/tasks",
+              "cli/memory",
+              "cli/tools",
+              "cli/providers",
+              "cli/channels",
+              "cli/workflows"
+            ]
+          },
+          {
+            "group": "Ops",
+            "icon": "wrench",
+            "pages": [
+              "cli/gateway",
+              "cli/tls",
+              "cli/logs",
+              "cli/debug",
+              "cli/config",
+              "cli/mcp",
+              "cli/vault",
+              "cli/admin"
+            ]
+          },
+          {
+            "group": "Security",
+            "icon": "shield",
+            "pages": [
+              "cli/auth",
+              "cli/scan",
+              "cli/read",
+              "cli/research"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Security",
+        "groups": [
+          {
+            "group": "Model",
+            "icon": "shield",
+            "pages": [
+              "security/threat-model",
+              "security/per-install-encryption",
+              "security/tenant-isolation",
+              "security/audit-trail"
+            ]
+          },
+          {
+            "group": "Hardening",
+            "icon": "lock",
+            "pages": [
+              "security/oauth-apps",
+              "security/rbac-permissions",
+              "security/prompt-injection-defense",
+              "security/pii-redaction",
+              "security/tls-best-practices"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "groups": [
+          {
+            "group": "Generated",
+            "icon": "book",
+            "pages": [
+              "reference/http-api",
+              "reference/cli-reference",
+              "reference/config-keys",
+              "reference/environment-vars",
+              "reference/database-schema"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "icon": "book-open",
+            "pages": [
+              "reference/glossary",
+              "reference/architecture-diagrams",
+              "reference/comparison",
+              "reference/privacy",
+              "reference/licensing",
+              "reference/brand-trademarks",
+              "reference/contributors",
+              "reference/changelog"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "For AI agents",
+        "groups": [
+          {
+            "group": "Using these docs",
+            "icon": "bot",
+            "pages": [
+              "ai/agent-guide",
+              "ai/llms-txt",
+              "ai/markdown-source",
+              "ai/docs-search-tool"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Help",
+        "groups": [
+          {
+            "group": "Support",
+            "icon": "help-circle",
+            "pages": [
+              "help/faq",
+              "help/debugging",
+              "help/log-locations",
+              "help/getting-help",
+              "help/error-codes"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

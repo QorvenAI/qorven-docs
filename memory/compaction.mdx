@@ -1,0 +1,70 @@
+---
+title: "Memory Compaction"
+description: "Long conversations are automatically summarised into a compact context block so agents stay coherent without hitting token limits."
+sidebarTitle: "Compaction"
+icon: "compress"
+---
+
+Every AI model has a context window — a limit on how much text it can hold in working memory at once. Long conversations eventually exceed this limit. Compaction is how Qorven handles that gracefully, so agents keep coherent context even in extended sessions.
+
+## What compaction does
+
+As a conversation grows, Qorven automatically summarises the earlier portion into a compact context block. This block replaces the raw message history in the agent's context window while preserving the key facts, decisions, and thread of work.
+
+The agent continues the conversation with full awareness of what happened before — it just isn't reading every message word-for-word anymore.
+
+Compaction is invisible during normal use. The agent's behaviour doesn't change, and you don't need to do anything.
+
+## When compaction happens
+
+Compaction triggers automatically when the conversation approaches the model's context limit. For most models this is after several hours of sustained back-and-forth, or during long autonomous tasks where the agent is making many tool calls.
+
+You can also trigger compaction manually from the session menu if you want to "reset" the working context while keeping a record of everything that happened.
+
+## What the agent remembers after compaction
+
+The compaction summary preserves:
+
+- Decisions made and conclusions reached
+- Tasks completed and their outcomes
+- Active goals and open action items
+- Key facts mentioned (names, dates, preferences, constraints)
+- The current state of any work in progress
+
+What it doesn't preserve: the exact wording of every message, intermediate reasoning steps that led nowhere, and conversational filler.
+
+<Note>
+  Important context is also independently stored in the Memory system. Even if a fact doesn't make it into the compaction summary, the agent may retrieve it from Memory when relevant. Compaction and Memory are complementary systems.
+</Note>
+
+## Viewing the compaction summary
+
+To see what was captured in a compaction:
+
+1. Open the session from **Dashboard → Sessions**
+2. Look for the compaction marker in the message history (shown as a collapsed block)
+3. Click to expand the summary
+
+This is useful when debugging why an agent seems to have "forgotten" something — you can check whether it was included in the summary or not.
+
+## Memory vs compaction
+
+These are related but different:
+
+| | Compaction | Memory |
+|---|---|---|
+| **Scope** | Single session / conversation | Persistent across all sessions |
+| **Triggered by** | Context length | Agent decision or explicit instruction |
+| **Lives in** | Session history | Memory database |
+| **Survives session end?** | Yes (as a session record) | Yes (indefinitely, until deleted) |
+
+For important facts that need to persist beyond a single session — client details, preferences, project decisions — agents store those in Memory explicitly, separate from compaction.
+
+<CardGroup cols={2}>
+  <Card title="Memory types" icon="layers" href="/memory/types">
+    The four types of memory agents store.
+  </Card>
+  <Card title="Memory search" icon="search" href="/memory/search">
+    How agents retrieve memories when they need them.
+  </Card>
+</CardGroup>

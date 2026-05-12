@@ -1,0 +1,66 @@
+---
+title: "Computer Use"
+description: "Give agents full control of the screen — not just the browser — so they can operate desktop apps, terminals, and anything else that is visible."
+sidebarTitle: "Computer Use"
+icon: "monitor"
+---
+
+Computer Use goes beyond the browser. The agent can see the entire screen of the Qorven server and interact with any application that is running on it — desktop apps, terminals, native GUI tools, or anything else that is visible on the display.
+
+## What it can do
+
+- Operate desktop applications (Electron apps, native tools, IDEs)
+- Use the terminal — run commands, read output, respond to prompts
+- Switch between windows and applications
+- Handle login screens and system dialogs
+- Automate complex multi-step workflows that span multiple apps
+- Work with anything that is not accessible via a browser URL
+
+## How it works
+
+The agent takes a screenshot of the full screen, interprets what it sees, and sends mouse and keyboard events to interact with whatever is visible. It repeats this loop — screenshot, reason, act — until the task is done.
+
+This is more powerful than browser tools because it is not limited to web pages, but it is also slower. Each step involves a full-screen capture and a model inference call.
+
+## Requirements
+
+The Qorven server must have a display available. This can be:
+
+- A real monitor connected to the server
+- A virtual display created with Xvfb (recommended for headless servers)
+
+To set up a virtual display with Xvfb:
+
+```bash
+apt-get install -y xvfb
+Xvfb :99 -screen 0 1920x1080x24 &
+export DISPLAY=:99
+```
+
+Set `DISPLAY=:99` (or whichever display number you used) in your Qorven environment configuration so the agent knows where to look.
+
+## Performance expectations
+
+Computer Use is the most capable but also the slowest browser/UI automation option. Expect:
+
+- 3–10 seconds per action for simple clicks and typing
+- Longer for tasks that require reading and interpreting screen content
+
+For tasks that can be done in a browser, [Browse and Act](/tools/browser/browse-and-act) or [primitive tools](/tools/browser/primitive-tools) will be faster.
+
+<Warning>
+  Computer Use gives the agent broad control over the server's desktop. Assign it only to trusted agents, and review the approval settings for your workspace before enabling it.
+</Warning>
+
+## Watching a computer use session
+
+Open the **Live Stream** panel in the dashboard to see what the agent is doing on the screen. You can take over control at any point.
+
+<CardGroup cols={2}>
+  <Card title="Browse and Act" icon="bot" href="/tools/browser/browse-and-act">
+    AI-guided browser automation — faster for web-based tasks.
+  </Card>
+  <Card title="Live stream" icon="video" href="/tools/browser/live-stream">
+    Watch the agent's screen in real time.
+  </Card>
+</CardGroup>

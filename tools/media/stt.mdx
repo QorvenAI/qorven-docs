@@ -1,0 +1,55 @@
+---
+title: "Speech to Text"
+description: "Speak to your agents instead of typing — voice input is transcribed automatically in the dashboard and over Telegram."
+sidebarTitle: "Speech to Text"
+icon: "mic"
+---
+
+Speech to Text (STT) transcribes your voice into text so you can talk to agents instead of typing. It works in the web dashboard's voice chat mode and processes incoming voice messages on the Telegram channel.
+
+## How to use it
+
+**In the dashboard:** Click the microphone icon in the chat input bar to start recording. Speak, then click again (or press Space) to stop. The transcript appears in the input field and is sent to the agent automatically in voice chat mode, or sits ready to edit before sending in standard mode.
+
+**Via Telegram:** Send a voice message to your Telegram bot. The audio is transcribed and treated as a text message — the agent reads the transcript and responds as normal.
+
+## Provider
+
+STT is powered by **Whisper**, OpenAI's open-source speech recognition model. Qorven supports two deployment options:
+
+| Option | Setup | Notes |
+|--------|-------|-------|
+| OpenAI Whisper API | OpenAI API key required | Fast, no GPU required on your server |
+| Local Whisper | No API key — runs on your server | Requires a GPU or is slow on CPU; full privacy |
+
+Configure which option to use in **Settings → Voice**.
+
+## Language support
+
+Whisper supports over 50 languages and detects the language automatically — you do not need to select it beforehand. Accuracy is highest for English, Spanish, French, German, Chinese, Japanese, and Portuguese. Less common languages work but with higher error rates.
+
+## Getting good results
+
+- Speak clearly at a normal pace — Whisper handles accents well
+- Minimize background noise where possible
+- For technical terms, jargon, or product names that are frequently misrecognised, add them to the vocabulary hints in **Settings → Voice → Custom vocabulary**
+- Short pauses between sentences help the model segment the audio correctly
+
+## Accuracy
+
+Whisper is among the most accurate open-source STT models available. In practice, you will occasionally see:
+
+- Homophones misrecognised (e.g. "their" vs "there")
+- Punctuation inserted inconsistently
+- Technical terms spelled phonetically
+
+For high-stakes dictation (code variable names, exact figures), review the transcript before sending.
+
+<CardGroup cols={2}>
+  <Card title="Text to Speech" icon="volume-2" href="/tools/media/tts">
+    Hear agent responses spoken aloud.
+  </Card>
+  <Card title="Telegram channel" icon="send" href="/channels/telegram">
+    Send voice messages directly to your agents.
+  </Card>
+</CardGroup>

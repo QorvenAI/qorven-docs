@@ -1,0 +1,82 @@
+---
+title: "Exec"
+description: "Run shell commands on the Qorven host — tests, builds, scripts, and any other terminal operation your Developer agent needs."
+sidebarTitle: "Exec"
+icon: "terminal"
+---
+
+<Info>
+  The `exec` tool lets agents run shell commands. It's how your Developer agent runs tests, builds your project, installs dependencies, and validates its own changes. All exec calls require approval by default.
+</Info>
+
+## What it does
+
+When your Developer agent needs to run something — a test suite, a build command, a script — it uses `exec` to run that command on the Qorven server and gets back the output (stdout + stderr, exit code).
+
+**Example:** You ask your Developer agent to "add input validation to the signup form and make sure the tests still pass."
+
+The agent:
+1. Reads the relevant files
+2. Makes the code changes
+3. Calls `exec("npm test")` to run the test suite
+4. Reads the output — if tests fail, it investigates and fixes
+5. Reports back once tests are passing
+
+## Approval required
+
+By default, every `exec` call requires your approval. An approval card appears in the chat:
+
+```
+Approval needed
+   exec → npm run build
+   [View command] [Approve] [Reject]
+```
+
+You can configure auto-approval for specific commands you trust — for example, read-only commands like `npm test` or `git status`.
+
+## Configuring auto-approval
+
+In an agent's settings, specify which commands run without asking:
+
+```yaml
+tools_config:
+  exec:
+    auto_approve:
+      - "npm test"
+      - "npm run build"
+      - "go test ./..."
+      - "git status"
+      - "git diff"
+    working_dir: /home/user/projects/my-app
+```
+
+Commands not on the auto-approve list always require manual approval.
+
+## Working directory
+
+By default, exec runs from the Qorven data directory. Set a default working directory in the agent's tool config, or your agent can specify the directory per command.
+
+For project-specific work, register the project with `qorven projects add` — the Developer agent will then run commands from the correct directory automatically.
+
+## Security model
+
+The exec tool runs under the `qorven` system user — a locked-down account with limited permissions. It cannot write to system directories, run as root, or access files outside the allowed paths.
+
+For stricter isolation (running untrusted code, user-submitted scripts), enable sandbox mode — this runs commands inside a restricted Linux namespace. See [sandbox mode →](/tools/built-in/sandbox-mode).
+
+## Related tools
+
+<CardGroup cols={2}>
+  <Card title="Filesystem" icon="file-code" href="/tools/coding/filesystem">
+    Read and write files — works alongside exec for code changes.
+  </Card>
+  <Card title="Apply Patch" icon="git-merge" href="/tools/coding/apply-patch">
+    Apply code changes as a unified diff.
+  </Card>
+  <Card title="Approvals" icon="check-circle" href="/workflows/approvals">
+    How to configure approval rules for exec and other tools.
+  </Card>
+  <Card title="Sandbox mode" icon="shield" href="/tools/built-in/sandbox-mode">
+    Run commands in an isolated environment.
+  </Card>
+</CardGroup>

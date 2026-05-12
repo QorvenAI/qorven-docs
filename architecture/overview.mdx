@@ -1,0 +1,166 @@
+---
+title: "Architecture overview"
+description: "The 5-minute tour. How Qorven's components fit together: gateway, Qors, memory, tools, channels."
+sidebarTitle: "Overview"
+icon: "layers"
+---
+
+<Info>
+  Qorven is one Go binary + Postgres. The binary embeds the Next.js web UI via `go:embed`, so deployment is a single file. Everything else — Qors, memory, tools, channels — is orchestrated by that binary.
+</Info>
+
+## The ten-thousand-foot view
+
+<Frame caption="Qorven's architecture. Everything in the dashed box is one Go process.">
+```mermaid
+flowchart LR
+    subgraph User["You"]
+      Web[Web UI]
+      TUI[TUI]
+      Phone["📱 Telegram / WhatsApp<br/>/ Slack / etc"]
+    end
+
+    subgraph Gateway["Qorven Gateway (one Go binary)"]
+      API[/HTTP API<br/>v1/*/]
+      WS[WebSocket hub]
+      Loop[Agent loop]
+      Tools[80+ tools]
+      Sched[Scheduler]
+      Dream[Dreamer]
+    end
+
+    subgraph Storage["Persistent state"]
+      DB[(PostgreSQL<br/>+ pgvector)]
+      FS[/var/lib/qorven]
+      Vault[(Encrypted vault)]
+    end
+
+    subgraph LLM["LLM providers (BYO)"]
+      OpenAI[OpenAI]
+      Anthropic[Anthropic]
+      Bedrock[Bedrock]
+      Ollama[Ollama]
+    end
+
+    Web -->|HTTPS| API
+    TUI -->|HTTPS| API
+    Phone -->|Webhook| API
+    API --> Loop
+    WS <--> Loop
+    Loop --> Tools
+    Loop --> LLM
+    Tools --> DB
+    Tools --> FS
+    Loop --> DB
+    Sched --> Loop
+    Dream --> DB
+    DB --> Vault
+```
+</Frame>
+
+## The four things to understand
+
+<Steps>
+  <Step title="One binary, everything in-process">
+    The web UI, API, WebSocket hub, agent loop, scheduler, dreamer, tool executors — all one Go process. No Node runtime at deploy time. No inter-service RPC. [Single-binary build →](/ops/customize-ui)
+  </Step>
+
+  <Step title="Postgres is the source of truth">
+    Users, Qors, sessions, messages, memories, audit log, tenant data, queues. One database. Vectors live next to metadata (pgvector), so no separate vector DB. [Database schema →](/reference/database-schema)
+  </Step>
+
+  <Step title="Qors are rows, not processes">
+    A Qor is a row in `agents` plus its system prompt, tools, model preference, and history. The agent loop rehydrates a Qor on demand when it needs to run — no long-lived per-Qor process. [What is a Qor →](/qors/what-is-a-qor)
+  </Step>
+
+  <Step title="Channels are surfaces, not identities">
+    You have one Qor per role; it's reachable from the web, TUI, Telegram, WhatsApp. Every inbound message is tagged with its channel and merged into the Qor's single canonical chat. [One Qor, one chat →](/architecture/one-qor-one-chat)
+  </Step>
+</Steps>
+
+## Request path, end-to-end
+
+Take the simple case: you ask Prime *"summarise my inbox"* from the web UI.
+
+<Steps>
+  <Step title="Web UI sends message">
+    Browser → `POST /api/v1/chat/completions` with `{session_id, agent_id, message}`. The `/api` prefix is stripped by middleware in production; in dev it routes through Next's rewrites.
+  </Step>
+  <Step title="Gateway authenticates + validates">
+    `AuthMiddlewareV2` checks the auth token, `TenantScopeMiddleware` binds the Postgres transaction to the caller's tenant, `TenantQuotaMiddleware` rate-limits by tenant. [Auth middleware →](/gateway/auth-middleware)
+  </Step>
+  <Step title="Agent loop picks up">
+    The loop loads Prime's row, recent messages (compacted if long), system prompt, and toolset. It calls the LLM with streaming enabled.
+  </Step>
+  <Step title="LLM streams back">
+    Tokens flow back through the WebSocket hub to the UI. If the LLM decides to call a tool (e.g. `delegate_to_soul` → "Inbox Qor"), the loop pauses, runs the tool, appends the result, re-invokes the LLM.
+  </Step>
+  <Step title="Tool calls fan out">
+    The inbox Qor gets spawned (or found), runs its own loop, uses `email` tool to read Gmail, writes a summary, returns. Prime's loop resumes with that summary in context.
+  </Step>
+  <Step title="Final answer streamed to UI">
+    Prime writes the final response; every token streams to the WebSocket. Done.
+  </Step>
+</Steps>
+
+## What's *not* in the picture
+
+<AccordionGroup>
+  <Accordion title="No Redis, no Kafka, no message queue" icon="x">
+    Background work uses Postgres `LISTEN/NOTIFY` + `SELECT ... FOR UPDATE SKIP LOCKED`. Good enough for hundreds of concurrent Qors; simpler to operate; no extra service to keep alive.
+  </Accordion>
+
+  <Accordion title="No separate vector DB" icon="x">
+    pgvector lives in the same Postgres. Embedding writes + metadata writes are one transaction. [Memory system →](/architecture/memory-system)
+  </Accordion>
+
+  <Accordion title="No cloud-only components" icon="x">
+    Qorven runs fully on a $5 VPS, a Raspberry Pi 5, a Mac mini, or air-gapped. The only network calls the binary makes are to LLM providers you've configured. Zero telemetry. [Threat model →](/security/threat-model)
+  </Accordion>
+
+  <Accordion title="No custom DSL for agents" icon="x">
+    Qors are configured by writing a system prompt + picking tools/models from the UI. No YAML workflows, no DAGs, no graph editor. Delegation happens because the LLM decides to delegate, not because you wired a graph.
+  </Accordion>
+</AccordionGroup>
+
+## How the pieces relate
+
+| Component | What it owns | Where it lives |
+|---|---|---|
+| [Gateway](/gateway/overview) | HTTP/WS, auth, routing, rate-limits | One Go binary |
+| [Agent loop](/qors/what-is-a-qor#the-loop) | Running Qors, tool dispatch, streaming | In-process |
+| [Tools](/tools/index) | 80+ built-in actions + MCP + custom | In-process, some shell out to browser/Python |
+| [Memory store](/memory/overview) | Sessions, messages, memories, graph edges | Postgres + pgvector |
+| [Scheduler](/workflows/cron) | Cron jobs, heartbeats, QOROS | In-process, Postgres rows for state |
+| [Dreamer](/memory/dreaming) | Periodic memory consolidation | Background goroutine |
+| [Web UI](/web-ui/overview) | React/Next.js dashboard | Embedded in the binary via `go:embed` |
+| [TUI](/tui/overview) | Terminal UI | `qorven` binary, same code path |
+| [Channels](/channels/index) | Inbound webhooks, outbound dispatch | In-process, per-channel goroutines |
+
+## Read the code
+
+Qorven is open-source under [FSL‑1.1‑ALv2](/reference/licensing). The hot paths:
+
+- `backend/internal/gateway/gateway.go` — the HTTP router, middleware stack, route mount order
+- `backend/internal/agent/loop.go` — the agent loop, tool dispatch, streaming
+- `backend/internal/session/session.go` — canonical chat, compaction, per-channel filtering
+- `backend/internal/memory/` — embedding, compression, graph, dreamer
+- `backend/internal/tools/` — every built-in tool, one file each
+- `web/` — the Next.js app; `app/(app)/` has every dashboard page
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="One Qor, one chat" icon="infinity" href="/architecture/one-qor-one-chat">
+    The canonical chat model and per-channel filtering.
+  </Card>
+  <Card title="Delegation" icon="git-branch" href="/architecture/delegation">
+    Prime → specialists. How and when Qors delegate.
+  </Card>
+  <Card title="Memory system" icon="database" href="/architecture/memory-system">
+    Compaction, pgvector, the knowledge graph, dreaming.
+  </Card>
+  <Card title="Security model" icon="shield" href="/architecture/security-model">
+    Tenant isolation, encryption, audit trail.
+  </Card>
+</CardGroup>

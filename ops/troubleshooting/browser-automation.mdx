@@ -1,0 +1,173 @@
+---
+title: "Browser Automation Errors"
+description: "Fix Chromium not found, connection timeouts, element not found, and headless browser blocking errors."
+sidebarTitle: "Browser Automation"
+icon: "globe"
+---
+
+Browser automation errors occur when agents use the `browse_web` or `browse_and_act` tools. Qorven launches a headless Chromium instance to handle these requests.
+
+## "Chromium not found" / "executable not found"
+
+**What it means:** Qorven can't find a Chromium or Chrome binary on the system.
+
+**Fix:**
+
+```bash
+# Ubuntu / Debian
+sudo apt install chromium-browser
+
+# RHEL / CentOS
+sudo dnf install chromium
+
+# Amazon Linux 2023
+sudo dnf install chromium
+
+# Verify it is findable
+which chromium-browser || which chromium || which google-chrome
+```
+
+If Chromium is installed but at a non-standard path, tell Qorven where it is:
+
+```toml
+[browser]
+chromium_path = "/usr/bin/chromium-browser"
+```
+
+**For Docker deployments**, add Chromium to your Dockerfile:
+
+```dockerfile
+RUN apt-get update && apt-get install -y \
+    chromium \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+---
+
+## "Connection timeout" / browser takes too long to respond
+
+**What it means:** The browser launched but a page took too long to load, or the automation script took too long to complete.
+
+**Default timeout:** 30 seconds for page navigation, 60 seconds for automation scripts.
+
+**Fix:**
+
+Increase the timeout in `config.toml`:
+
+```toml
+[browser]
+navigation_timeout_ms = 60000     # 60 seconds
+script_timeout_ms     = 120000    # 2 minutes
+```
+
+**Common causes:**
+- Target site is slow or overloaded.
+- Waiting for an element that never appears.
+- JavaScript-heavy SPA that takes a long time to hydrate.
+
+For JavaScript-heavy sites, wait for the page to be fully interactive rather than just loaded:
+
+In agent prompts, instruct the agent to "wait for the page to fully load before interacting" — the `browse_and_act` tool handles this automatically.
+
+---
+
+## "Element not found" / "selector timed out"
+
+**What it means:** The automation script tried to interact with an element that doesn't exist or wasn't visible in time.
+
+**Common causes:**
+
+1. The site's HTML structure changed and the CSS selector is outdated.
+2. The element is inside an iframe.
+3. The element requires JavaScript to be rendered and it hasn't loaded yet.
+4. The site shows a CAPTCHA or cookie banner blocking the actual content.
+
+**Fix:**
+
+Use `browse_and_act` instead of `browse_web` for complex interactions. The `browse_and_act` tool uses a vision-based approach — it takes a screenshot and identifies elements visually rather than by selector, making it more robust to site changes.
+
+For repeatable automation, describe actions in natural language in the agent prompt:
+
+- Instead of: "click the element with id #submit-btn"
+- Use: "click the blue submit button in the form"
+
+---
+
+## "JavaScript disabled" errors
+
+**What it means:** A site detected the headless browser and blocked it, or Qorven's browser is configured to block JavaScript.
+
+**Diagnose:**
+
+JavaScript is enabled by default. Check your config:
+
+```toml
+[browser]
+javascript = true   # default — do not set to false unless you have a reason
+```
+
+**For sites blocking headless browsers:**
+
+Some sites detect and block headless browsers via the `navigator.webdriver` flag. Qorven attempts to mask this by default. If a site is still blocking:
+
+```toml
+[browser]
+stealth_mode = true    # enables additional headless detection countermeasures
+```
+
+Note: Circumventing bot detection may violate a site's terms of service. Only do this for sites you own or have permission to automate.
+
+---
+
+## "Screenshot failed" / blank screenshots
+
+**What it means:** The browser launched but the page didn't render correctly.
+
+**Common causes:**
+
+1. Missing fonts — some pages require system fonts that aren't installed.
+2. GPU acceleration errors — headless Chromium on some cloud VMs.
+3. Sandbox errors on systems with restricted kernel capabilities.
+
+**Fix:**
+
+```toml
+[browser]
+# Add --no-sandbox if running in a container without user namespace support
+extra_args = ["--no-sandbox", "--disable-dev-shm-usage"]
+```
+
+<Warning>
+  `--no-sandbox` reduces security isolation. Only use this in containers where the process is already isolated at the container level.
+</Warning>
+
+Install fonts for better rendering:
+
+```bash
+sudo apt install fonts-noto fonts-liberation
+```
+
+---
+
+## Resource limits
+
+Browser automation is resource-intensive. Each headless Chromium instance uses approximately 200–500 MB of RAM. If you run many agents concurrently:
+
+```toml
+[browser]
+max_concurrent = 3    # limit concurrent browser instances
+```
+
+Monitor memory usage with `free -m` or the Qorven Grafana dashboard.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="SSRF allowlist" icon="shield" href="/gateway/ssrf-allowlist">
+    Allow browser automation to reach internal URLs.
+  </Card>
+  <Card title="Common errors" icon="help-circle" href="/ops/troubleshooting/common-errors">
+    Quick reference error table.
+  </Card>
+</CardGroup>

@@ -1,0 +1,69 @@
+---
+title: "Audit Log"
+description: "Every agent action is logged with timestamp, agent, tool, arguments, and result — searchable, filterable, and exportable."
+sidebarTitle: "Audit Log"
+icon: "history"
+---
+
+The Audit Log is a complete, tamper-proof record of everything your agents have done. Every tool call, approval decision, and system event is captured automatically — you don't need to configure anything.
+
+## What gets logged
+
+Every entry in the Audit Log contains:
+
+| Field | Description |
+|---|---|
+| **Timestamp** | Exact time the action occurred (UTC, with millisecond precision) |
+| **Agent** | Which agent performed the action |
+| **Session** | The conversation or scheduled task the action was part of |
+| **Tool** | The tool that was called (e.g. `send_email`, `write_file`, `web_search`) |
+| **Arguments** | The exact parameters passed to the tool |
+| **Result** | Whether the action succeeded, failed, or was rejected |
+| **User** | The user who initiated or approved the action (if applicable) |
+
+All approval decisions are also captured here — including who approved, who rejected, and what reasoning was provided.
+
+## Searching and filtering
+
+The Audit Log is fully searchable. You can filter by:
+
+- **Date range** — last hour, today, last 7 days, or a custom range
+- **Agent** — show only actions from a specific agent
+- **Tool** — show only email sends, file writes, web searches, etc.
+- **Result** — filter to only errors or only approvals
+- **Keyword** — search across arguments and results
+
+Use the filter bar at the top of the **Workflows → Audit Log** page to combine filters. Results update in real time.
+
+## Exporting to CSV
+
+To export a filtered view, click **Export** in the top right. Qorven generates a CSV file with all visible columns. This is useful for compliance reviews, expense reconciliation, or sharing a record with an external auditor.
+
+The export includes all fields from the current filter view.
+
+## Non-repudiation
+
+Audit log entries cannot be edited or deleted — not by agents, not by admins, and not through the API. Once an action is logged, the record is permanent.
+
+<Info>
+  The only exception is a factory reset (**Settings → System → Danger Zone → Factory Reset**), which wipes all data including the audit log. The log entry for the factory reset itself is written before the wipe so the action is on record.
+</Info>
+
+## Common uses
+
+**Debugging an agent** — something went wrong with a task. Open the Audit Log, filter by that agent and the time window, and trace exactly what it did step-by-step.
+
+**Compliance review** — your organization needs to show that no unauthorized emails were sent. Filter to `send_email` actions over the review period and export the results.
+
+**Approval accountability** — a sensitive action was taken. The log shows which human approved it, at what time, from which channel.
+
+**Cost attribution** — identify which agents are making the most tool calls and which tasks are most resource-intensive.
+
+<CardGroup cols={2}>
+  <Card title="Approvals" icon="check-circle" href="/workflows/approvals">
+    Understand how approval decisions are created and resolved.
+  </Card>
+  <Card title="Schedules" icon="calendar" href="/workflows/schedule">
+    See the run history for scheduled agent tasks.
+  </Card>
+</CardGroup>

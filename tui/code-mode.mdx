@@ -1,0 +1,120 @@
+---
+title: "Code Mode"
+description: "Three-panel code mode in the TUI — see what your Developer agent is doing in real time and approve file changes before they land."
+sidebarTitle: "Code Mode"
+icon: "code"
+---
+
+<Info>
+  Type `/code` in `qorven chat` to open three-panel code mode: file tree on the left, code editor in the middle, chat on the right. Watch your Developer agent work, approve changes before they're written, and navigate open files — all without leaving the terminal.
+</Info>
+
+## Opening code mode
+
+```
+/code
+```
+
+Type `/code` at the prompt. The TUI splits into three panels. You're automatically switched to the Developer agent if you aren't already on one.
+
+Type `/code` again to collapse back to the single-panel chat view. Your session continues; nothing is lost.
+
+## The three panels
+
+```
+┌──────────────┬────────────────────────────┬───────────────────┐
+│  File tree   │        Code editor          │       Chat        │
+│              │                             │                   │
+│  src/        │  backend/cmd/start.go       │ Developer ▶       │
+│  ├ cmd/      │  ─────────────────────────  │                   │
+│  │ └ start.go│  func main() {              │ > add a --dry-run │
+│  ├ internal/ │    gw := gateway.New(cfg)   │   flag to the     │
+│  └ ...       │    gw.Start()               │   start command   │
+│              │  }                          │                   │
+│              │                             │ Working on it...  │
+└──────────────┴────────────────────────────┴───────────────────┘
+```
+
+**Left — file tree:** The project's directory structure. Highlights files the agent has opened or modified. Navigate with arrow keys; press Enter to open a file in the editor panel.
+
+**Middle — code editor:** Read-only live view of the file the agent is working in. When the agent proposes a change, the diff is shown here in red/green before it's applied.
+
+**Right — chat:** Your conversation with the Developer agent. Same as the single-panel chat, just alongside the code view.
+
+## Approving file changes
+
+When the Developer agent wants to write a file, code mode shows the diff and pauses:
+
+```
+─── Proposed change: backend/cmd/start.go ───────────────────────
+  func main() {
++   if cfg.DryRun {
++     log.Println("dry-run mode, exiting")
++     return
++   }
+    gw := gateway.New(cfg)
+─────────────────────────────────────────────────────────────────
+[A]pprove  [R]eject  [E]dit  [S]kip all
+```
+
+- **A** — apply the change and continue
+- **R** — reject; the agent is told the change was refused and can try a different approach
+- **E** — open the diff in your `$EDITOR` to modify it before applying
+- **S** — approve all remaining changes in this task without further prompts
+
+If you do nothing, the task stays paused until you respond. The agent will not write files unilaterally.
+
+<Tip>
+  For exploratory sessions where you trust the agent, use **S** (skip all) once after the first change looks right. You'll still see diffs in the editor panel, but won't be prompted for each one.
+</Tip>
+
+## Navigating open files
+
+The file tree highlights files the agent has touched. Use:
+
+- **Tab** — cycle focus between panels (tree → editor → chat → tree)
+- **↑ / ↓** in the tree — move through the directory
+- **Enter** in the tree — open the file in the editor panel
+- **[** / **]** — previous / next file the agent modified
+
+## Registering a project
+
+Code mode works with any project registered in Qorven:
+
+```bash
+qorven projects add /path/to/my-project --name my-project
+```
+
+When you open code mode, Qorven looks for the nearest registered project from your current working directory. If more than one matches, a picker appears.
+
+```bash
+qorven projects list      # see registered projects
+qorven projects remove my-project
+```
+
+## Exiting code mode
+
+```
+/code
+```
+
+Type `/code` again to return to single-panel chat. The Developer agent session continues in the background — open files and pending changes are preserved until you come back.
+
+`Ctrl+C` exits the entire TUI, same as in normal chat mode. Any pending (unapproved) changes are discarded.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Developer agent" icon="cpu" href="/qors/what-is-a-qor">
+    What the Developer agent is built to do.
+  </Card>
+  <Card title="Agent tools" icon="wrench" href="/qors/tools">
+    The filesystem, exec, and apply_patch tools the Developer uses.
+  </Card>
+  <Card title="Keybindings" icon="keyboard" href="/tui/keybindings">
+    Full keybinding reference including code mode shortcuts.
+  </Card>
+  <Card title="Slash commands" icon="terminal" href="/tui/slash-commands">
+    All `/commands` available in the TUI.
+  </Card>
+</CardGroup>

@@ -1,0 +1,100 @@
+---
+title: "Dashboard Overview"
+description: "A tour of every page in the Qorven web dashboard — what each one is for and when you'd use it."
+sidebarTitle: "Overview"
+icon: "monitor"
+---
+
+<Info>
+  The Qorven web dashboard is built into the server — no separate deployment, no extra configuration. Open your browser, log in, and everything is already there.
+</Info>
+
+## Main pages
+
+<CardGroup cols={3}>
+  <Card title="Chat" icon="message-circle" href="/web-ui/chat">
+    Talk to Prime or switch to any specialist agent directly. See tool calls in real time as your agents work.
+  </Card>
+  <Card title="Agents" icon="brain" href="/web-ui/qors-page">
+    Create and manage your agent team. Edit instructions, swap models, review memory, check activity.
+  </Card>
+  <Card title="Code Editor" icon="code" href="/web-ui/code-editor">
+    A full IDE in your browser, wired to your Developer agent. View files, review changes, approve edits.
+  </Card>
+  <Card title="Drive" icon="hard-drive" href="/web-ui/drive">
+    Files your agents can read. Connect Google Drive, Dropbox, or upload directly.
+  </Card>
+  <Card title="Mail" icon="mail" href="/web-ui/mail">
+    Your inbox, managed by your Email Agent. See drafts, approve sends, monitor what's been handled.
+  </Card>
+  <Card title="Calendar" icon="calendar" href="/web-ui/calendar">
+    Read-write calendar access. Agents can schedule meetings, check availability, and send invites.
+  </Card>
+  <Card title="Schedule" icon="clock" href="/web-ui/schedule">
+    All your scheduled agent tasks in one view — daily briefings, recurring reports, cron jobs.
+  </Card>
+  <Card title="Memories" icon="database" href="/web-ui/memories">
+    Browse, search, and edit everything your agents have remembered across all conversations.
+  </Card>
+  <Card title="Models Hub" icon="cpu" href="/web-ui/models-hub">
+    Browse 1,700+ AI models, compare pricing, and set which models your agents use.
+  </Card>
+  <Card title="Connectors" icon="link" href="/web-ui/connectors">
+    Connect third-party services — Gmail, Notion, GitHub, Slack, and more.
+  </Card>
+  <Card title="Marketplace" icon="shopping-bag" href="/web-ui/marketplace">
+    Browse and install community-built skills to extend your agents.
+  </Card>
+  <Card title="Audit Log" icon="history" href="/web-ui/audit">
+    A full record of every action taken by every agent — tool calls, approvals, messages sent.
+  </Card>
+  <Card title="Notifications" icon="bell" href="/web-ui/notifications">
+    Alerts from your agents — approvals pending, tasks completed, issues flagged.
+  </Card>
+  <Card title="Terminal" icon="terminal" href="/web-ui/terminal">
+    A browser-based shell into the Qorven host (when enabled by an admin).
+  </Card>
+  <Card title="Voice" icon="mic" href="/web-ui/voice">
+    Talk to your agents hands-free. Real-time voice chat with text-to-speech responses.
+  </Card>
+</CardGroup>
+
+## Settings
+
+<CardGroup cols={2}>
+  <Card title="Preferences" icon="settings" href="/web-ui/settings/preferences">
+    Theme, language, timezone, auto-approve rules.
+  </Card>
+  <Card title="Provider Keys" icon="key" href="/web-ui/settings/provider-keys">
+    Add, rotate, and manage your AI provider API keys.
+  </Card>
+  <Card title="OAuth Apps" icon="link" href="/web-ui/settings/oauth-apps">
+    Register connector credentials for this install.
+  </Card>
+  <Card title="Privacy" icon="shield" href="/web-ui/settings/privacy">
+    Data retention, PII redaction settings, memory scope controls.
+  </Card>
+</CardGroup>
+
+## The Approvals flow
+
+Some agent actions — sending emails, modifying files, running commands — require your approval before they execute. Approval requests appear as notifications in the dashboard and can also be sent to you via Telegram, Slack, or any connected channel.
+
+You can approve or reject right from the notification, without opening the dashboard. [Learn more about approvals →](/workflows/approvals)
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Chat" icon="message-circle" href="/web-ui/chat">
+    The most-used page, explained in full.
+  </Card>
+  <Card title="Add an AI provider" icon="key" href="/web-ui/settings/provider-keys">
+    First thing to configure after install.
+  </Card>
+  <Card title="Create an agent" icon="brain" href="/qors/creating-a-qor">
+    Add a specialist to your team.
+  </Card>
+  <Card title="Connect a channel" icon="message-square" href="/channels/index">
+    Reach your agents from Telegram, Slack, WhatsApp, and more.
+  </Card>
+</CardGroup>

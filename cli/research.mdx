@@ -1,0 +1,46 @@
+---
+title: "qorven research"
+description: "Search Reddit, HN, GitHub, and more in parallel. Score by engagement."
+sidebarTitle: "research"
+icon: "search"
+---
+
+<Info>Generated from `qorven research --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Search Reddit, HN, GitHub, and more in parallel. Score by engagement.
+
+Examples:
+  qorven research "AI agents"
+  qorven research "Go vs Rust" --platforms reddit,hackernews
+  qorven research "Bitcoin" --depth deep --json
+
+Usage:
+  qorven research <topic> [flags]
+
+Flags:
+      --depth string       quick/default/deep (default "default")
+  -h, --help               help for research
+      --json               output as JSON
+      --platforms string   filter: reddit,hackernews,github
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

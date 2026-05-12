@@ -1,0 +1,72 @@
+---
+title: "Terminal"
+description: "A browser-based shell into your Qorven server for running CLI commands without SSH."
+sidebarTitle: "Terminal"
+icon: "terminal"
+---
+
+The Terminal page gives you a shell on your Qorven server directly in the browser. It is primarily useful for running `qorven` CLI commands and inspecting server state without needing an SSH session.
+
+<Warning>
+  The Terminal is disabled by default and must be explicitly enabled by an admin. When enabled, it grants shell access to the server — restrict it to trusted users only.
+</Warning>
+
+## Enabling the Terminal
+
+An admin can enable the Terminal in **Settings → System**. Once enabled, it is accessible to users with admin role. Non-admin users do not see the Terminal in the sidebar.
+
+## What you can do
+
+The Terminal runs as the same system user that runs the Qorven process. Common uses:
+
+```bash
+# Check the current version
+qorven version
+
+# View live agent logs
+qorven logs --follow
+
+# Run a one-off migration
+qorven db migrate
+
+# Check database status
+qorven db status
+
+# Export data
+qorven export --output /tmp/backup.json
+```
+
+Output streams in real time — you see each line as it is produced, not after the command completes.
+
+## Limitations
+
+The Terminal is a restricted shell, not a full root shell. The following are blocked:
+
+- Commands that modify Qorven's binary or service configuration
+- `sudo` and privilege escalation
+- Background process management (`nohup`, `&`, `screen`, `tmux`)
+
+If you need to perform system-level administration, use SSH directly.
+
+<Info>
+  The Terminal session is tied to your browser tab. Navigating away closes the session. Long-running commands should be run over SSH instead.
+</Info>
+
+## Session security
+
+Each terminal session is logged to the [Audit Log](/web-ui/audit) with the user's identity, start time, and all commands entered. Sessions time out after 15 minutes of inactivity.
+
+## Disabling the Terminal
+
+To disable the Terminal, go to **Settings → System** and toggle it off. All active sessions are terminated immediately.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Audit Log" icon="history" href="/web-ui/audit">
+    Terminal commands are logged here.
+  </Card>
+  <Card title="Code Editor" icon="code" href="/web-ui/code-editor">
+    Work on code files without needing a terminal.
+  </Card>
+</CardGroup>

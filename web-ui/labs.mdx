@@ -1,0 +1,97 @@
+---
+title: "Labs"
+description: "Multi-agent simulation sandbox for testing prompts, personas, and team dynamics — not production data."
+sidebarTitle: "Labs"
+icon: "flask-conical"
+---
+
+<Warning>
+  Labs uses **synthetic personas and simulated conversations**. It never touches your real agents, real memory, or real users. Everything in Labs stays in Labs.
+</Warning>
+
+## What Labs is
+
+Labs is a controlled simulation environment. You define a scenario — a seed prompt, a set of synthetic personas, and a number of rounds — and Qorven runs a multi-agent conversation between those personas, then generates a report.
+
+**Use Labs to:**
+- Test how a new system prompt behaves under adversarial personas
+- Explore how a team of Qors would handle a difficult edge case
+- Prototype a new Qor role before deploying it to production
+- Run red-team simulations without touching real data
+
+## What Labs is NOT
+
+<AccordionGroup>
+  <Accordion title="❌ Not a workflow builder">
+    Labs runs one-shot simulations. It doesn't execute tools, call APIs, or persist state beyond the simulation report.
+  </Accordion>
+  <Accordion title="❌ Not a Plan">
+    Plans are how Prime proposes real work. Labs is a sandbox that never touches real agents or data.
+  </Accordion>
+  <Accordion title="❌ Not a production path">
+    Nothing you test in Labs is deployed automatically. You copy what works into a real Qor's system prompt manually.
+  </Accordion>
+</AccordionGroup>
+
+## Running a scenario
+
+<Steps>
+  <Step title="Open Labs">
+    Navigate to **Labs** in the rail (flask icon).
+  </Step>
+  <Step title="Write a seed prompt">
+    Describe the situation to simulate. Example: *"A customer support agent receives a refund request for an order that shipped 6 months ago."*
+  </Step>
+  <Step title="Set the persona count and rounds">
+    Choose how many synthetic personas to generate (2–8) and how many conversation rounds to simulate (1–10).
+  </Step>
+  <Step title="Run the simulation">
+    Click **Run**. Qorven generates personas, runs the conversation, and produces a structured report.
+  </Step>
+  <Step title="Read the report">
+    The report includes: what each persona said, which Qor responses worked, which broke down, and a recommendation for improving the system prompt.
+  </Step>
+</Steps>
+
+## Injecting mid-scenario
+
+You can intervene mid-simulation by injecting a message as one of the personas or as the Qor. This is useful for testing how the Qor handles a curveball without restarting the whole scenario.
+
+## API
+
+```bash
+# Create a scenario
+POST /v1/scenarios
+{
+  "seed": "Customer asks for a refund after 6 months",
+  "agent_count": 3,
+  "rounds": 5
+}
+
+# Run it
+POST /v1/scenarios/{id}/run
+
+# Inject mid-simulation
+POST /v1/scenarios/{id}/inject
+{ "persona_index": 1, "message": "I want to speak to a manager" }
+
+# Get the report
+GET /v1/scenarios/{id}
+```
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="System prompts" icon="file-text" href="/qors/system-prompts">
+    Apply what you learn in Labs to your real Qors.
+  </Card>
+  <Card title="Sandbox" icon="shield" href="/web-ui/sandbox">
+    Run individual tool calls safely — different from Labs.
+  </Card>
+  <Card title="Plans" icon="git-branch" href="/web-ui/plans">
+    For real work with real agents, use Plans.
+  </Card>
+  <Card title="Creating a Qor" icon="plus" href="/qors/creating-a-qor">
+    Once you've tested a role in Labs, deploy it here.
+  </Card>
+</CardGroup>

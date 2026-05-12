@@ -1,0 +1,121 @@
+---
+title: "Memory overview"
+description: "How Qors remember: typed memories, hybrid search, compaction, the knowledge graph, and dreaming."
+sidebarTitle: "Overview"
+icon: "database"
+---
+
+<Info>
+  Qorven's memory system is built for conversations that never end. A Qor talking to you for six months shouldn't perform worse than one talking to you for six days. This page is the practical companion to [architecture/memory-system](/architecture/memory-system) — what operators actually do.
+</Info>
+
+## The mental model
+
+Every Qor has three stores that grow together:
+
+<CardGroup cols={3}>
+  <Card title="Rolling window" icon="clock">
+    The N most-recent turns sent to the LLM on every call. Bounded by the model's context window. Stays small.
+  </Card>
+  <Card title="Typed memories" icon="database">
+    Durable, searchable facts. Every important thing from a conversation gets written here. Bounded by Postgres storage (effectively unlimited).
+  </Card>
+  <Card title="Knowledge graph" icon="network">
+    Entities + edges extracted from memories. Answers relational queries like *"what do we know about Project Apollo?"*
+  </Card>
+</CardGroup>
+
+## Operator touch points
+
+<Steps>
+  <Step title="The Memory tab on each Qor">
+    Web UI → Qor → Memory. Browse, search, edit, delete memories.
+  </Step>
+  <Step title="The in-chat 🧠 search">
+    Toolbar above the composer. Semantic search; click a result to drop it into context.
+  </Step>
+  <Step title="qorven memory CLI">
+    Scripted inspection + editing. Good for debugging retrieval.
+  </Step>
+  <Step title="Dreaming schedule">
+    Per-Qor setting (default 6h). Controls when the Qor consolidates its day into durable memories.
+  </Step>
+</Steps>
+
+## Memory types
+
+<CardGroup cols={2}>
+  <Card title="fact" icon="check-circle">
+    Durable truth. *"Priya's laptop is a 2024 M3 MacBook Pro."*
+  </Card>
+  <Card title="preference" icon="heart">
+    How someone likes things. *"Priya prefers bullet points."*
+  </Card>
+  <Card title="decision" icon="gavel">
+    What was decided. *"2026-04-20: ship v0.4 with Telegram only."*
+  </Card>
+  <Card title="identity" icon="user">
+    Who the Qor is. Injected into every system prompt.
+  </Card>
+  <Card title="event" icon="calendar">
+    Something happened. Decays over time.
+  </Card>
+  <Card title="observation" icon="eye">
+    Weaker than fact, unverified. Low importance by default.
+  </Card>
+  <Card title="goal" icon="target">
+    Ongoing objective. Retrieved when planning.
+  </Card>
+  <Card title="todo" icon="check-square">
+    Actionable item. Lives until marked done.
+  </Card>
+</CardGroup>
+
+[Full type reference →](/memory/types)
+
+## How retrieval works
+
+Hybrid: **pgvector cosine similarity + BM25 full-text**, merged via Reciprocal Rank Fusion. In practice beats either alone.
+
+- Semantic hits catch paraphrases ("budget" matches "spending limit")
+- Keyword hits catch exact terms ("Apollo" matches "Apollo" but not "launch")
+- RRF picks the best of both without tuning weights
+
+The top-K (default 5) most-relevant memories get injected into the LLM context for each turn.
+
+## Scope rules
+
+Memories have a `scope` that controls who sees them:
+
+| Scope | Who retrieves |
+|---|---|
+| `agent` | Only this Qor (default) |
+| `team` | Qors in the same team |
+| `task` | Scoped to one task run |
+| `session` | Scoped to one session |
+| `prime` | Visible to the Chief-of-Staff Qor |
+
+Scopes are enforced at the query level. A bug in a retrieval handler can't leak cross-scope. [Scopes + privacy →](/memory/privacy)
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Types" icon="list" href="/memory/types">
+    Each type, when to use, examples.
+  </Card>
+  <Card title="Compaction" icon="compress" href="/memory/compaction">
+    How long chats stay fresh.
+  </Card>
+  <Card title="Search" icon="search" href="/memory/search">
+    UI + API + CLI.
+  </Card>
+  <Card title="Knowledge graph" icon="network" href="/memory/knowledge-graph">
+    Entities, edges, traversal.
+  </Card>
+  <Card title="Dreaming" icon="moon" href="/memory/dreaming">
+    Nightly consolidation.
+  </Card>
+  <Card title="Privacy" icon="shield" href="/memory/privacy">
+    Scopes + PII redaction.
+  </Card>
+</CardGroup>

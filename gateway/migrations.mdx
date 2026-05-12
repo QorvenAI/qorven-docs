@@ -1,0 +1,123 @@
+---
+title: "Database Migrations"
+description: "Qorven runs database migrations automatically on startup — how they work and how to manage them manually."
+sidebarTitle: "Migrations"
+icon: "database"
+---
+
+Database migrations are embedded in the Qorven binary. They run automatically every time `qorven start` is called. In normal operation, you do not need to think about migrations.
+
+## How it works
+
+On startup, Qorven:
+
+1. Connects to the database.
+2. Checks the current schema version against the migrations bundled in the binary.
+3. Runs any pending migrations in order.
+4. If all migrations succeed, starts serving requests.
+5. If any migration fails, the server refuses to start and exits with a non-zero code.
+
+This is intentional. Running on a partially migrated schema is unsafe. The fail-fast behaviour prevents data corruption.
+
+## Checking migration status
+
+```bash
+qorven migrate status
+```
+
+```
+Schema version: 42
+Pending migrations: 0
+Status: up to date
+```
+
+If you are on an older version and are about to upgrade:
+
+```bash
+qorven migrate status --check-latest
+```
+
+```
+Schema version: 38
+Pending migrations: 4
+Status: behind (upgrade to apply)
+```
+
+## Manual migration
+
+In normal operation, migrations run on startup. For planned maintenance windows where you want to migrate first and restart later:
+
+```bash
+# Apply all pending migrations without starting the server
+qorven migrate up
+
+# Apply a specific number of migrations
+qorven migrate up --steps 2
+```
+
+## Rolling back
+
+Rollback reverts the most recent migration. Use this only if you need to downgrade to an earlier binary version.
+
+```bash
+# Roll back one migration
+qorven migrate down
+
+# Roll back multiple
+qorven migrate down --steps 3
+```
+
+<Warning>
+  Rolling back a migration may delete data. Always take a database backup before rolling back. See [Backup and restore](/gateway/backup-restore).
+</Warning>
+
+## What migrations do
+
+Migrations handle schema changes: creating tables, adding columns, creating indexes, enabling extensions. They never modify your data except to apply structural changes required by new features (e.g. populating a new column with a default value).
+
+The migration files are embedded in the binary at `backend/internal/db/migrations/`. You can inspect them in the source repository if you want to audit what a migration does before upgrading.
+
+## Migration failures
+
+If a migration fails at startup, the server logs the error and exits. Common causes:
+
+| Cause | Fix |
+|---|---|
+| pgvector extension not installed | Run `CREATE EXTENSION IF NOT EXISTS vector;` in the database |
+| Insufficient permissions | Grant the Qorven DB user `CREATE` privileges |
+| Database not running | Start PostgreSQL first |
+| Schema manually modified | Restore from backup or manually fix the discrepancy |
+
+Run `qorven doctor` to check prerequisites before starting:
+
+```bash
+qorven doctor
+```
+
+```
+[ok] database: connected
+[ok] pgvector: installed
+[ok] migrations: up to date
+[ok] encryption key: present
+```
+
+## Multiple instances
+
+If you run more than one Qorven instance (e.g. blue/green deployment), only one should run migrations. The built-in migration runner uses an advisory lock in PostgreSQL — concurrent migration runs from multiple instances will queue safely, and only the first will actually run pending migrations.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="PostgreSQL setup" icon="database" href="/ops/postgres-setup">
+    Database prerequisites and connection string.
+  </Card>
+  <Card title="Backup and restore" icon="archive" href="/gateway/backup-restore">
+    Back up before running migrations.
+  </Card>
+  <Card title="Upgrading" icon="arrow-up" href="/ops/upgrading">
+    Upgrade process — migrations included.
+  </Card>
+  <Card title="Boot fails" icon="alert-triangle" href="/ops/troubleshooting/boot-fails">
+    Diagnosing migration failures.
+  </Card>
+</CardGroup>

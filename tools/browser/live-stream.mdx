@@ -1,0 +1,54 @@
+---
+title: "Live Stream"
+description: "Watch what your agent is doing in the browser in real time, and take over control at any point."
+sidebarTitle: "Live Stream"
+icon: "video"
+---
+
+Live Stream lets you watch an agent's browser or screen session as it runs. Instead of waiting for a task to finish and reading a log, you see every click, keystroke, and page load as it happens.
+
+## Opening the stream
+
+When an agent is running a browser or computer-use task, a **Live** button appears in the chat panel header and in the Code Editor sidebar. Click it to open the stream in a panel alongside the conversation.
+
+The stream updates in real time — there is no need to refresh. If the agent is between steps (thinking or waiting for a response), the stream shows the last screenshot.
+
+## What you can see
+
+- Every page the agent navigates to
+- What the agent clicks and types
+- The full screen if the agent is using Computer Use
+- Screenshots the agent has taken as part of the task
+
+## Taking over control
+
+At any point during a live session you can click **Take control** to pause the agent and interact with the browser or screen yourself. Use this to:
+
+- Correct a mistake before the agent continues
+- Handle a step that requires your personal login or 2FA
+- Complete a sensitive form manually rather than passing credentials to the agent
+
+When you are done, click **Return control** to hand back to the agent from wherever you left off.
+
+## Debugging automations
+
+Live Stream is the fastest way to diagnose why a Browse and Act or primitive-tool workflow is failing. Common things to watch for:
+
+- The agent waiting on a selector that never appears (page loaded differently than expected)
+- A login redirect intercepting the intended destination
+- A modal or cookie banner blocking the target element
+
+Once you spot the issue, you can edit the agent's instructions and re-run, or take over and complete the step manually.
+
+## In Telegram and voice sessions
+
+Live Stream is a web dashboard feature. Browser and computer-use tasks initiated from Telegram or voice channels still run the same way — the stream is available in the dashboard even if the task was triggered elsewhere.
+
+<CardGroup cols={2}>
+  <Card title="Browse and Act" icon="bot" href="/tools/browser/browse-and-act">
+    AI-guided browser automation.
+  </Card>
+  <Card title="Computer Use" icon="monitor" href="/tools/browser/computer-use">
+    Full screen control beyond the browser.
+  </Card>
+</CardGroup>

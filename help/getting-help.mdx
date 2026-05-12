@@ -1,0 +1,109 @@
+---
+title: "Getting Help"
+description: "How to diagnose problems with your Qorven install and where to get help when you're stuck."
+sidebarTitle: "Getting Help"
+icon: "help-circle"
+---
+
+## Step 1 — Run `qorven doctor`
+
+Before anything else, run the built-in health check. It tests every component and prints exactly what's wrong:
+
+```bash
+qorven doctor
+```
+
+It checks:
+- Database connectivity and migration status
+- TLS certificate validity and expiry
+- Disk space
+- Required config values are present and non-empty
+- Outbound connectivity to configured providers
+- Service account permissions
+
+If `qorven doctor` prints a specific failure, fix that first.
+
+## Step 2 — Read the logs
+
+```bash
+# Stream live logs
+qorven logs tail
+
+# Errors only
+qorven logs tail --level error
+
+# Logs from the last hour
+qorven logs tail --since 1h
+```
+
+See [Log locations](/help/log-locations) for file paths if you prefer to open the log directly.
+
+## Step 3 — Check common issues
+
+<AccordionGroup>
+  <Accordion title="The server starts but I can't connect">
+    - Check that the port is not in use: `ss -tlnp | grep 4200`
+    - Check `[server] host` in config — if set to `127.0.0.1`, the server only accepts connections from the same machine
+    - Check firewall rules: `sudo ufw status`
+    - Verify TLS: try `curl -k https://localhost:4200/health`
+  </Accordion>
+
+  <Accordion title="I'm getting 503 errors">
+    The database is unavailable. Check:
+    ```bash
+    pg_isready -h localhost
+    sudo systemctl status postgresql
+    qorven logs tail --level error
+    ```
+  </Accordion>
+
+  <Accordion title="Agents aren't responding">
+    - Check that a provider API key is configured: `qorven providers list`
+    - Verify the key is valid by testing it with the provider's API directly
+    - Check the agent's model setting — the model name may be incorrect
+    - Look for errors in the logs: `qorven logs tail --level error`
+  </Accordion>
+
+  <Accordion title="I forgot the admin password">
+    Reset it from the command line (you need SSH access to the server):
+    ```bash
+    qorven users reset-password --email admin@example.com --password newpassword
+    ```
+  </Accordion>
+
+  <Accordion title="The setup wizard keeps appearing">
+    The system thinks it hasn't been set up. Check that `config.toml` has `[auth] token` set and that the database migration ran successfully:
+    ```bash
+    qorven migrate status
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Step 4 — Search GitHub Issues
+
+Search [GitHub Issues](https://github.com/qorvenai/qorven/issues) for your error message or symptom. Many common problems are already documented there with solutions.
+
+## Step 5 — Open a new issue
+
+If you haven't found a solution, open a [new GitHub issue](https://github.com/qorvenai/qorven/issues/new) and include:
+
+1. **Output of `qorven doctor`**
+2. **Relevant log output** (`qorven logs tail --level error --since 1h`)
+3. **Output of `qorven version`**
+4. **What you were doing when the problem occurred**
+5. **What you expected to happen vs what actually happened**
+
+Issues without doctor output and logs are much harder to diagnose and may be closed asking for this information.
+
+## Questions and discussion
+
+For questions that aren't bugs — configuration help, feature ideas, usage tips — use [GitHub Discussions](https://github.com/qorvenai/qorven/discussions). The community and maintainers are active there.
+
+<CardGroup cols={2}>
+  <Card title="Log locations" icon="file-text" href="/help/log-locations">
+    Where logs live and how to access them.
+  </Card>
+  <Card title="Error codes" icon="alert-circle" href="/help/error-codes">
+    HTTP and agent error reference.
+  </Card>
+</CardGroup>

@@ -1,0 +1,69 @@
+---
+title: "Codebase Digest"
+description: "Generate a structured summary of a codebase so agents can understand a project quickly without reading every file."
+sidebarTitle: "Codebase Digest"
+icon: "book"
+---
+
+Codebase Digest generates a structured overview of a project — file tree, key functions, architecture patterns, and external dependencies — and gives it to the agent as context. This lets an agent understand a new codebase in one step instead of reading dozens of files individually.
+
+## What the digest includes
+
+- **File tree** — a directory listing filtered to source files (no `node_modules`, build output, or generated files)
+- **Key functions and types** — top-level exported functions, classes, types, and interfaces across the codebase
+- **Entry points** — `main` functions, route registrations, top-level exports
+- **Dependencies** — packages listed in `package.json`, `go.mod`, `requirements.txt`, `Cargo.toml`, etc.
+- **Architecture patterns** — detected conventions such as MVC structure, repository pattern, service layers
+
+The output is a condensed text document, not raw source code, so it fits within a model's context window even for large projects.
+
+## When agents use it
+
+Codebase Digest is typically called at the start of a coding session when the agent is working in a project it has not seen before, or when a previous session's context has been cleared. It is also called automatically when you ask an agent to explore or explain a codebase:
+
+```
+"Explain the architecture of this project"
+"What does the authentication system do?"
+"Where should I add a new API endpoint?"
+```
+
+## Caching
+
+The digest is cached on disk and updated incrementally when files change. Generating a fresh digest for a large project (10,000+ files) takes a few seconds; subsequent calls return the cached version instantly unless files have been modified.
+
+The cache is stored at `~/.qorven/digest-cache/` and keyed by project path. You can clear it manually if you want a full regeneration:
+
+```bash
+qorven digest clear --project /path/to/project
+```
+
+## Controlling what is included
+
+You can configure digest behaviour per project by adding a `.qorven-digest.yaml` file to the project root:
+
+```yaml
+# .qorven-digest.yaml
+include:
+  - src/**
+  - internal/**
+exclude:
+  - "**/*_test.go"
+  - vendor/**
+max_depth: 5
+```
+
+If no config file is present, Qorven uses sensible defaults: it respects `.gitignore`, excludes common build and vendor directories, and limits depth to 8 levels.
+
+## Limitations
+
+- Digest extracts structure, not semantics. An agent reading the digest understands the shape of a codebase, but for deep logic it will read the relevant files directly.
+- Very large monorepos (100k+ files) may produce digests that exceed the model's context window. Use the `include` config to scope the digest to the relevant subdirectory.
+
+<CardGroup cols={2}>
+  <Card title="Glob and Grep" icon="search" href="/tools/coding/glob-grep">
+    Find specific files and content after understanding the structure.
+  </Card>
+  <Card title="LSP Bridge" icon="code" href="/tools/coding/lsp-bridge">
+    IDE-level code intelligence for go-to-definition and type information.
+  </Card>
+</CardGroup>

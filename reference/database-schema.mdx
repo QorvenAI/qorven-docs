@@ -1,0 +1,94 @@
+---
+title: "Database Schema"
+description: "Overview of Qorven's PostgreSQL tables. The schema is managed by migrations — direct manipulation is unsupported."
+sidebarTitle: "Database Schema"
+icon: "database"
+---
+
+<Warning>
+  Direct database manipulation (manually editing rows, dropping tables, running custom SQL) is unsupported and may break Qorven or corrupt data. Use the API, CLI, or UI for all operations. The only exception is read-only queries for reporting or debugging.
+</Warning>
+
+The schema is managed by numbered migration files embedded in the binary. Run `qorven migrate` to apply pending migrations. On startup, Qorven applies any pending migrations automatically unless `migration_auto = false` is set in config.
+
+## Main tables
+
+### `users`
+
+User accounts. Stores hashed passwords (bcrypt, cost 12), role, active/locked state, and lockout expiry.
+
+| Column | Notes |
+|---|---|
+| `id` | UUID primary key |
+| `email` | Unique |
+| `password_hash` | bcrypt |
+| `role` | `"admin"` or `"user"` |
+| `is_active` | Boolean; false = account disabled |
+| `locked_until` | Nullable timestamp for login lockout |
+| `tenant_id` | Nullable; set in multi-tenant mode |
+
+### `agents`
+
+Agent definitions — name, system prompt, model, tool allowlist, approval settings.
+
+### `sessions`
+
+Conversation sessions. Each session belongs to a user and an agent.
+
+### `messages`
+
+Individual messages within a session. Includes role (`user`, `assistant`, `tool`), content, token counts, and tool call metadata.
+
+### `memories`
+
+Agent long-term memory entries. Embeddings stored alongside text for semantic recall.
+
+### `tasks`
+
+Background tasks spawned by agents. Tracks status (`pending`, `running`, `paused`, `done`, `failed`), progress, and output.
+
+### `provider_keys`
+
+AI model provider credentials. Name, provider slug, and the API key — stored encrypted with the install's AES-256-GCM key.
+
+### `audit_log`
+
+Append-only record of every meaningful action. See [Audit trail](/security/audit-trail) for the full schema and query examples.
+
+### `apps`
+
+Installed app manifests. Slug, version, enabled state, and per-app configuration. App-specific tables are tracked in `app_schema_migrations`.
+
+### `app_schema_migrations`
+
+Tracks which per-app migrations have been applied, scoped by app slug. Prevents re-running migrations when an app is disabled and re-enabled.
+
+## Row-level security
+
+In multi-tenant mode, RLS policies are attached to every tenant-scoped table (`agents`, `sessions`, `messages`, `memories`, `tasks`, `provider_keys`). The active tenant ID is set as a session variable on each database connection. Queries automatically filter to the active tenant.
+
+## Migration files
+
+Migrations are embedded in the binary. To inspect them:
+
+```bash
+qorven migrate list          # list all migrations and their status
+qorven migrate status        # show current migration version
+qorven migrate up            # apply pending migrations
+qorven migrate down --steps 1  # roll back one migration (use with care)
+```
+
+## Schema inspection
+
+You can query the schema directly with `psql` for debugging or reporting:
+
+```sql
+-- List all tables
+SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;
+
+-- Row counts
+SELECT relname, n_live_tup FROM pg_stat_user_tables ORDER BY n_live_tup DESC;
+
+-- Check RLS policies
+SELECT tablename, policyname, cmd, qual FROM pg_policies WHERE schemaname = 'public';
+```

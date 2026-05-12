@@ -1,0 +1,64 @@
+---
+title: "Scrape"
+description: "Read a specific URL and extract clean, structured content — including JavaScript-rendered pages."
+sidebarTitle: "Scrape"
+icon: "file-text"
+---
+
+The `scrape` tool reads a single URL and returns its content in a clean, structured form: main body text, headings, links, and metadata — with ads, navigation, and boilerplate stripped away.
+
+It's the right tool when you know exactly which page you want to read.
+
+## What it does
+
+- Navigates to the URL using a headless browser, so JavaScript-rendered content loads correctly
+- Extracts the main content (article body, product description, documentation text)
+- Strips ads, cookie banners, navigation menus, and footers
+- Returns headings, paragraphs, links, and page metadata (title, description, author, publish date)
+- Works on single-page apps, news articles, blog posts, product pages, and documentation
+
+## When to use scrape vs other web tools
+
+| Tool | Best for |
+|------|----------|
+| `scrape` | Reading a specific page with rich content |
+| `crawl` | Reading an entire website or documentation site |
+| `web_fetch` | Fetching raw HTML, JSON, or text from a URL |
+
+Use `scrape` when you want clean, readable content from a known page. Use `web_fetch` when you need the raw response (e.g., an API endpoint or RSS feed). Use `crawl` when you need multiple pages.
+
+## Example uses
+
+- **"Summarise this article"** — the agent scrapes the URL you share and reads the full article text
+- **"What are the pricing plans on this page?"** — the agent scrapes the pricing page and extracts the table
+- **"Check if this product is still available"** — the agent scrapes the product page and reads the current status
+- **"Extract all the email addresses from this contact page"** — the agent scrapes and returns the structured links and text
+
+## JavaScript-rendered pages
+
+Unlike `web_fetch`, `scrape` uses a real headless browser. This means it handles:
+
+- React and Vue apps that render content client-side
+- Pages that load content via AJAX after the initial HTML
+- Sites that require JavaScript for navigation
+
+The trade-off is speed: `scrape` is slower than `web_fetch` because it waits for the page to fully render. For static content, `web_fetch` is faster.
+
+## Inputs
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `url` | Yes | The full URL to scrape |
+| `selector` | No | CSS selector to focus on a specific part of the page |
+| `wait_for` | No | CSS selector to wait for before extracting (useful for lazy-loaded content) |
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Crawl" icon="network" href="/tools/built-in/crawl">
+    Follow links and read multiple pages from a site.
+  </Card>
+  <Card title="Web Fetch" icon="download" href="/tools/built-in/web-fetch">
+    Fetch raw content without a browser.
+  </Card>
+</CardGroup>

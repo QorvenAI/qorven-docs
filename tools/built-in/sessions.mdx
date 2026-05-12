@@ -1,0 +1,57 @@
+---
+title: "Sessions"
+description: "Agents can read session metadata to understand conversation context and reference past interactions."
+sidebarTitle: "Sessions"
+icon: "message-square"
+---
+
+The `sessions` tool lets agents read metadata about current and past conversations. It's used internally to give agents awareness of their own history — when they last talked with you, what topics were covered, how many messages are in the current session.
+
+## What it surfaces
+
+- **Current session** — start time, message count, participating agents
+- **Past sessions** — a list of recent sessions with timestamps and brief summaries
+- **Session by ID** — full metadata for a specific past session
+
+The tool returns metadata, not full message transcripts. Agents use it to get orientation ("when did we last discuss project X?") rather than to replay entire conversations.
+
+## How agents use it
+
+Sessions is primarily used by Prime, the lead agent, to understand context:
+
+- **Continuity** — "we spoke about the pricing page redesign two days ago" — the agent can reference this without you re-explaining
+- **Handoffs** — when delegating a task to Writer or Developer, Prime can note which session the original request came from
+- **Scheduling awareness** — the daily briefing builder uses session history to understand what's already been covered
+
+Most users never need to think about this tool — it runs silently in the background to help agents stay oriented.
+
+## Sessions are automatically managed
+
+You don't create or close sessions manually. Qorven starts a new session when you open a new conversation and closes it when the conversation ends. The sessions tool just surfaces what's already happening.
+
+## Viewing sessions in the UI
+
+All sessions are visible in your dashboard under **Sessions**. You can browse past conversations, see which agents participated, and review what was discussed.
+
+## Privacy note
+
+Session metadata is stored on your self-hosted Qorven instance. Nothing leaves your server. You can delete sessions from the dashboard, or wipe them entirely via **Settings → Danger Zone**.
+
+## Inputs
+
+| Operation | Parameters | Description |
+|-----------|-----------|-------------|
+| `get_current` | — | Returns metadata about the current active session |
+| `list_recent` | `limit` (default 10) | Returns a list of recent sessions with summaries |
+| `get_by_id` | `session_id` | Returns full metadata for a specific session |
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Memory" icon="brain" href="/tools/built-in/memory">
+    Persistent facts that survive across sessions.
+  </Card>
+  <Card title="How Tools Work" icon="wrench" href="/tools/how-tools-work">
+    Understand the full tool call lifecycle.
+  </Card>
+</CardGroup>

@@ -1,0 +1,80 @@
+---
+title: "docs_search tool"
+description: "A built-in Qor tool that lets agents query the Qorven docs at runtime. Semantic + keyword, top-K results."
+sidebarTitle: "docs_search tool"
+icon: "search"
+---
+
+<Info>
+  `docs_search` is a built-in tool that makes Qorven's documentation queryable by Qors themselves. Prime + any specialist with `docs` in its tool allowlist can call it.
+</Info>
+
+## Invocation
+
+```json
+{
+  "tool": "docs_search",
+  "args": {
+    "query": "how to rotate the encryption key",
+    "max_results": 3
+  }
+}
+```
+
+## Response
+
+```json
+{
+  "results": [
+    {
+      "url": "https://docs.qorven.ai/security/per-install-encryption",
+      "title": "Per-install encryption",
+      "snippet": "The encryption key is generated at install time and protects every encrypted secret...",
+      "relevance": 0.91
+    },
+    {
+      "url": "https://docs.qorven.ai/ops/encryption-key",
+      "title": "Encryption key operations",
+      "snippet": "...",
+      "relevance": 0.78
+    },
+    {
+      "url": "https://docs.qorven.ai/cli/admin",
+      "title": "qorven admin",
+      "snippet": "...",
+      "relevance": 0.65
+    }
+  ]
+}
+```
+
+## How to use it in your Qor
+
+In the system prompt:
+
+```
+When a user asks about Qorven features, install, or config:
+1. Call docs_search with their question
+2. Read the top 1-2 results
+3. Answer using those as the source of truth
+4. Cite URLs so the user can follow up
+```
+
+## Hybrid ranking
+
+Same pgvector + BM25 RRF stack used for memory search. Tuned on a fixed corpus (the docs), re-indexed on each docs deploy.
+
+## Alternative: fetch yourself
+
+If your Qor has `web_fetch` but not `docs_search`, it can fetch `https://docs.qorven.ai/llms.txt` then pick + fetch individual pages. Slower, more tokens, but works without the tool.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Agent guide" icon="bot" href="/ai/agent-guide">
+    All the docs conventions for LLMs.
+  </Card>
+  <Card title="Memory search" icon="database" href="/memory/search">
+    The sibling tool for a Qor's own memory.
+  </Card>
+</CardGroup>

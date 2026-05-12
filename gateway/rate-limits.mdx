@@ -1,0 +1,108 @@
+---
+title: "Rate Limits"
+description: "Qorven's per-IP and per-token rate limits prevent abuse and protect your server from runaway agent workflows."
+sidebarTitle: "Rate Limits"
+icon: "gauge"
+---
+
+Qorven applies rate limits at two levels: per authentication token and per IP address. Limits protect against runaway agent workflows, misbehaving integrations, and unauthenticated probing.
+
+## Default limits
+
+| Scope | Default | Applies to |
+|---|---|---|
+| Per-token | 1,000 req/min | Authenticated requests |
+| Per-IP (unauthenticated) | 100 req/min | Unauthenticated requests (login, health) |
+| Per-IP (all) | 5,000 req/min | Total requests from a single IP |
+
+These defaults are conservative. A typical interactive user generates fewer than 50 requests per minute. The defaults are designed to allow busy agent workflows without affecting normal usage.
+
+## Rate limit responses
+
+When a limit is exceeded, Qorven returns:
+
+```
+HTTP/1.1 429 Too Many Requests
+Retry-After: 12
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1747044872
+```
+
+The `Retry-After` header tells the client how many seconds to wait before retrying.
+
+## Configuring limits
+
+```toml
+[server]
+# Per-token limit (authenticated requests)
+rate_limit_rpm = 1000
+
+# Per-IP limit for unauthenticated requests
+rate_limit_unauth_rpm = 100
+```
+
+### Raising limits for high-volume workflows
+
+If you run automated agent pipelines that generate more than 1,000 requests per minute, raise the per-token limit:
+
+```toml
+[server]
+rate_limit_rpm = 10000
+```
+
+Or set a higher limit for a specific token from the admin panel under **Settings > API Keys > Rate limit**.
+
+### Disabling limits for trusted internal use
+
+```toml
+[server]
+rate_limit_rpm = 0          # 0 = disabled
+rate_limit_unauth_rpm = 0
+```
+
+<Warning>
+  Disabling rate limits on a public-facing instance is not recommended. Only disable them on instances accessible from trusted internal networks only.
+</Warning>
+
+## Per-tenant limits in multi-tenant mode
+
+When multi-tenant mode is enabled, rate limits apply per tenant in addition to the global limits:
+
+```toml
+[tenants.defaults]
+rate_limit_rpm = 1000
+```
+
+A single tenant cannot exhaust the global limit for other tenants.
+
+## Burst allowance
+
+The rate limiter uses a token-bucket algorithm with a burst allowance. Requests up to 2× the configured RPM limit are allowed in short bursts. Sustained traffic above the limit is throttled.
+
+This means a workflow that sends 120 requests in 5 seconds is allowed, even if the limit is 1,000/min — it smooths out normal traffic patterns without penalising burst activity.
+
+## Monitoring rate limit hits
+
+Rate limit violations are logged at `warn` level and included in the audit log with `result: "rate_limited"`.
+
+```bash
+# Watch for rate limit events in real time
+qorven logs tail --level warn | grep rate_limit
+```
+
+The Prometheus metric `qorven_rate_limit_exceeded_total` counts violations by token and IP.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Auth middleware" icon="lock" href="/gateway/auth-middleware">
+    Token-based authentication.
+  </Card>
+  <Card title="Multi-tenant RLS" icon="users" href="/gateway/multi-tenant-rls">
+    Per-tenant rate limit configuration.
+  </Card>
+  <Card title="Monitoring" icon="activity" href="/ops/monitoring">
+    Prometheus metrics for rate limit tracking.
+  </Card>
+</CardGroup>

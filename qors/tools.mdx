@@ -1,0 +1,188 @@
+---
+title: "Agent Tool Configuration"
+description: "Control exactly which tools each agent can call — restrict dangerous operations, keep each agent focused on its role."
+sidebarTitle: "Tools"
+icon: "wrench"
+---
+
+<Info>
+  Every agent has a tools allowlist. Only the tools on that list can be called. Safe tools are on by default; destructive operations require explicit approval. Restricting tools is one of the easiest ways to improve security and keep agents focused.
+</Info>
+
+## How the allowlist works
+
+When an agent wants to call a tool, Qorven checks:
+
+1. Is the tool on this agent's allowlist? If not — refused, error returned to the agent.
+2. Is the tool in the `require_approval` set? If yes — paused, human approval requested.
+3. Otherwise — executed.
+
+This means you can run different agents with very different capabilities on the same install. Your Email Agent never touches the filesystem; your Developer agent can.
+
+## Editing the allowlist
+
+### From the dashboard
+
+1. **Settings → Agents → (agent) → Tools tab**
+2. Toggle tools on or off.
+3. For tools requiring approval, toggle the **Require approval** switch.
+4. Save.
+
+### From YAML
+
+```yaml
+agents:
+  - id: developer
+    tools:
+      allowed:
+        - filesystem
+        - exec
+        - apply_patch
+        - glob
+        - grep
+        - memory
+        - web_fetch
+      require_approval:
+        - exec          # confirm before running shell commands
+
+  - id: email
+    tools:
+      allowed:
+        - email
+        - memory
+        - storage
+      require_approval: []
+```
+
+`require_approval` is a subset of `allowed`. A tool must be in `allowed` before it can be in `require_approval`.
+
+## Default allowlist
+
+Fresh installs use these defaults:
+
+| Category | Default state |
+|---|---|
+| `memory` (read/write) | Enabled |
+| `web_fetch` | Enabled |
+| `docs_search` | Enabled |
+| `storage` (read) | Enabled |
+| `storage` (write) | Requires approval |
+| `filesystem` | Disabled |
+| `exec` | Disabled |
+| `apply_patch` | Disabled |
+| `email` | Disabled (enable per-agent) |
+| `calendar` | Disabled (enable per-agent) |
+
+## Recommended allowlists by agent type
+
+### Researcher
+
+```yaml
+tools:
+  allowed:
+    - web_fetch
+    - web_search
+    - scrape
+    - memory
+    - docs_search
+    - storage        # read-only output files
+```
+
+No filesystem, no exec. Researcher's job is to find and synthesise, not to modify.
+
+### Developer
+
+```yaml
+tools:
+  allowed:
+    - filesystem
+    - exec
+    - apply_patch
+    - glob
+    - grep
+    - web_fetch
+    - memory
+  require_approval:
+    - exec
+    - apply_patch   # optional — remove once you trust the agent
+```
+
+`exec` with approval is a good middle ground: the agent can run commands, but you confirm each one in the web UI or TUI before it fires.
+
+### Email Agent
+
+```yaml
+tools:
+  allowed:
+    - email
+    - memory
+    - calendar      # if scheduling is in scope
+    - storage       # for reading attachments
+```
+
+No code tools. Email Agent reads, drafts, and sends — nothing else.
+
+### Writer
+
+```yaml
+tools:
+  allowed:
+    - memory
+    - docs_search
+    - web_fetch
+    - storage
+```
+
+Access to research tools so it can gather material, plus storage to save drafts.
+
+### Prime
+
+Prime's allowlist should be broad because it orchestrates the others:
+
+```yaml
+tools:
+  allowed:
+    - memory
+    - docs_search
+    - web_fetch
+    - delegate_to_agent
+    - storage
+    - calendar
+    - email
+  require_approval:
+    - email         # confirm before Prime sends on your behalf
+```
+
+## Approval flow
+
+When a tool hit the approval gate, the running task pauses and you'll see a prompt in whichever channel you're using:
+
+> "Developer agent wants to run: `exec` → `make release-linux-amd64`  
+> [Approve] [Reject] [Edit command]"
+
+In the TUI, this appears inline. In Telegram or Slack, it's a button message. In the web UI, it's a modal.
+
+Approved commands execute immediately. Rejected commands are reported back to the agent as a refusal; the agent can try a different approach or ask you what to do instead.
+
+<Warning>
+  Adding `exec` to an agent's allowlist without `require_approval` means the agent can run arbitrary shell commands on your server without asking first. Only do this for agents you've thoroughly tested in a sandboxed environment.
+</Warning>
+
+## Tool reference
+
+Full tool documentation is in the **Tools** section:
+
+<CardGroup cols={2}>
+  <Card title="Built-in tools" icon="package" href="/tools/builtin">
+    Complete reference for every tool that ships with Qorven.
+  </Card>
+  <Card title="Custom tools" icon="code" href="/tools/custom">
+    Writing your own tools and adding them to the registry.
+  </Card>
+  <Card title="Tool approvals" icon="check-circle" href="/workflows/approvals">
+    How the approval gate works end-to-end.
+  </Card>
+  <Card title="Agent configuration" icon="settings" href="/qors/creating-a-qor">
+    Full agent config reference including system prompt and model.
+  </Card>
+</CardGroup>

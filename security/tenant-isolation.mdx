@@ -1,0 +1,77 @@
+---
+title: "Tenant Isolation"
+description: "Multi-tenant mode enforces hard data separation between tenants using PostgreSQL row-level security."
+sidebarTitle: "Tenant Isolation"
+icon: "users"
+---
+
+## When to use multi-tenant mode
+
+Multi-tenant mode is designed for:
+
+- **Agencies** running Qorven on behalf of multiple clients, where each client must not see another's agents, conversations, or data.
+- **Teams** that need a hard boundary between departments — not just access control at the application layer, but enforced isolation at the database level.
+
+If you are running Qorven for a single organization where all users share the same workspace, you do not need multi-tenant mode.
+
+## How isolation works
+
+When multi-tenant mode is enabled, Qorven applies **PostgreSQL row-level security (RLS)** policies to every table that holds tenant-scoped data.
+
+Each row in those tables carries a `tenant_id` column. RLS policies enforce that every `SELECT`, `INSERT`, `UPDATE`, and `DELETE` is automatically filtered to the active tenant's ID — at the database engine level, not the application layer.
+
+This means:
+
+- Even if there were a bug in the application's authorization logic, a tenant's query could not return rows belonging to a different tenant.
+- Agents, sessions, messages, memories, tasks, and provider keys are all tenant-scoped.
+- Each tenant authenticates with their own auth token.
+
+## Enabling multi-tenant mode
+
+Set the following in `config.toml`:
+
+```toml
+[auth]
+multi_tenant = true
+```
+
+Then restart the service. On first startup, the migration that enables RLS policies runs automatically.
+
+## Managing tenants
+
+```bash
+# Create a new tenant
+qorven admin tenants create --name "Acme Corp"
+
+# List all tenants
+qorven admin tenants list
+
+# Rotate a tenant's auth token
+qorven admin tenants rotate-token <tenant-id>
+
+# Delete a tenant and all their data
+qorven admin tenants delete <tenant-id>
+```
+
+<Warning>
+  Tenant deletion is permanent. All agents, sessions, memories, and messages belonging to that tenant are removed from the database. This cannot be undone.
+</Warning>
+
+## What is not isolated
+
+- **System-level configuration** — `config.toml`, the encryption key, and TLS certificates are shared across all tenants. Only admins can modify these.
+- **Installed apps** — apps installed by an admin are available to all tenants. Per-tenant app restrictions are not yet implemented.
+- **Audit log** — the audit log captures all tenants' activity. Admin users can query across tenants; tenant users can only see their own entries.
+
+## Security note
+
+RLS policies are attached to the PostgreSQL role that Qorven uses to connect to the database. If you connect to PostgreSQL directly using a superuser role (e.g. `postgres`), RLS is bypassed. Ensure that direct database access is restricted and that the Qorven database user has only the permissions it needs.
+
+<CardGroup cols={2}>
+  <Card title="RBAC permissions" icon="shield-check" href="/security/rbac-permissions">
+    Admin vs user roles and what each can do.
+  </Card>
+  <Card title="Audit trail" icon="history" href="/security/audit-trail">
+    Audit log entries are tenant-scoped for users, cross-tenant for admins.
+  </Card>
+</CardGroup>

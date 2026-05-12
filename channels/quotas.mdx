@@ -1,0 +1,121 @@
+---
+title: "Quotas & rate limits"
+description: "How Qorven caps per-tenant and per-channel throughput, and how to raise the limits when you need to."
+sidebarTitle: "Quotas"
+icon: "gauge"
+---
+
+<Info>
+  Qorven enforces two kinds of limits: **gateway-level** (IP and tenant, protect the server) and **channel-level** (per-binding, respect provider limits).
+</Info>
+
+## Gateway-level
+
+From the default `config.toml`:
+
+```toml
+[limits]
+# Max requests per second per IP (burst 20).
+ip_rate_per_sec = 10
+ip_rate_burst   = 20
+
+# Max concurrent plan-run requests per tenant.
+tenant_concurrent_runs = 5
+
+# Sustained tenant rate (req/min across all endpoints).
+tenant_rate_per_min = 600
+
+# Max request body (protects against large uploads).
+max_body_mb = 10
+```
+
+If a tenant hits the rate limit, the gateway returns `429 Too Many Requests` with a `Retry-After` header. The CLI and web UI honour it.
+
+## Channel-level
+
+Each channel binding has its own outbound quota. Telegram's default:
+
+```bash
+qorven channels show telegram-bot
+# outbound_rate_per_sec: 30
+# outbound_rate_per_min: 1500
+# per_user_rate_per_min: 60
+```
+
+These match Telegram's published limits; raising beyond their ceiling will get your bot rate-limited by Telegram itself.
+
+<Warning>
+  Raising rate limits on Meta channels (WhatsApp, Facebook Messenger) without Meta's approval will get your account flagged. Stay within the public tier until Meta upgrades your messaging limit.
+</Warning>
+
+## Per-provider LLM quotas
+
+The LLM side has its own limits, enforced by the provider (OpenAI, Anthropic, etc.). Qorven handles them with automatic failover:
+
+1. Try provider A's first key
+2. On 429 → try A's next key
+3. All of A's keys exhausted → try provider B
+4. All providers exhausted → report error to the user
+
+See [failover](/models/failover).
+
+## Quota dashboard
+
+**Web UI → Usage → Quotas** shows:
+
+- IP-level: current vs. limit for connected clients
+- Tenant-level: concurrent runs, req/min
+- Channel-level: messages/min per binding
+- Provider-level: tokens/min per key
+
+## Raising limits
+
+For self-hosted, edit `config.toml`:
+
+```toml
+[limits]
+tenant_concurrent_runs = 50
+tenant_rate_per_min = 10000
+```
+
+Restart. No migration required.
+
+For channel-level, depends on the provider — most require you to verify and request higher tiers. Details per-channel:
+
+<CardGroup cols={2}>
+  <Card title="Telegram — unlimited for premium bots" icon="send" href="/channels/telegram" />
+  <Card title="WhatsApp — tier 1/2/3/4/5" icon="message-circle" href="/channels/whatsapp" />
+  <Card title="Slack — per-app rate buckets" icon="slack" href="/channels/slack" />
+  <Card title="Email (SMTP) — provider-specific" icon="mail" href="/channels/email" />
+</CardGroup>
+
+## When quotas fire
+
+<AccordionGroup>
+  <Accordion title="User gets '429 try again'">
+    Gateway hit the IP rate limit. Usually a client bug (retry loop). Check `qorven logs --filter rate_limit.exceeded`.
+  </Accordion>
+
+  <Accordion title="Channel silently drops messages">
+    Channel-level outbound limit. The Qor attempted to reply, the quota said no, the reply is retried on backoff. Eventually delivers unless the backlog overflows.
+  </Accordion>
+
+  <Accordion title="LLM replies start failing">
+    Provider-level. Failover kicks in; if all providers are exhausted you'll see `ERROR agent.loop.all_models_failed`. Time to add more keys or a different provider.
+  </Accordion>
+</AccordionGroup>
+
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Failover" icon="arrow-right" href="/models/failover">
+    How LLM calls rotate across keys and providers.
+  </Card>
+  <Card title="Debounce" icon="clock" href="/channels/debounce">
+    The inbound side: merging rapid messages.
+  </Card>
+  <Card title="Usage page" icon="bar-chart" href="/web-ui/overview">
+    Monitoring tokens + cost + throughput.
+  </Card>
+</CardGroup>

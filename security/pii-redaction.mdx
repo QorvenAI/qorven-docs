@@ -1,0 +1,98 @@
+---
+title: "PII Redaction"
+description: "Automatically strip personally identifiable information before content is sent to an AI model."
+sidebarTitle: "PII Redaction"
+icon: "eye-off"
+---
+
+## What it does
+
+PII redaction intercepts content before it is included in a model prompt and replaces detected sensitive patterns with placeholders. The original content is never sent to the AI provider.
+
+Example — an email body before and after redaction:
+
+**Before:**
+```
+Hi, I'm John Smith. My email is john@acme.com and my phone is +1-555-234-5678.
+Please process my card ending 4242.
+```
+
+**After (sent to model):**
+```
+Hi, I'm [NAME]. My email is [EMAIL] and my phone is [PHONE].
+Please process my card ending [CARD_LAST4].
+```
+
+The agent sees the redacted version. It can still reason about the content and respond helpfully — it just never receives the raw PII.
+
+## What is redacted
+
+| Pattern | Placeholder | Example |
+|---|---|---|
+| Email addresses | `[EMAIL]` | `alice@example.com` |
+| Phone numbers (most formats) | `[PHONE]` | `+1 (555) 234-5678` |
+| Credit / debit card numbers | `[CARD]` | `4111 1111 1111 1111` |
+| US Social Security Numbers | `[SSN]` | `123-45-6789` |
+| US passport numbers | `[PASSPORT]` | `A12345678` |
+| IPv4 addresses (private ranges) | `[IP_PRIVATE]` | `192.168.1.1` |
+| Names (when name detection enabled) | `[NAME]` | Requires explicit opt-in |
+
+## What is not redacted by default
+
+- Publicly known names (companies, cities, countries)
+- Dates and times
+- Generic numbers that are not card/SSN patterns
+- URLs (agents often need these to do their work)
+
+## Enabling redaction
+
+Redaction can be enabled globally or per agent.
+
+**Globally** (applies to all agents unless overridden):
+
+```toml
+[privacy]
+pii_redaction = true
+redact_names = false  # name detection is off by default
+```
+
+**Per agent** in **Settings → Agents → Privacy**, or via CLI:
+
+```bash
+qorven agents set-privacy my-support-agent --pii-redaction on
+```
+
+## Custom patterns
+
+Add your own regex patterns to catch domain-specific identifiers (customer IDs, order numbers, etc.):
+
+```toml
+[privacy]
+custom_patterns = [
+  { name = "ORDER_ID", pattern = "ORD-[0-9]{8}", placeholder = "[ORDER_ID]" },
+  { name = "EMPLOYEE_ID", pattern = "EMP[0-9]{6}", placeholder = "[EMPLOYEE_ID]" }
+]
+```
+
+## Audit log interaction
+
+When PII redaction is enabled, the redacted version of content is what appears in the audit log. The original is never stored in Qorven's database.
+
+<Tip>
+  If you are running a customer support agent that processes inbound emails, enable PII redaction globally and then selectively disable it for agents that legitimately need raw contact details (e.g. a CRM-writing agent).
+</Tip>
+
+## Limitations
+
+- Redaction is pattern-based, not semantic. It will not catch PII expressed in unusual formats.
+- Name detection (`redact_names`) uses a common-names list and produces false positives on common words that happen to be names. Use it selectively.
+- Redaction runs before the model call. It does not retroactively redact content already stored in session history.
+
+<CardGroup cols={2}>
+  <Card title="Audit trail" icon="history" href="/security/audit-trail">
+    Redacted content is what appears in the audit log.
+  </Card>
+  <Card title="Threat model" icon="shield" href="/security/threat-model">
+    Privacy considerations when using external model providers.
+  </Card>
+</CardGroup>

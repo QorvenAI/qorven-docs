@@ -1,0 +1,61 @@
+---
+title: "Manage Agents"
+description: "How Prime and other orchestrator agents create, configure, and delegate to specialist agents at runtime to handle complex multi-part tasks."
+sidebarTitle: "Manage Agents"
+icon: "users"
+---
+
+The Manage Agents tool is what makes multi-agent coordination work in Qorven. When Prime — or any orchestrator agent — receives a task that is better handled by a specialist, it uses this tool to create or activate the right agent, hand off the work, and collect the result.
+
+Most users never interact with this tool directly. It runs behind the scenes whenever Prime routes a task to a specialist.
+
+## How it works
+
+When you give Prime a complex task, it breaks it into parts and decides which agent is best suited to each one. For example:
+
+```
+"Research our top three competitors, write a comparison report, and publish it to Notion"
+```
+
+Prime might:
+
+1. Delegate the research to the **Researcher** agent (web search, data gathering)
+2. Delegate the writing to the **Writer** agent (structure, tone, formatting)
+3. Delegate the Notion publishing to the **Integrations** agent (API call, formatting for Notion)
+
+Each delegation is a call to Manage Agents. The called agent runs, returns its output, and Prime assembles the final result.
+
+## What Manage Agents can do
+
+- **Activate a specialist** — start an agent that is configured in your workspace
+- **Create an ephemeral agent** — spin up a temporary agent with specific instructions and tools for a single task, then discard it
+- **Pass context** — give the delegated agent relevant background, files, or prior results
+- **Collect results** — wait for the agent to finish and receive its output
+- **Run agents in parallel** — delegate multiple tasks simultaneously and wait for all results
+
+## Admin-only in production
+
+In production workspaces, Manage Agents is restricted to admin-level agents. This prevents runaway delegation chains and ensures that agent creation is intentional. The tool is visible in the tool list but will return a permission error if a non-admin agent attempts to use it.
+
+## Building agents that delegate
+
+If you are building a custom orchestrator agent, you can give it Manage Agents access in the agent's tool settings. Write its system prompt to describe when and how it should delegate:
+
+```
+You are a Project Manager agent. When you receive a task that requires coding,
+delegate it to the Developer agent using manage_agents. When it requires research,
+delegate to the Researcher agent. Collect their outputs and synthesise a final response.
+```
+
+<Info>
+  Delegation depth is limited to 3 levels by default (orchestrator → specialist → sub-specialist). This prevents infinite delegation loops. Change the limit in **Settings → Advanced → Max delegation depth**.
+</Info>
+
+<CardGroup cols={2}>
+  <Card title="How tools work" icon="wrench" href="/tools/how-tools-work">
+    Overview of how tools are assigned and executed.
+  </Card>
+  <Card title="Approvals" icon="check-circle" href="/tools/approvals">
+    Control which agent actions require human sign-off.
+  </Card>
+</CardGroup>

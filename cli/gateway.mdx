@@ -1,0 +1,47 @@
+---
+title: "qorven gateway"
+description: "Manage the Qorven gateway service"
+sidebarTitle: "gateway"
+icon: "server"
+---
+
+<Info>Generated from `qorven gateway --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Manage the Qorven gateway service
+
+Usage:
+  qorven gateway [command]
+
+Available Commands:
+  install     Install as systemd user service
+  start       Start gateway in background
+  status      Show gateway status
+  stop        Stop the running gateway
+  uninstall   Remove systemd service
+
+Flags:
+  -h, --help   help for gateway
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+
+Use "qorven gateway [command] --help" for more information about a command.
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

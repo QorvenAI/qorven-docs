@@ -1,0 +1,65 @@
+---
+title: "Per-Agent Model"
+description: "Assign a different AI model to each agent — use a fast cheap model for email triage and a powerful model where it counts."
+sidebarTitle: "Per-Agent Model"
+icon: "sliders"
+---
+
+Not every task needs the same model. Email triage doesn't need the same firepower as writing a detailed technical proposal. Per-agent model configuration lets you match each agent's capabilities to its workload — reducing cost where precision doesn't matter and applying more powerful models where it does.
+
+## How to configure a model for a specific agent
+
+1. Go to **Dashboard → Agents**
+2. Click on the agent you want to configure
+3. Open the **Model** tab
+4. Select a provider and model from the dropdown
+5. Click **Save**
+
+From that point on, this agent uses the configured model regardless of what the workspace default is set to.
+
+To revert an agent to the workspace default, go to the same page and select **Use workspace default**.
+
+## Why assign different models per agent
+
+<AccordionGroup>
+  <Accordion title="Cost optimisation">
+    High-volume, simple tasks (inbox triage, notifications, short summaries) don't need an expensive frontier model. A fast, cheap model handles them well at a fraction of the cost.
+
+    High-stakes, complex tasks (writing client proposals, analysing contracts, building code) benefit from the best available model — the extra cost is worth it.
+  </Accordion>
+  <Accordion title="Speed">
+    Some agents need to respond in near-real-time — for example, a Telegram bot responding to quick questions. A fast, lightweight model keeps response times snappy.
+
+    Background agents running long research tasks don't need the same speed — you can use a slower, more capable model without impacting the user experience.
+  </Accordion>
+  <Accordion title="Specialisation">
+    Some models are better at specific task types. DeepSeek or o3 excels at structured reasoning. Claude Opus is strong at nuanced writing. GPT-4o handles general mixed tasks reliably. Assigning the right model to the right agent produces better results than a one-size-fits-all approach.
+  </Accordion>
+</AccordionGroup>
+
+## Recommended model assignments by agent type
+
+| Agent | Recommended model | Reason |
+|---|---|---|
+| Prime (lead agent) | Claude Sonnet or GPT-4o | Balanced general capability for orchestration |
+| Email Agent | Claude Haiku or GPT-4o mini | High volume, fast, cost-efficient |
+| Researcher | Gemini 2.5 Pro or GPT-4o | Large context window for long documents |
+| Developer | Claude Sonnet or GPT-4o | Strong at code across many languages |
+| Writer | Claude Opus or GPT-4o | Best at nuanced, high-quality prose |
+| Analyst / Reasoning tasks | o3 or DeepSeek-R1 | Purpose-built reasoning models |
+| Custom agent (local/private) | Llama 3 70B via Ollama | No external data transfer |
+
+These are starting points — adjust based on your experience with each agent's actual output.
+
+## What happens if a configured model is unavailable
+
+If the model assigned to an agent becomes unavailable (provider outage, key expired, rate limit), the agent falls back to the workspace default model. If you've also configured a [failover chain](/models/failover), that takes priority over the simple default fallback.
+
+<CardGroup cols={2}>
+  <Card title="Default model" icon="cpu" href="/models/default-model">
+    Set the workspace-wide fallback model.
+  </Card>
+  <Card title="Model failover" icon="arrow-right-left" href="/models/failover">
+    Configure fallback chains when a provider goes down.
+  </Card>
+</CardGroup>

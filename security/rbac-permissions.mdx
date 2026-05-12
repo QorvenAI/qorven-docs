@@ -1,0 +1,92 @@
+---
+title: "RBAC Permissions"
+description: "Qorven has two built-in roles: admin and user. Here's what each can and cannot do."
+sidebarTitle: "RBAC Permissions"
+icon: "shield-check"
+---
+
+## Built-in roles
+
+Qorven ships with two roles. Every account is assigned one at creation time.
+
+### Admin
+
+Full access to the system. Admins can:
+
+- Create, edit, and delete agents (including system agents)
+- View and manage all users
+- Access all audit log entries (across all tenants in multi-tenant mode)
+- Add, rotate, and delete provider API keys
+- Configure channels and OAuth apps
+- Run selective data resets and factory reset
+- Install, enable, disable, and uninstall apps
+- Change system settings (config, TLS, update)
+- View all sessions across all users
+
+### User
+
+Chat-only access. Users can:
+
+- Open and interact with agents they have been granted access to
+- View their own session history
+- Manage their own connected accounts (OAuth)
+- Change their own password
+
+Users **cannot**:
+
+- Change agent configuration
+- View other users' sessions
+- Access provider keys or API credentials
+- View audit log entries beyond their own actions
+- Access Settings beyond their own account
+
+<Info>
+  The role boundary is enforced on the backend. Every admin-only API endpoint checks the caller's role and returns `403 admin_only` if a user attempts access — the UI hiding the button is not the only guard.
+</Info>
+
+## Permission table
+
+| Action | Admin | User |
+|---|:---:|:---:|
+| Chat with agents | Yes | Yes |
+| View own sessions | Yes | Yes |
+| View all sessions | Yes | No |
+| Create / edit agents | Yes | No |
+| Manage provider keys | Yes | No |
+| View full audit log | Yes | No |
+| Manage users | Yes | No |
+| Configure channels | Yes | No |
+| Install apps | Yes | No |
+| Run data resets | Yes | No |
+| Factory reset | Yes | No |
+
+## Adding users
+
+```bash
+# Add a user with the default 'user' role
+qorven users add --email alice@example.com --password changeme
+
+# Add an admin
+qorven users add --email bob@example.com --password changeme --role admin
+
+# Change an existing user's role
+qorven users set-role --email alice@example.com --role admin
+
+# List all users
+qorven users list
+```
+
+Users can also be created through the UI at **Settings → Users → Add User** (admin only).
+
+## Planned: custom roles
+
+Custom roles with per-resource permissions are on the roadmap but not yet available. Until then, the admin/user distinction is the only boundary. If you need finer control today, run separate Qorven installs.
+
+<CardGroup cols={2}>
+  <Card title="Audit trail" icon="history" href="/security/audit-trail">
+    Every permission use is recorded in the audit log.
+  </Card>
+  <Card title="Tenant isolation" icon="users" href="/security/tenant-isolation">
+    Hard data separation for multi-tenant deployments.
+  </Card>
+</CardGroup>

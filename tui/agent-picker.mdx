@@ -1,0 +1,88 @@
+---
+title: "Agent Picker"
+description: "Switch which agent handles your messages in the TUI without leaving the terminal."
+sidebarTitle: "Agent Picker"
+icon: "brain"
+---
+
+<Info>
+  In `qorven chat`, type `/agent` to open the agent picker. Navigate with arrow keys, select with Enter, and all subsequent messages go to that agent until you switch again.
+</Info>
+
+## Opening the picker
+
+```
+/agent
+```
+
+Type `/agent` at the prompt and hit Enter (or Tab to autocomplete). The picker opens inline — no separate window, no interruption to your session.
+
+## Navigating
+
+- **↑ / ↓** — move through the agent list
+- **Enter** — select the highlighted agent
+- **Esc** — cancel and stay with the current agent
+- **Type to filter** — start typing a name to narrow the list
+
+The picker shows each agent's name and the first line of its role description, so you can tell them apart at a glance.
+
+## After selecting
+
+The prompt changes to show the active agent:
+
+```
+[Developer] ▶
+```
+
+Every message you type goes to that agent until you run `/agent` again. The agent you switched away from keeps its session — switching back picks up where you left off.
+
+## The agent list
+
+The picker lists every agent configured on your install. On a default install that's:
+
+| Agent | Role shown in picker |
+|---|---|
+| Prime | Chief of Staff — general purpose, orchestrates others |
+| Developer | Code, files, terminal, deployments |
+| Researcher | Web research, fact-finding, reports |
+| Writer | Drafting, editing, content |
+| Email Agent | Email triage, drafts, sending |
+
+Custom agents you've created appear at the bottom of the list.
+
+## Starting with a specific agent
+
+Skip the picker entirely by passing `--agent` at startup:
+
+```bash
+qorven chat --agent developer
+```
+
+The session opens directly in Developer mode. Useful for dedicated coding sessions where you don't want to go through Prime.
+
+## Prime vs. direct
+
+When you talk to Prime, it may delegate to a specialist internally — you see one response, Prime handles the hand-off. When you pick a specialist directly, Prime is bypassed: you're talking to that agent, no middleman.
+
+For focused, single-discipline work (debugging a specific codebase, writing a specific document), direct selection keeps the context tight.
+
+<Tip>
+  Use `/agent prime` to return to Prime from any specialist. Prime's memory includes everything that happened in the specialist session.
+</Tip>
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Slash commands" icon="terminal" href="/tui/slash-commands">
+    Full list of `/commands` available in the TUI.
+  </Card>
+  <Card title="Delegation" icon="git-branch" href="/qors/delegation">
+    How Prime automatically routes tasks to specialist agents.
+  </Card>
+  <Card title="Code mode" icon="code" href="/tui/code-mode">
+    Three-panel code mode for working alongside the Developer agent.
+  </Card>
+  <Card title="Keybindings" icon="keyboard" href="/tui/keybindings">
+    Full keybinding reference for the TUI.
+  </Card>
+</CardGroup>

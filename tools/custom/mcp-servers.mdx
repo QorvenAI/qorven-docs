@@ -1,0 +1,113 @@
+---
+title: "MCP Servers"
+description: "Connect any Model Context Protocol server to Qorven and its tools become available to your agents automatically."
+sidebarTitle: "MCP Servers"
+icon: "plug"
+---
+
+Model Context Protocol (MCP) is an open standard for exposing tools from external processes. Any MCP-compatible server — whether community-built, vendor-provided, or one you wrote yourself — can be connected to Qorven, and its tools will appear alongside the built-ins and be available to any agent you assign them to.
+
+## Why MCP
+
+MCP lets you connect tools written in any language (Python, TypeScript, Go, Ruby, etc.) without touching Qorven's core code. The server runs as a separate process, communicates over a standard protocol, and Qorven discovers its tools automatically on startup.
+
+The community has built MCP servers for many services — databases, SaaS APIs, developer tools, data pipelines — so you can often connect a new capability without writing any code.
+
+## Connecting an MCP server
+
+Add the server to your `config.toml`:
+
+```toml
+[[mcp_server]]
+name    = "stripe"
+command = "python3"
+args    = ["/home/user/mcp-servers/stripe-mcp/server.py"]
+env     = { STRIPE_API_KEY = "sk_live_..." }
+
+[[mcp_server]]
+name    = "postgres-readonly"
+command = "npx"
+args    = ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost/mydb"]
+```
+
+Qorven starts each MCP server as a child process on startup and communicates with it over stdio. The server's tools are loaded into the tool registry under the server's `name` as a namespace (e.g. `stripe/create_refund`, `postgres-readonly/query`).
+
+## HTTP transport
+
+For MCP servers that run as standalone HTTP services rather than stdio processes:
+
+```toml
+[[mcp_server]]
+name      = "my-remote-tools"
+transport = "http"
+url       = "https://mcp.example.com/mcp"
+headers   = { Authorization = "Bearer mytoken" }
+```
+
+## Assigning MCP tools to agents
+
+Once connected, MCP tools appear in the tool picker when configuring an agent. Assign them the same way as built-in tools — select the ones you want the agent to have access to.
+
+You can assign individual tools from a server (e.g. `stripe/create_refund` but not `stripe/delete_customer`) or all tools from a server at once.
+
+## Building your own MCP server
+
+The MCP spec is language-agnostic. The fastest way to build a server is with an existing SDK:
+
+| Language | SDK |
+|----------|-----|
+| TypeScript | `@modelcontextprotocol/sdk` |
+| Python | `mcp` (PyPI) |
+| Go | `github.com/mark3labs/mcp-go` |
+
+A minimal Python MCP server:
+
+```python
+from mcp.server import Server
+from mcp.server.stdio import stdio_server
+from mcp import types
+
+server = Server("my-tools")
+
+@server.list_tools()
+async def list_tools():
+    return [
+        types.Tool(
+            name="get_order_status",
+            description="Look up the status of an order by order ID",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "order_id": {"type": "string", "description": "The order ID"}
+                },
+                "required": ["order_id"]
+            }
+        )
+    ]
+
+@server.call_tool()
+async def call_tool(name: str, arguments: dict):
+    if name == "get_order_status":
+        # call your API
+        return [types.TextContent(type="text", text=f"Order {arguments['order_id']}: Shipped")]
+
+async def main():
+    async with stdio_server() as streams:
+        await server.run(*streams, server.create_initialization_options())
+
+import asyncio
+asyncio.run(main())
+```
+
+## Community MCP servers
+
+The MCP ecosystem is growing quickly. Community servers are listed at [modelcontextprotocol.io/servers](https://modelcontextprotocol.io/servers) and include integrations for GitHub, Slack, Jira, Notion, Linear, PostgreSQL, Snowflake, and many more.
+
+<CardGroup cols={2}>
+  <Card title="Registering a custom tool" icon="plus" href="/tools/custom/registering">
+    Write a native Go tool for tighter integration with Qorven internals.
+  </Card>
+  <Card title="How tools work" icon="wrench" href="/tools/how-tools-work">
+    How tools are discovered, assigned, and called.
+  </Card>
+</CardGroup>

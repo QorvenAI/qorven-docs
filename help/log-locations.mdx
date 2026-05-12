@@ -1,0 +1,131 @@
+---
+title: "Log Locations"
+description: "Where Qorven writes its logs and how to access, stream, and filter them."
+sidebarTitle: "Log Locations"
+icon: "file-text"
+---
+
+## Log files
+
+| Install type | Server log | Install log |
+|---|---|---|
+| systemd (production) | `/var/log/qorven/qorven.log` | `/var/log/qorven/install.log` |
+| Development / `~/.qorven` | `~/.qorven/qorven.log` | `~/.qorven/install.log` |
+| Docker | `docker logs qorven` | N/A |
+
+## Streaming logs with the CLI
+
+```bash
+# Stream all logs in real time
+qorven logs tail
+
+# Errors only
+qorven logs tail --level error
+
+# Warnings and above
+qorven logs tail --level warn
+
+# Last 100 lines, then stream
+qorven logs tail --lines 100
+
+# Logs from the last hour
+qorven logs tail --since 1h
+
+# Logs from a specific time
+qorven logs tail --since "2026-05-08T10:00:00"
+```
+
+## Audit log
+
+The audit log is separate from the server log and lives in the database. Access it via:
+
+```bash
+qorven logs audit --tail              # stream live audit events
+qorven logs audit --since 24h        # last 24 hours
+qorven logs audit --agent my-agent   # filter by agent
+qorven logs audit --action tool.call # filter by action type
+```
+
+See [Audit trail](/security/audit-trail) for full details.
+
+## Docker
+
+```bash
+# Stream live logs
+docker logs -f qorven
+
+# Last 200 lines
+docker logs --tail 200 qorven
+
+# Since a timestamp
+docker logs --since "2026-05-08T10:00:00" qorven
+```
+
+If using Docker Compose:
+```bash
+docker compose logs -f qorven
+```
+
+## Log format
+
+Logs are structured JSON:
+
+```json
+{
+  "time": "2026-05-08T14:32:01.234Z",
+  "level": "ERROR",
+  "msg": "database connection failed",
+  "error": "dial tcp: connection refused",
+  "component": "gateway"
+}
+```
+
+To pretty-print with `jq`:
+
+```bash
+qorven logs tail | jq '.'
+```
+
+To extract just messages:
+
+```bash
+qorven logs tail | jq -r '.msg'
+```
+
+## Log levels
+
+| Level | What it covers |
+|---|---|
+| `debug` | Every request, query, and tool call — verbose; use for deep debugging |
+| `info` | Normal operation: server start, requests, agent actions |
+| `warn` | Unexpected but non-fatal conditions |
+| `error` | Failures that may need attention |
+
+Set the level in `config.toml`:
+
+```toml
+[server]
+log_level = "info"
+```
+
+Or via environment variable: `QORVEN_SERVER_LOG_LEVEL=debug`
+
+## Log rotation
+
+Log rotation is handled automatically for systemd installs via `logrotate`. Default policy: rotate daily, keep 14 days, compress old files.
+
+To view the logrotate config:
+```bash
+cat /etc/logrotate.d/qorven
+```
+
+Docker environments rely on the Docker daemon's log rotation settings. Configure via `--log-opt max-size` and `--log-opt max-file` in your compose file or daemon configuration.
+
+<CardGroup cols={2}>
+  <Card title="Getting help" icon="help-circle" href="/help/getting-help">
+    Diagnostic steps when something goes wrong.
+  </Card>
+  <Card title="Audit trail" icon="history" href="/security/audit-trail">
+    The separate audit log for agent and user actions.
+  </Card>
+</CardGroup>

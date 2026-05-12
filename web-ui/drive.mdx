@@ -1,0 +1,75 @@
+---
+title: "Drive"
+description: "File storage your agents can read — upload documents directly or sync from Google Drive and Dropbox."
+sidebarTitle: "Drive"
+icon: "hard-drive"
+---
+
+Drive is the file layer your agents use as a reference library. Upload documents, spreadsheets, PDFs, and text files, and your agents can read them when answering questions, doing research, or completing tasks.
+
+## What you can store
+
+- Documents — `.pdf`, `.docx`, `.txt`, `.md`
+- Spreadsheets — `.xlsx`, `.csv`
+- Presentations — `.pptx`
+- Images — `.png`, `.jpg`, `.webp` (agents can describe and analyze images)
+- Any plain-text file format
+
+There is no hard storage limit beyond your server's disk space.
+
+## Uploading files
+
+Drag files onto the Drive page, or click **Upload** and select files from your computer. Files are stored on your Qorven server under the configured data directory.
+
+Folders are supported. Drag a folder to preserve the directory structure.
+
+## Syncing from cloud storage
+
+Connect Google Drive or Dropbox via [Connectors](/web-ui/connectors) to automatically sync files into your Qorven Drive. Once connected:
+
+- Files sync on a schedule (default: every hour)
+- New files added to your cloud folder appear in Qorven Drive automatically
+- Deletions in the cloud are mirrored locally
+- You can trigger a manual sync at any time from the Drive page
+
+<Info>
+  Only files you explicitly share in the connector setup are synced — Qorven does not pull your entire Google Drive unless you configure it to.
+</Info>
+
+## How agents use Drive
+
+When an agent needs to answer a question or complete a task, it can search your Drive for relevant files. For example:
+
+- "What does our refund policy say?" — agent finds and reads your `refund-policy.pdf`
+- "Summarize last quarter's numbers" — agent reads your `Q3-report.xlsx`
+- "Draft a proposal using our standard template" — agent reads `proposal-template.docx` and follows its structure
+
+Agents do not read every file on every request. They search for relevant files based on the task at hand.
+
+## Managing files
+
+From the Drive page you can:
+
+- **Preview** — click any file to see a preview (PDFs, text, images)
+- **Download** — download a copy to your computer
+- **Delete** — remove a file from Qorven Drive (does not delete from cloud storage)
+- **Move** — drag files between folders
+
+## File permissions
+
+By default, all agents can read files in Drive. You can restrict a file or folder to specific agents from the file's detail panel.
+
+<Tip>
+  Put sensitive documents (HR records, financial data) in a dedicated folder and restrict access to only the agents that need them.
+</Tip>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Connectors" icon="link" href="/web-ui/connectors">
+    Connect Google Drive or Dropbox for automatic sync.
+  </Card>
+  <Card title="Code Editor" icon="code" href="/web-ui/code-editor">
+    Work on code files with your Developer agent.
+  </Card>
+</CardGroup>

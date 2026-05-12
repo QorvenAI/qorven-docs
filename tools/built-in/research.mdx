@@ -1,0 +1,83 @@
+---
+title: "Research"
+description: "Deep research built in — your agents search the web, read sources in full, and synthesise findings into a structured answer. No API key needed."
+sidebarTitle: "Research"
+icon: "search"
+---
+
+<Info>
+  The `research` tool does deep, multi-step research — not just a keyword search. It searches across multiple sources, reads the full text of relevant pages, cross-references findings, and gives your agent a comprehensive picture of the topic.
+</Info>
+
+## How it works
+
+When your agent calls `research`, it:
+
+1. Generates multiple search queries from your question
+2. Searches across 10+ providers simultaneously (Google, Bing, Brave, DuckDuckGo, news sources, and more)
+3. Reads the full text of the most relevant results — not just the snippet
+4. Cross-references findings across sources
+5. Returns a structured summary with key findings, supporting evidence, and source links
+
+This takes 30–90 seconds for a typical research task and returns far more useful information than a quick web search would.
+
+## Example
+
+Ask your agent:
+
+> "Research current freight rates from Shanghai to Hamburg. Include trends over the last 6 months and any upcoming factors that might affect pricing."
+
+Your agent calls `research`, reads shipping industry sources, market reports, and news articles in full, and returns:
+
+```
+Shanghai → Hamburg freight rates (May 2026):
+
+Current rate: $2,800–3,200 per 40ft container (spot)
+6-month trend: Down 18% from Nov 2025 peak of ~$3,800
+
+Key drivers:
+• Red Sea situation normalising — alternative routings decreasing surcharges
+• Q2 traditionally lower demand
+• Major carriers adding capacity on Asia-Europe lanes in H2
+
+Watch: Chinese New Year production backlog clearing — potential rate uptick June/July
+
+Sources: Freightos, Sea Intelligence, TradeWinds (3 others)
+```
+
+## What makes it different from a web search
+
+| | `web_search` | `research` |
+|---|---|---|
+| Sources checked | 1 query | Multiple queries, 10+ sources |
+| Content read | Snippet only | Full article text |
+| Cross-referencing | No | Yes |
+| Best for | Quick facts, current events | In-depth analysis, complex topics |
+| Speed | Seconds | 30–90 seconds |
+
+Use `web_search` when you need a quick answer. Use `research` when you need to understand a topic properly.
+
+## No account required
+
+The research tool works out of the box — no API keys, no accounts, no limits to set up. It's built into Qorven from day one.
+
+## Enabling research for an agent
+
+In an agent's tool settings, make sure `research` is in the allowed tools list. Your Researcher agent has it enabled by default. You can also add it to any custom agent you create.
+
+## Related tools
+
+<CardGroup cols={2}>
+  <Card title="Scrape" icon="globe" href="/tools/built-in/scrape">
+    Read a specific URL in full — structured content extraction.
+  </Card>
+  <Card title="Crawl" icon="network" href="/tools/built-in/crawl">
+    Follow links from a starting URL and read multiple pages.
+  </Card>
+  <Card title="Web Fetch" icon="download" href="/tools/built-in/web-fetch">
+    Fetch raw HTML or content from a URL.
+  </Card>
+  <Card title="Flight Search" icon="plane" href="/tools/built-in/flight-search">
+    Real-time flight prices — a specialised built-in tool.
+  </Card>
+</CardGroup>

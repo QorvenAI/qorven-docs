@@ -1,0 +1,91 @@
+---
+title: "10 things to try next"
+description: "Guided menu of everything worth exploring in your first hour with Qorven."
+sidebarTitle: "Next steps"
+icon: "list"
+---
+
+<Info>
+  You're installed, signed in, chatting with Prime. Here's the order most operators find useful for the next hour.
+</Info>
+
+## The quick wins
+
+<CardGroup cols={2}>
+  <Card title="1. Install the local CA" icon="shield" href="/security/tls-best-practices">
+    `sudo qorven tls install-ca` on every laptop that'll visit this Qorven install. Browser warnings disappear; the green lock stays. One-time per machine.
+  </Card>
+
+  <Card title="2. Connect Telegram" icon="send" href="/channels/telegram">
+    5 minutes end-to-end: create a bot with `@BotFather`, paste the token into Settings → Channels, and message your Qor from your phone. It lands in the same canonical chat as the web UI.
+  </Card>
+
+  <Card title="3. Try the 🧠 Memory button" icon="brain" href="/memory/search">
+    Click the Memory button above the composer. Search anything you've told this Qor. Every archived compaction is indexed.
+  </Card>
+
+  <Card title="4. Share your screen" icon="monitor" href="/tools/media/screen-share">
+    Toolbar → **Share screen**. Your Qor gets a frame every second. Useful for *"what am I looking at?"* and *"how do I fix this error?"*.
+  </Card>
+</CardGroup>
+
+## Deeper explorations
+
+<CardGroup cols={2}>
+  <Card title="5. Spawn a specialist Qor" icon="plus" href="/qors/creating-a-qor">
+    *"Create a Qor called 'Inbox Triage' that reads my mail, flags VIP senders, and drafts responses for review."* Prime creates it on the fly.
+  </Card>
+
+  <Card title="6. Give it a tool budget" icon="wrench" href="/tools/index">
+    Each Qor has an allowlist of tools. Default is "everything"; for a focused Qor, restrict it to just `read_document`, `web_fetch`, and `send_email`.
+  </Card>
+
+  <Card title="7. Set up a cron Qor" icon="clock" href="/workflows/cron">
+    *"Every morning at 7am, summarise my calendar + unread mail and send it to Telegram."* Qorven's cron is Qor-based — the runs feed into memory, not a cold log.
+  </Card>
+
+  <Card title="8. Open a Room" icon="users" href="/workflows/rooms">
+    Drop 3 Qors into a shared room. Assign roles. Watch them iterate. Rooms are where multi-agent work actually happens.
+  </Card>
+
+  <Card title="9. Add a connector" icon="link" href="/connectors/index">
+    Google Drive, Gmail, Notion, GitHub, Linear, Jira — 52 OAuth integrations. Register your OAuth app once in Settings → Connectors, every tenant on this install uses it.
+  </Card>
+
+  <Card title="10. Back up the encryption key" icon="key" href="/ops/encryption-key">
+    `cat /etc/qorven/config.toml | grep encryption_key`. Put that value in your password manager. **This is the only copy.** If it goes, every encrypted secret in Postgres is unrecoverable.
+  </Card>
+</CardGroup>
+
+## Architecture reading order
+
+When you have 20 minutes, read these in order:
+
+<Steps>
+  <Step title="Architecture overview">
+    [Read →](/architecture/overview) — the full request path, who holds what state.
+  </Step>
+  <Step title="One Qor, one chat">
+    [Read →](/architecture/one-qor-one-chat) — why there's no "new session" button, how channels merge.
+  </Step>
+  <Step title="Delegation">
+    [Read →](/architecture/delegation) — how Prime picks specialists, how specialists can delegate further.
+  </Step>
+  <Step title="Memory system">
+    [Read →](/architecture/memory-system) — compaction, pgvector, knowledge graph, dreaming.
+  </Step>
+  <Step title="Security model">
+    [Read →](/architecture/security-model) — tenant isolation, encryption key, prompt-injection defense.
+  </Step>
+</Steps>
+
+## If something breaks
+
+<CardGroup cols={2}>
+  <Card title="Start with qorven doctor" icon="stethoscope" href="/cli/doctor">
+    One command, checks everything: DB connection, TLS cert, config validity, provider keys, channel webhooks.
+  </Card>
+  <Card title="Check logs" icon="file-text" href="/help/log-locations">
+    `journalctl -u qorven -f` on Linux, `/var/log/qorven/*.log` always, `docker compose logs -f` in Docker.
+  </Card>
+</CardGroup>

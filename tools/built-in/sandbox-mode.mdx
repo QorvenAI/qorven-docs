@@ -1,0 +1,90 @@
+---
+title: "Sandbox Mode"
+description: "Run agent tool calls in a restricted environment — limited filesystem access, no network, controlled execution."
+sidebarTitle: "Sandbox Mode"
+icon: "box"
+---
+
+Sandbox mode runs an agent's tool calls inside a restricted execution environment. The agent still runs and calls tools, but those tools operate under tight constraints: limited filesystem visibility, no network access, and controlled command execution.
+
+Use sandbox mode when you're running code or processing content from untrusted sources and want a hard boundary around what the agent can affect.
+
+## What sandbox mode restricts
+
+| Capability | Normal mode | Sandbox mode |
+|-----------|-------------|--------------|
+| Filesystem access | Configured paths | Agent storage only |
+| Network requests | Outbound Gate policy | Blocked entirely |
+| Shell commands | Approval required | Blocked or allowlisted only |
+| Read external files | Yes | Agent storage only |
+| Write files | Approval required | Agent storage only |
+
+In sandbox mode, the agent is effectively air-gapped from your system and the internet. It can reason, use memory, read documents you've explicitly given it, and write to its own storage — but nothing else.
+
+## When to use it
+
+**Processing untrusted code** — if a user has submitted code for review or execution, sandbox mode prevents that code (or a malicious prompt embedded in it) from affecting your system.
+
+**Handling external documents** — emails, uploaded files, or web content from unknown sources could contain prompt injection attempts. Sandbox mode limits the blast radius.
+
+**Isolated research tasks** — for agents you want to keep completely separate from your production systems.
+
+**Testing new agent configurations** — run a new agent in sandbox mode first to observe its behaviour before giving it full tool access.
+
+## Enabling per-agent
+
+In agent settings (**Settings → Agents → [Agent Name] → Execution**), toggle **Sandbox mode**. Or in `config.toml`:
+
+```toml
+[[agents]]
+name = "ContentProcessor"
+sandbox = true
+```
+
+## Enabling per-session
+
+You can also request sandbox mode for a specific conversation without changing the agent's permanent configuration. Start your message with:
+
+> "Run in sandbox mode: [your task here]"
+
+Or set it via the session options panel before starting the conversation.
+
+## Allowlisting specific commands in sandbox
+
+If you need an agent to run specific commands even in sandbox mode, you can add them to an allowlist:
+
+```toml
+[[agents]]
+name = "CodeReviewer"
+sandbox = true
+
+  [agents.sandbox]
+  allowed_commands = [
+    "python --version",
+    "node --version",
+    "pylint --output-format=json"
+  ]
+```
+
+Only exact-match or regex-matched commands are permitted. Everything else is blocked.
+
+## Trade-offs
+
+Sandbox mode is more secure but comes with real trade-offs:
+
+- **Slower** — the restricted environment has more overhead
+- **More limited** — agents may not be able to complete tasks that require external resources
+- **Less useful for connected workflows** — an agent that needs to send emails or query a database can't do so in full sandbox mode
+
+For most everyday tasks on a trusted team, sandbox mode is unnecessary. It's a tool for specific threat models, not a default you should apply everywhere.
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Deny Lists" icon="x-circle" href="/tools/deny-lists">
+    Block specific tools entirely.
+  </Card>
+  <Card title="Outbound Gate" icon="door-open" href="/tools/built-in/outbound-gate">
+    Control external network access at the domain level.
+  </Card>
+</CardGroup>

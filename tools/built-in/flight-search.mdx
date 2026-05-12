@@ -1,0 +1,66 @@
+---
+title: "Flight Search"
+description: "Real-time flight prices straight from the chat — the same data as Google Flights, with no travel API account or signup required."
+sidebarTitle: "Flight Search"
+icon: "plane"
+---
+
+<Info>
+  The `flight_search` tool is built into Qorven and requires no API account, no billing setup, and no API key. Ask your agent about flights and get real prices immediately.
+</Info>
+
+## What you can ask
+
+Your agent understands plain English travel requests:
+
+> "Find direct flights from Dubai to Mumbai next week."
+
+> "What's the cheapest day to fly from London to New York in June?"
+
+> "Compare flights from Singapore to Tokyo on March 15th — show me price, airline, and flight time."
+
+The agent translates your request into a flight search, retrieves live pricing, and returns the results in a readable format.
+
+## Example output
+
+```
+Dubai (DXB) → Mumbai (BOM) · Direct only · Mar 18–24
+
+IndiGo  6E-1702   3h 05m   ₹8,432    Dep 08:15
+Emirates EK-500   3h 15m   ₹14,890   Dep 10:30
+Air India AI-996  3h 20m   ₹9,215    Dep 14:45
+
+Prices current as of 10 minutes ago.
+Cheapest: IndiGo on Mar 19 at ₹7,890
+```
+
+## What you get
+
+**Live pricing** — prices are fetched in real time from the same data source as Google Flights. No markup, no stale cache.
+
+**Direct and connecting flights** — ask for direct only, or see all options. Connecting flights show layover airport, duration, and terminal information.
+
+**Flexible date search** — ask for the cheapest day in a week, compare a range of dates, or find prices across an entire month.
+
+**Multiple airports** — searches by city automatically considers all airports. You can also specify by IATA code if needed.
+
+**Round-trip and one-way** — both supported.
+
+## No account needed
+
+Most flight search tools require you to register for a travel API, set up billing, and stay within monthly quotas. The Qorven flight search tool has none of these requirements. Install Qorven once and it works from day one, for any number of searches.
+
+## Enabling flight search for an agent
+
+In an agent's tool settings, add `flight_search` to the allowed tools list. Your built-in Researcher agent can use it by default. It's also useful to add to a personal assistant agent or any agent that helps with travel planning.
+
+## Related tools
+
+<CardGroup cols={2}>
+  <Card title="Research" icon="search" href="/tools/built-in/research">
+    Deep research on any topic — useful for travel research beyond just prices.
+  </Card>
+  <Card title="Web Fetch" icon="download" href="/tools/built-in/web-fetch">
+    Fetch any URL — useful for checking airline baggage policies, visa requirements, etc.
+  </Card>
+</CardGroup>

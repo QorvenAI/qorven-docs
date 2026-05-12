@@ -1,0 +1,81 @@
+---
+title: "SQL Query"
+description: "Let agents query your connected databases to answer questions, pull reports, and look up records."
+sidebarTitle: "SQL Query"
+icon: "database"
+---
+
+The `sql_query` tool runs SQL against your connected databases. Point Qorven at your PostgreSQL, MySQL, or SQLite database and agents can answer business questions directly from your data — no export needed.
+
+## Supported databases
+
+- PostgreSQL
+- MySQL / MariaDB
+- SQLite
+
+## Read-only by default
+
+By default, `sql_query` only runs `SELECT` statements. `INSERT`, `UPDATE`, `DELETE`, and DDL statements are blocked at the tool level. This means you can give agents database access for analysis without worrying about accidental data changes.
+
+<Warning>
+Write access can be explicitly enabled in `config.toml`, but doing so also enables the approval requirement — any write query will pause for your sign-off before executing.
+</Warning>
+
+## Example uses
+
+- **"What were our top 10 customers by revenue last quarter?"** — the agent writes and runs the SQL query against your CRM or billing database
+- **"How many support tickets are still open?"** — the agent counts rows in your support table
+- **"Pull the latest order for customer ID 4821"** — the agent queries and returns the record
+- **"Generate a summary of signups by country this month"** — the agent groups, counts, and formats the results
+
+## How agents know your schema
+
+When you connect a database, Qorven reads the schema (table names, column names, and types) and stores it as context. Agents can refer to tables and columns by name without you needing to explain the structure.
+
+## Connecting a database
+
+<Steps>
+  <Step title="Open database settings">
+    Navigate to **Settings → Integrations → Databases** and click **Add database**.
+  </Step>
+  <Step title="Enter connection details">
+    Provide the host, port, database name, username, and password. For SQLite, provide the file path.
+  </Step>
+  <Step title="Test the connection">
+    Qorven will attempt a connection and display any errors. A successful test confirms the agent can reach your database.
+  </Step>
+  <Step title="Assign to agents">
+    Go to **Settings → Agents → [Agent Name] → Tools** and enable `sql_query` for that agent. Choose which connected database it can access.
+  </Step>
+</Steps>
+
+## Results in chat
+
+SQL results are displayed as a formatted table in the chat interface. The agent also receives the data as structured JSON to use in further reasoning or report generation.
+
+## Inputs
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `query` | Yes | The SQL statement to run |
+| `database` | No | The named database to run against (if multiple are connected) |
+| `limit` | No | Row limit — defaults to 100, max 1000 |
+
+## Enabling write access
+
+```toml
+# config.toml
+[tools.sql_query]
+allow_writes = true  # write statements still require approval
+```
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Read Document" icon="file" href="/tools/built-in/read-document">
+    Read data from files (CSV, Excel, PDF).
+  </Card>
+  <Card title="Approvals" icon="check-circle" href="/tools/approvals">
+    How write queries are gated behind approval.
+  </Card>
+</CardGroup>

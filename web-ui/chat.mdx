@@ -1,0 +1,93 @@
+---
+title: "Chat"
+description: "The main chat interface — talk to your agents, watch them work in real time, switch between specialists, and manage conversations."
+sidebarTitle: "Chat"
+icon: "message-circle"
+---
+
+The Chat page is where you spend most of your time in Qorven. Open it to talk to Prime — or to any of your specialist agents directly.
+
+## Talking to Prime
+
+By default, you're talking to Prime. Send any message — a question, a task, a request — and Prime takes it from there.
+
+Prime will:
+- Answer directly if it can handle the task itself
+- Delegate to a specialist agent if the task calls for it (research, coding, writing, email)
+- Run multiple agents in sequence if the task has several parts
+- Ask you a clarifying question before acting on anything ambiguous
+
+You can see exactly what Prime is doing as it works — every tool call, every delegation, streams in real time below the response.
+
+## Switching agents
+
+To talk directly to a specialist agent, click the agent selector at the top of the chat window and pick a different agent. You'll be in a separate conversation with that agent — your Prime conversations and specialist conversations are kept separate.
+
+This is useful when you know exactly which agent you need and want to skip Prime's routing step.
+
+## Attaching files
+
+Drag any file into the chat window to attach it. Your agents can read:
+
+- **PDFs** — documents, reports, contracts, invoices
+- **Images** — screenshots, photos, diagrams
+- **Word documents** — DOCX with formatting and tracked changes
+- **Spreadsheets** — Excel and CSV, sheet by sheet
+- **Text files** — code, logs, notes
+
+Once attached, you can ask about the contents: "Summarise this", "What are the key numbers in this report?", "Find any issues in this code."
+
+## Watching tool calls
+
+When an agent uses a tool — searching the web, reading a file, sending a message — you see it inline in the conversation:
+
+```
+🔍  research("Q1 freight rates from Shanghai to Hamburg")
+    → Found 8 sources. Top finding: rates down 12% YTD...
+```
+
+Every tool call shows the action taken and the result returned. You can expand any call to see the full input and output. Nothing is hidden.
+
+## Approvals
+
+If an agent wants to take an action that requires your approval — send an email, modify a file, run a command — it pauses and shows an approval card in the chat:
+
+```
+⏳ Approval needed
+   send_email → "Q2 proposal" to sarah@client.com
+   [View draft] [Approve] [Reject]
+```
+
+Click **View draft** to review, then approve or reject. The agent continues as soon as you decide.
+
+## Sessions
+
+Each conversation is saved as a session. Use the session list on the left to switch between ongoing conversations or pick up an old one.
+
+Agents remember context within a session. When you start a new session, the agent still has its long-term memories from past sessions, but it starts fresh on the immediate context.
+
+## Keyboard shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Enter` | Send message |
+| `Shift + Enter` | New line in message |
+| `↑` | Edit last message |
+| `Escape` | Cancel editing |
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Agents" icon="brain" href="/web-ui/qors-page">
+    Create and manage your agent team.
+  </Card>
+  <Card title="Approvals" icon="check-circle" href="/workflows/approvals">
+    How agent approvals work and how to configure them.
+  </Card>
+  <Card title="Channels" icon="message-square" href="/channels/index">
+    Chat with your agents from Telegram, Slack, WhatsApp, and more.
+  </Card>
+  <Card title="TUI" icon="terminal" href="/tui/overview">
+    Use the same chat interface from a terminal.
+  </Card>
+</CardGroup>

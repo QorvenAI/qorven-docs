@@ -1,0 +1,57 @@
+---
+title: "Global flags"
+description: "Flags accepted by every `qorven` subcommand."
+sidebarTitle: "Global flags"
+icon: "flag"
+---
+
+<Info>
+  These flags come before the subcommand and apply to every operation.
+</Info>
+
+## Reference
+
+| Flag | Env var | Default | Purpose |
+|---|---|---|---|
+| `--server <url>` | `QORVEN_SERVER` | `http://localhost:4200` | Gateway URL to talk to. Set this to hit a remote install. |
+| `--token <token>` | `QORVEN_TOKEN` | (from `~/.qorven/token_default`) | Auth token. Generated at setup time. |
+| `--output <fmt>` / `-o` | — | `table` | Output format: `table`, `json`, `yaml`. JSON is script-friendly. |
+| `--verbose` / `-v` | — | off | Show internal HTTP requests + timing. Good for debugging. |
+| `--yes` / `-y` | — | off | Skip interactive confirmation prompts. For automation. |
+| `--help` / `-h` | — | — | Show help for the command. |
+
+## Common combinations
+
+```bash
+# Run a remote operation non-interactively in JSON
+qorven --server https://acme.qorven.ai \
+       --token $QORVEN_TOKEN \
+       --output json \
+       --yes \
+       sessions delete <id>
+
+# Debug a hanging command
+qorven --verbose agents list
+```
+
+## Token precedence
+
+From highest to lowest priority:
+
+1. `--token` flag
+2. `QORVEN_TOKEN` env var
+3. `~/.qorven/token_default` file
+4. `/etc/qorven/token_default` file (systemd-local installs)
+
+If none resolve, the CLI errors out before making any request.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Env vars" icon="variable" href="/cli/env-vars">
+    Every environment variable Qorven respects.
+  </Card>
+  <Card title="CLI index" icon="terminal" href="/cli/index">
+    Every command.
+  </Card>
+</CardGroup>

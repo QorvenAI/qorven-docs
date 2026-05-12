@@ -1,0 +1,117 @@
+---
+title: "Models overview"
+description: "How Qorven picks which model runs each turn — provider catalog, per-Qor model, failover, local models."
+sidebarTitle: "Overview"
+icon: "cpu"
+---
+
+<Info>
+  Qorven is model-agnostic. Bring OpenAI, Anthropic, Bedrock, DeepSeek, Gemini, Groq, Mistral, Together, Fireworks, Ollama, LM Studio, Perplexity, DashScope, or an OpenRouter aggregator. Each Qor picks its own model.
+</Info>
+
+## Three layers of configuration
+
+<Steps>
+  <Step title="Provider keys (install-wide)">
+    You paste an API key per provider in **Settings → Provider Keys**. Keys are encrypted at rest with your install's encryption key.
+  </Step>
+  <Step title="Default model (install-wide)">
+    In **Models Hub → Models** you mark one model as the install-wide default. New Qors start with this model.
+  </Step>
+  <Step title="Per-Qor override">
+    In the Qor's config page you can override the model — e.g. Prime uses Claude Opus for reasoning, the Coder uses DeepSeek for cheap iteration.
+  </Step>
+</Steps>
+
+## Picking a model for your use case
+
+<CardGroup cols={3}>
+  <Card title="Chief-of-staff / Prime" icon="brain">
+    Needs reasoning + tool use. Claude Opus 4.x, GPT-5, Gemini 2.5 Pro, DeepSeek V3.
+  </Card>
+  <Card title="Specialists (coding, research)" icon="wrench">
+    Specialised mid-size models. DeepSeek Coder, Qwen Coder, GPT-5-mini, Claude Haiku.
+  </Card>
+  <Card title="Background (dreaming, compaction)" icon="moon">
+    Cheap + good enough. GPT-5-nano, Gemini Flash, Haiku, DeepSeek Chat.
+  </Card>
+  <Card title="Local / privacy-first" icon="monitor">
+    Ollama (Llama 3.3 70B, Qwen 2.5), LM Studio. Zero outbound calls.
+  </Card>
+  <Card title="Lowest cost" icon="dollar-sign">
+    DeepSeek, Gemini Flash, Groq Llama 3.3, OpenRouter's free tier.
+  </Card>
+  <Card title="Fastest" icon="zap">
+    Groq (tokens/sec king), Together AI, Fireworks. For real-time chat.
+  </Card>
+</CardGroup>
+
+## The model catalog
+
+Qorven ships with a catalog of 1,700+ models + pricing + context windows + capability flags. It's refreshed weekly from provider APIs (via an `llmstats` integration).
+
+```bash
+qorven models search --capability vision --max-price 1.00
+# Gemini 2.5 Flash  — vision, tools, 1M ctx, $0.075/1M in, $0.3/1M out
+# DeepSeek VL       — vision, tools, 128k ctx, $0.20/1M in, $0.40/1M out
+# …
+```
+
+[Catalog CLI →](/cli/models)
+
+## Failover
+
+When your Prime's preferred model hits a 429 or 402, Qorven cycles:
+
+<Steps>
+  <Step title="Next key for the same provider">
+    If Prime is on OpenAI and key `sk-abc` is rate-limited → try `sk-def`.
+  </Step>
+  <Step title="Next provider in the priority list">
+    All OpenAI keys exhausted → fall through to Anthropic.
+  </Step>
+  <Step title="Smart scorer tries to match capabilities">
+    Prime needs 200k context → Anthropic Claude Sonnet picked over Gemini Flash.
+  </Step>
+  <Step title="All providers exhausted">
+    The Qor writes an error message to the user: *"All LLM providers failed. Check your provider keys."*
+  </Step>
+</Steps>
+
+[Failover deep-dive →](/models/failover)
+
+## Providers
+
+<CardGroup cols={4}>
+  <Card title="OpenAI" icon="cloud" href="/models/providers/openai" />
+  <Card title="Anthropic" icon="cloud" href="/models/providers/anthropic" />
+  <Card title="Bedrock" icon="cloud" href="/models/providers/bedrock" />
+  <Card title="DeepSeek" icon="cloud" href="/models/providers/deepseek" />
+  <Card title="Gemini" icon="cloud" href="/models/providers/gemini" />
+  <Card title="Groq" icon="zap" href="/models/providers/groq" />
+  <Card title="Mistral" icon="cloud" href="/models/providers/mistral" />
+  <Card title="Together" icon="cloud" href="/models/providers/together" />
+  <Card title="Fireworks" icon="cloud" href="/models/providers/fireworks" />
+  <Card title="Ollama" icon="monitor" href="/models/providers/ollama" />
+  <Card title="LM Studio" icon="monitor" href="/models/providers/lmstudio" />
+  <Card title="Perplexity" icon="search" href="/models/providers/perplexity" />
+  <Card title="DashScope (Qwen)" icon="cloud" href="/models/providers/dashscope" />
+  <Card title="OpenRouter" icon="link" href="/models/providers/openrouter" />
+</CardGroup>
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Provider keys" icon="key" href="/models/provider-keys">
+    Key management UI + encryption.
+  </Card>
+  <Card title="Default model" icon="star" href="/models/default-model">
+    Setting the install-wide default.
+  </Card>
+  <Card title="Per-Qor model" icon="user" href="/models/per-qor-model">
+    Overriding per agent.
+  </Card>
+  <Card title="Failover" icon="arrow-right" href="/models/failover">
+    Automatic rotation on rate-limits.
+  </Card>
+</CardGroup>

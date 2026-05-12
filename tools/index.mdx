@@ -1,0 +1,137 @@
+---
+title: "Tools"
+description: "Tools are how Qors act in the world — from running shell commands to sending emails. 80+ built-in, plus MCP, plus custom."
+sidebarTitle: "Tools"
+icon: "wrench"
+---
+
+<Info>
+  A Qor without tools is a chat bot. A Qor **with** tools can read files, browse the web, send emails, open PRs, query databases, generate images, automate browsers, and delegate to other Qors. Tools are the difference.
+</Info>
+
+## The taxonomy
+
+<CardGroup cols={2}>
+  <Card title="Research & web" icon="search" href="/tools/built-in/research">
+    `research`, `scrape`, `crawl`, `web_fetch`, `weather`, `flight_search`.
+  </Card>
+  <Card title="Filesystem & code" icon="file-code" href="/tools/coding/filesystem">
+    `filesystem`, `exec`, `apply_patch`, `lsp_bridge`, `codebase_digest`, `project_registry`, `glob`, `grep`.
+  </Card>
+  <Card title="Browser automation" icon="globe" href="/tools/browser/overview">
+    Selector primitives + `browse_and_act` + `computer_use` for canvas-heavy UIs.
+  </Card>
+  <Card title="Media" icon="image" href="/tools/media/tts">
+    TTS, STT, image generation, image understanding, screen share.
+  </Card>
+  <Card title="Data" icon="database" href="/tools/built-in/sql-query">
+    `sql_query`, `read_document`, `storage`, `email`, `memory`, `sessions`.
+  </Card>
+  <Card title="Delegation" icon="users" href="/tools/delegation/manage-agents">
+    `delegate_to_agent`, `manage_agents` — coordinate your agent team.
+  </Card>
+  <Card title="Safety" icon="shield" href="/tools/built-in/safety">
+    `safety`, `ssrf`, `outbound_gate`, `policy`, `sandbox_mode`.
+  </Card>
+  <Card title="Custom + MCP" icon="plus" href="/tools/custom/registering">
+    Write your own in Go, or plug in any [MCP server](/tools/custom/mcp-servers).
+  </Card>
+</CardGroup>
+
+## Anatomy of a tool call
+
+```json
+{
+  "tool": "web_fetch",
+  "args": { "url": "https://example.com/article" }
+}
+```
+
+The gateway:
+
+<Steps>
+  <Step title="Validates">
+    Args parsed against a JSONSchema. Unknown args rejected.
+  </Step>
+  <Step title="Checks allowlist">
+    Is this Qor allowed to call this tool? Approvals required if destructive.
+  </Step>
+  <Step title="Runs">
+    Tool's `Execute` method runs. For some tools this shells out (browser, code exec). Others are in-process.
+  </Step>
+  <Step title="Audits">
+    Every tool call + result → audit log.
+  </Step>
+  <Step title="Returns">
+    Result (ForLLM + ForUser halves — [widget emission →](/tools/how-tools-work)).
+  </Step>
+</Steps>
+
+## Allowlists — the security knob
+
+Each Qor has a `tools_allowed` list. By default: all tools except destructive ones. Recommended for specialised Qors:
+
+```yaml
+# Researcher Qor
+tools_allowed:
+  - research
+  - scrape
+  - web_fetch
+  - read_document
+  - memory_search
+
+# Coder Qor
+tools_allowed:
+  - filesystem
+  - exec          # requires approval
+  - apply_patch
+  - lsp_bridge
+  - codebase_digest
+  - project_registry
+  - glob
+  - grep
+```
+
+Restricting tools is the first defence against prompt injection. A research Qor with no `exec` can't be tricked into running `rm -rf`. [Security model →](/architecture/security-model)
+
+## Approvals
+
+Tools marked `destructive=true` require human approval at each call unless the Qor is in `approval_required: false` mode. Destructive defaults:
+
+- `exec` — runs arbitrary commands
+- `apply_patch` — modifies source files
+- `send_email` — outbound communication
+- `send_message` — outbound IM
+- `delete_file`, `drop_table`, etc.
+
+See [approvals →](/workflows/approvals).
+
+## Writing your own tool
+
+Two paths:
+
+<CardGroup cols={2}>
+  <Card title="Go tool in-repo" icon="code" href="/tools/custom/registering">
+    Fastest, most powerful. Implement the `Tool` interface, register in the tool registry. Ships with the next build.
+  </Card>
+  <Card title="MCP server" icon="plug" href="/tools/custom/mcp-servers">
+    Language-agnostic. Expose tools via the Model Context Protocol; Qorven discovers and wires them automatically.
+  </Card>
+</CardGroup>
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="How tools work" icon="book-open" href="/tools/how-tools-work">
+    Deep-dive on the execution model.
+  </Card>
+  <Card title="Approvals" icon="check-circle" href="/tools/approvals">
+    Gating destructive operations.
+  </Card>
+  <Card title="Deny lists" icon="x-circle" href="/tools/deny-lists">
+    Per-Qor allowlists + install-wide bans.
+  </Card>
+  <Card title="Custom tools" icon="plus" href="/tools/custom/registering">
+    Adding a tool to Qorven.
+  </Card>
+</CardGroup>

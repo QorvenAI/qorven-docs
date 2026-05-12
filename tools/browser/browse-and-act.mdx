@@ -1,0 +1,64 @@
+---
+title: "Browse and Act"
+description: "AI-guided browser automation — describe what you want in plain English and the agent works out how to do it on any website."
+sidebarTitle: "Browse and Act"
+icon: "bot"
+---
+
+Browse and Act lets an agent navigate and interact with any website using natural language instructions. You describe what you want done — the agent uses vision to understand the page and figures out which elements to click, what to type, and how to navigate, without you writing a single CSS selector.
+
+## How it works
+
+The agent takes a screenshot of the page, interprets what it sees, and decides on the next action. It repeats this loop — look, decide, act — until the task is complete or it needs to ask you something.
+
+Because the agent reads the page visually, it works on sites you have never automated before, pages where the layout changes, and apps that are hard to inspect with traditional selectors.
+
+## Examples
+
+```
+"Log into my CRM and download last month's leads as a CSV"
+```
+
+```
+"Go to the supplier portal, find the invoice for PO-2847, and mark it as approved"
+```
+
+```
+"Open our analytics dashboard, take a screenshot of the weekly traffic chart, and send it to the team Slack channel"
+```
+
+```
+"Fill in the new employee onboarding form with these details: [name, start date, department, manager]"
+```
+
+## When to use Browse and Act
+
+Browse and Act is the right choice when:
+
+- The task is described in plain language and you do not want to write selectors
+- You are automating a site for the first time and do not know its structure
+- The page layout changes and hard-coded selectors would break
+- The workflow involves judgment — choosing between options, reading content, adapting to what is on the page
+
+For structured, repeatable tasks on well-known pages, [primitive tools](/tools/browser/primitive-tools) are faster and more reliable.
+
+## Performance
+
+Browse and Act is slower than primitive tools because each step requires a screenshot and a model inference call. Complex workflows (10+ steps) can take a minute or more to complete. For time-sensitive automations, consider recording the selectors from a Browse and Act run and converting them into a primitive-tool workflow.
+
+<Info>
+  Browse and Act uses a vision-capable model. Make sure the agent you assign it to is using GPT-4o, Claude 3+, or Gemini — models without vision cannot use this tool.
+</Info>
+
+## Approval for destructive actions
+
+Any Browse and Act action that submits a form, clicks a button that modifies data, or triggers a purchase will pause and request your approval before proceeding, unless you have turned off approvals for that agent.
+
+<CardGroup cols={2}>
+  <Card title="Primitive tools" icon="mouse-pointer" href="/tools/browser/primitive-tools">
+    Direct element targeting for repeatable, exact workflows.
+  </Card>
+  <Card title="Live stream" icon="video" href="/tools/browser/live-stream">
+    Watch the agent browse in real time and take over if needed.
+  </Card>
+</CardGroup>

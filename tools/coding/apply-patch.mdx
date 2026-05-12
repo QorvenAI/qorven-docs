@@ -1,0 +1,70 @@
+---
+title: "Apply Patch"
+description: "Apply a unified diff to your codebase safely — only the specified lines change, with a preview before anything is written."
+sidebarTitle: "Apply Patch"
+icon: "git-merge"
+---
+
+Apply Patch takes a unified diff (the standard `diff -u` format) and applies it to your files. It is how the Developer agent commits changes after generating them — instead of overwriting an entire file, only the lines specified in the diff are changed. This makes the operation auditable, reversible, and safe to approve.
+
+## Why patches instead of file overwrites
+
+A patch describes exactly what changed: which lines were removed and which were added. This means:
+
+- You can read the diff and understand what will change before it happens
+- Unchanged parts of the file are untouched, even if the agent did not read them
+- The change can be reviewed and rejected without any side effects
+- Git shows a clean, minimal diff when you commit
+
+## How it works
+
+When the Developer agent produces a code change, it generates a patch in unified diff format and calls `apply_patch`. The patch is shown to you in the chat (and in the Approvals panel if approval is required) before it is written to disk.
+
+A typical patch looks like:
+
+```diff
+--- a/src/handlers/auth.go
++++ b/src/handlers/auth.go
+@@ -42,7 +42,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+-	if err := validateToken(token); err != nil {
++	if err := validateToken(token, r.RemoteAddr); err != nil {
+ 		http.Error(w, "invalid token", http.StatusUnauthorized)
+ 		return
+ 	}
+```
+
+## Approval behaviour
+
+Apply Patch requires approval by default. When the agent proposes a change:
+
+1. The patch appears in the **Approvals** panel with a syntax-highlighted diff view
+2. You can approve, reject, or ask the agent to revise
+3. Once approved, the patch is applied atomically — all hunks succeed or none do
+
+To allow the Developer agent to apply patches without approval in trusted projects, turn off the approval requirement in the agent's tool settings.
+
+<Warning>
+  Disabling approval for Apply Patch means the agent can modify files on your server without confirmation. Only do this in development environments you are comfortable with.
+</Warning>
+
+## Git integration
+
+After a patch is applied, the agent can stage and commit the change using the git tools. The typical flow is:
+
+1. Agent generates a patch → you approve it
+2. Patch is applied to disk
+3. Agent runs `git add` and `git commit` with a descriptive message
+4. You review the commit before pushing
+
+## Patch failures
+
+If a patch cannot be applied cleanly (because the file has changed since the diff was generated), Apply Patch reports the failure and shows which hunks could not be matched. The agent will re-read the affected file and generate a fresh patch.
+
+<CardGroup cols={2}>
+  <Card title="Filesystem tools" icon="folder" href="/tools/coding/filesystem">
+    Read, write, and manage files directly.
+  </Card>
+  <Card title="Glob and Grep" icon="search" href="/tools/coding/glob-grep">
+    Find files and search code before making changes.
+  </Card>
+</CardGroup>

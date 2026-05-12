@@ -1,0 +1,54 @@
+---
+title: "qorven chat"
+description: "Chat with an agent interactively or send a single message."
+sidebarTitle: "chat"
+icon: "message-circle"
+---
+
+<Info>Generated from `qorven chat --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Chat with an agent interactively or send a single message.
+
+Interactive:
+  qorven chat
+  qorven chat researcher
+
+Single-shot:
+  qorven chat -m "What time is it?"
+  qorven chat -m @prompt.txt
+
+Pipe:
+  echo "Analyze this" | qorven chat
+
+Usage:
+  qorven chat [agent] [flags]
+
+Flags:
+  -a, --agent string     Agent key
+  -h, --help             help for chat
+  -m, --message string   One-shot message (or @file)
+      --no-stream        Disable streaming
+  -s, --session string   Session ID to continue
+      --tui              Use full TUI with sidebar
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

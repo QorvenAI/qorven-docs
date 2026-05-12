@@ -1,0 +1,69 @@
+---
+title: "Notifications"
+description: "Alerts from your agents — pending approvals, completed tasks, flagged issues, and messages waiting for your attention."
+sidebarTitle: "Notifications"
+icon: "bell"
+---
+
+Notifications keep you in the loop without requiring you to check every agent's activity manually. When something needs your attention — an approval request, a completed task, an error, or an incoming message — a notification appears here.
+
+## Notification types
+
+| Type | When it appears |
+|---|---|
+| **Approval required** | An agent has staged an action and needs your go-ahead before proceeding |
+| **Task complete** | An agent finished a task you assigned |
+| **Task failed** | An agent encountered an error it couldn't resolve |
+| **Message waiting** | An inbound message on a channel (Telegram, Slack, etc.) hasn't been answered |
+| **Draft ready** | The Email Agent has prepared a reply for your review |
+| **System alert** | A connector expired, a model key is invalid, a schedule failed |
+
+## Approval cards
+
+Approval notifications include an inline card showing exactly what the agent wants to do:
+
+- The action description
+- Relevant inputs (email text, file to be deleted, calendar event details)
+- **Approve** and **Reject** buttons
+
+You can approve or reject directly from the notification without navigating away.
+
+<Info>
+  Approvals that are not acted on within 24 hours are automatically cancelled and the agent is notified to wait for a new instruction.
+</Info>
+
+## Marking notifications
+
+- **Mark as read** — click the checkmark on any notification, or use **Mark all read** at the top
+- **Dismiss** — remove a notification from the list permanently (this does not affect the underlying task)
+
+Unread notifications are shown with a badge count in the sidebar.
+
+## Delivery settings
+
+By default, notifications are delivered to the dashboard only. You can also route them to:
+
+- **Telegram** — get a message from your Qorven bot when a notification arrives
+- **Slack** — post notifications to a designated Slack channel
+- **Email** — receive a summary email (digest format, configurable frequency)
+
+To configure delivery, go to [Preferences](/web-ui/settings/preferences) and find the Notifications section.
+
+<Tip>
+  For approval-heavy workflows, enable Telegram delivery so you can approve actions directly from your phone without opening the dashboard.
+</Tip>
+
+## Notification history
+
+All notifications, including dismissed ones, are stored for 30 days. To view older notifications, scroll to the bottom of the list and click **Load older**.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Mail" icon="mail" href="/web-ui/mail">
+    Review and approve email drafts from the Email Agent.
+  </Card>
+  <Card title="Preferences" icon="settings" href="/web-ui/settings/preferences">
+    Configure notification delivery channels.
+  </Card>
+</CardGroup>

@@ -1,0 +1,56 @@
+---
+title: "qorven init"
+description: "Interactive setup wizard for first-time Qorven configuration."
+sidebarTitle: "init"
+icon: "rocket"
+---
+
+<Info>Generated from `qorven init --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Interactive setup wizard for first-time Qorven configuration.
+
+Steps:
+  1. Database connection (PostgreSQL)
+  2. Run migrations
+  3. Choose LLM provider + API key
+  4. Create default agent
+  5. Generate auth token
+  6. Save config
+
+Examples:
+  qorven init                                    # Interactive wizard
+  qorven init --non-interactive --db-dsn "postgres://..." --provider deepseek --api-key "sk-..."
+
+Usage:
+  qorven init [flags]
+
+Flags:
+      --api-base string     Custom API base URL
+      --api-key string      Provider API key
+      --auth-token string   Gateway auth token (auto-generated if empty)
+      --db-dsn string       PostgreSQL DSN
+  -h, --help                help for init
+      --non-interactive     Non-interactive mode (requires --db-dsn and --api-key)
+      --provider string     LLM provider (deepseek/openai/gemini/anthropic)
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

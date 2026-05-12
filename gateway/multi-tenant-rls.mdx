@@ -1,0 +1,118 @@
+---
+title: "Multi-tenant Row-Level Security"
+description: "How Qorven isolates multiple workspaces on a single server using PostgreSQL row-level security."
+sidebarTitle: "Multi-tenant RLS"
+icon: "users"
+---
+
+Qorven supports running multiple isolated tenants on a single server. Each tenant has their own agents, sessions, memories, and users. Tenants cannot see each other's data.
+
+This is useful for agencies managing multiple client workspaces, or enterprise teams that want separate AI environments under a single deployment.
+
+## How isolation works
+
+Row-level security (RLS) is enforced at the PostgreSQL level, not just in application code. Every table that contains tenant-scoped data has an RLS policy that filters rows by the current tenant ID.
+
+When Qorven connects to the database for an authenticated request, it sets a session variable (`SET LOCAL qorven.tenant_id = '...'`) before executing any query. PostgreSQL's RLS policies use this variable to filter results automatically — even if application code accidentally issues an unscoped query.
+
+This means isolation is enforced at the database layer. A bug in application code cannot leak cross-tenant data.
+
+## Enabling multi-tenant mode
+
+```toml
+[server]
+multi_tenant = true
+```
+
+Restart the service after changing this setting. Existing data is migrated to the default tenant automatically.
+
+<Info>
+  In single-tenant mode (the default), RLS policies still exist but are set to `PERMISSIVE` with no tenant filtering. Enabling multi-tenant mode changes them to `RESTRICTIVE`.
+</Info>
+
+## Creating tenants
+
+```bash
+# Create a new tenant
+qorven tenants create --name "Acme Corp"
+
+# Output:
+# Tenant created: acme-corp
+# Auth token: qvt_live_xxxxxxxxxxxx
+# Admin URL: https://your-host/t/acme-corp/
+```
+
+Each tenant gets:
+- A unique tenant ID and slug
+- An isolated auth token
+- Their own admin user account
+- Separate agent, session, and memory namespaces
+
+## Listing and managing tenants
+
+```bash
+# List all tenants
+qorven tenants list
+
+# Suspend a tenant (disables their auth token)
+qorven tenants suspend acme-corp
+
+# Delete a tenant and all their data
+qorven tenants delete acme-corp --confirm
+```
+
+<Warning>
+  `qorven tenants delete` permanently deletes all data for that tenant, including agents, sessions, memories, and audit logs. This cannot be undone.
+</Warning>
+
+## Per-tenant configuration
+
+Each tenant can have different provider keys, agent configurations, and feature flags. These are set through the tenant's own admin panel, not shared with other tenants.
+
+Provider API keys are encrypted per-tenant using the shared encryption key. See [Encryption key](/ops/encryption-key).
+
+## Auth tokens in multi-tenant mode
+
+Each tenant has their own auth token. The token identifies both the user and their tenant — no additional tenant header is needed.
+
+```bash
+# Tenant A's requests
+curl https://your-host/v1/agents \
+  -H "Authorization: Bearer qvt_live_tenant_a_token"
+
+# Tenant B's requests (completely isolated)
+curl https://your-host/v1/agents \
+  -H "Authorization: Bearer qvt_live_tenant_b_token"
+```
+
+## Limits and quotas
+
+Per-tenant limits can be configured to prevent one tenant from consuming all server resources:
+
+```toml
+[tenants.defaults]
+max_agents        = 50
+max_sessions      = 1000
+max_memory_mb     = 512
+rate_limit_rpm    = 1000
+```
+
+Override for a specific tenant:
+
+```bash
+qorven tenants set-limit acme-corp max_agents 200
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Auth middleware" icon="lock" href="/gateway/auth-middleware">
+    How tenant tokens are validated.
+  </Card>
+  <Card title="Rate limits" icon="gauge" href="/gateway/rate-limits">
+    Per-tenant request rate limiting.
+  </Card>
+  <Card title="Encryption key" icon="key" href="/ops/encryption-key">
+    How secrets are encrypted per-tenant.
+  </Card>
+</CardGroup>

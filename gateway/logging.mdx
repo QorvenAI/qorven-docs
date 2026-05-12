@@ -1,0 +1,155 @@
+---
+title: "Logging"
+description: "Configure Qorven's log levels, output location, and log rotation."
+sidebarTitle: "Logging"
+icon: "file-text"
+---
+
+Qorven writes structured JSON logs to `/var/log/qorven/qorven.log`. The log level and format are configurable.
+
+## Log levels
+
+| Level | What is logged |
+|---|---|
+| `debug` | Everything, including request/response bodies and internal state |
+| `info` | Normal operations, startup events, health checks |
+| `warn` | Recoverable issues — retries, degraded dependencies |
+| `error` | Failures that require attention |
+
+The default level is `info`. For production, `info` is the right choice. Use `debug` temporarily when diagnosing a specific issue.
+
+## Setting the log level
+
+```toml
+[server]
+log_level = "info"
+```
+
+Or with an environment variable:
+
+```bash
+QORVEN_SERVER_LOG_LEVEL=debug sudo systemctl restart qorven
+```
+
+## Log output
+
+Application logs go to `/var/log/qorven/qorven.log`. Audit logs (HTTP requests and agent actions) go to `/var/log/qorven/audit.log`. These are separate files.
+
+When running under systemd, logs also appear in the journal:
+
+```bash
+# Follow all Qorven logs via journald
+journalctl -u qorven -f
+
+# Show only errors
+journalctl -u qorven -p err
+```
+
+## Log format
+
+Logs are structured JSON, one entry per line. This makes them compatible with log aggregators like Loki, Datadog, CloudWatch, and Splunk.
+
+```json
+{
+  "ts": "2026-05-12T09:14:32.104Z",
+  "level": "info",
+  "msg": "agent task completed",
+  "agent_id": "agt_01J2K...",
+  "session_id": "ses_01J2K...",
+  "duration_ms": 1842,
+  "tool_calls": 3
+}
+```
+
+## Tailing logs with the CLI
+
+```bash
+# Follow application logs
+qorven logs tail
+
+# Follow audit logs
+qorven logs tail --audit
+
+# Filter by log level
+qorven logs tail --level error
+
+# Show last 100 lines, then follow
+qorven logs tail --lines 100
+```
+
+## Log rotation
+
+The systemd installer includes a logrotate configuration at `/etc/logrotate.d/qorven`:
+
+```
+/var/log/qorven/*.log {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    postrotate
+        systemctl kill -s HUP qorven.service
+    endscript
+}
+```
+
+This rotates logs daily, keeps 14 days of compressed history, and sends a `HUP` signal to Qorven to reopen the log file after rotation.
+
+To change retention:
+
+```bash
+sudo nano /etc/logrotate.d/qorven
+```
+
+Replace `rotate 14` with your preferred number of days.
+
+## Forwarding logs to a log aggregator
+
+Qorven writes structured JSON, so any log aggregator with a JSON parser can ingest it directly.
+
+### Loki / Grafana
+
+Add a Promtail job:
+
+```yaml
+scrape_configs:
+  - job_name: qorven
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: qorven
+          __path__: /var/log/qorven/*.log
+    pipeline_stages:
+      - json:
+          expressions:
+            level: level
+            msg: msg
+```
+
+### Filebeat (Elasticsearch / Datadog)
+
+```yaml
+filebeat.inputs:
+  - type: filestream
+    paths:
+      - /var/log/qorven/*.log
+    parsers:
+      - ndjson:
+          target: ""
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Audit log" icon="history" href="/gateway/audit-log">
+    The separate audit trail for HTTP and agent actions.
+  </Card>
+  <Card title="Monitoring" icon="activity" href="/ops/monitoring">
+    Prometheus metrics and dashboards.
+  </Card>
+  <Card title="systemd service" icon="server" href="/gateway/systemd">
+    journald integration and service management.
+  </Card>
+</CardGroup>

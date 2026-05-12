@@ -1,0 +1,102 @@
+---
+title: "Audit Log"
+description: "Every HTTP request and agent action is recorded in Qorven's structured audit log — learn how to access, stream, and configure it."
+sidebarTitle: "Audit Log"
+icon: "history"
+---
+
+Qorven records an entry for every HTTP request and every agent action. The audit log is your authoritative record of who did what, when, and with what result.
+
+## What gets logged
+
+Each entry captures:
+
+| Field | Description |
+|---|---|
+| `timestamp` | RFC 3339 UTC timestamp |
+| `user` | User ID and role |
+| `action` | Operation type (e.g. `agent.run`, `tool.call`, `session.create`) |
+| `resource` | The entity acted on (agent ID, session ID, etc.) |
+| `result` | `ok`, `error`, or `denied` |
+| `status_code` | HTTP status code |
+| `duration_ms` | Request duration in milliseconds |
+| `agent` | Agent ID, if the action involved an agent |
+| `tool` | Tool name, if the action was a tool call |
+| `ip` | Client IP address |
+
+### Example entry
+
+```json
+{
+  "timestamp": "2026-05-12T09:14:32Z",
+  "user": "usr_01J2K...",
+  "role": "admin",
+  "action": "tool.call",
+  "resource": "agent:agt_01J2K...",
+  "tool": "send_email",
+  "result": "ok",
+  "status_code": 200,
+  "duration_ms": 312,
+  "ip": "203.0.113.5"
+}
+```
+
+## Log location
+
+Audit logs are written to `/var/log/qorven/audit.log`. Application logs (errors, debug output) go to `/var/log/qorven/qorven.log`.
+
+Both files are managed by logrotate — see [Logging](/gateway/logging) for rotation configuration.
+
+## Streaming logs
+
+Use the CLI to tail the audit log in real time:
+
+```bash
+# Stream all audit events
+qorven logs tail --audit
+
+# Filter to a specific user
+qorven logs tail --audit --user usr_01J2K
+
+# Filter to a specific agent
+qorven logs tail --audit --agent agt_01J2K
+
+# Filter to errors only
+qorven logs tail --audit --result error
+```
+
+## Retention policy
+
+The default retention period is 90 days. Entries older than this are pruned automatically during the nightly maintenance window.
+
+To change the retention period, set it in `config.toml`:
+
+```toml
+[audit]
+retention_days = 180   # keep 6 months
+```
+
+Set `retention_days = 0` to disable pruning and keep all entries indefinitely. On a busy installation, audit log tables can grow large — monitor your disk usage if you disable pruning.
+
+<Warning>
+  The audit log is stored in PostgreSQL, not on disk. Backing up the database backs up the audit log. See [Backup and restore](/gateway/backup-restore).
+</Warning>
+
+## Querying the audit log in the UI
+
+The admin panel under **Settings > Audit Log** provides a searchable, filterable view of the audit log. You can filter by user, agent, action type, result, and date range.
+
+## Disabling the audit log
+
+The audit log cannot be fully disabled — some entries are required for security. You can reduce verbosity by raising the log level, but HTTP and agent actions are always recorded regardless of log level.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Logging" icon="file-text" href="/gateway/logging">
+    Application log configuration and levels.
+  </Card>
+  <Card title="Backup and restore" icon="archive" href="/gateway/backup-restore">
+    Protecting your audit history.
+  </Card>
+</CardGroup>

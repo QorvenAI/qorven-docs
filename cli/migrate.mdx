@@ -1,0 +1,58 @@
+---
+title: "qorven migrate"
+description: "Apply, roll back, or force-mark database migrations."
+sidebarTitle: "migrate"
+icon: "database-zap"
+---
+
+<Info>Generated from `qorven migrate --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Apply, roll back, or force-mark database migrations.
+
+The migrator is the same one the gateway invokes at boot. Use this
+command from CI and release pipelines to advance or audit the schema
+without standing up the full gateway.
+
+Examples:
+  qorven migrate up
+  qorven migrate down
+  qorven migrate force 37
+
+Environment:
+  QORVEN_POSTGRES_DSN   Postgres DSN (required)
+  QORVEN_MIGRATIONS_DIR Path to migrations/ (default: backend/migrations)
+
+Usage:
+  qorven migrate [command]
+
+Available Commands:
+  down        Roll back the most recent migration
+  force       Force-mark schema at a specific version (recovery only)
+  up          Apply all pending migrations
+
+Flags:
+  -h, --help   help for migrate
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+
+Use "qorven migrate [command] --help" for more information about a command.
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

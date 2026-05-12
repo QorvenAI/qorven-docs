@@ -1,0 +1,101 @@
+---
+title: "Agent Model Selection"
+description: "Assign a different AI model to each agent so every task gets the right balance of power, speed, and cost."
+sidebarTitle: "Models"
+icon: "cpu"
+---
+
+<Info>
+  Each agent runs on its own model. Your Developer agent can use Claude Opus for heavy reasoning while your Email Agent trims latency and cost with Claude Haiku — all from the same install.
+</Info>
+
+## Why per-agent models matter
+
+A single model choice is always a compromise. Powerful models are slow and expensive; fast models cut corners on complex tasks. Per-agent assignment ends that trade-off: give each agent exactly what it needs for its workload.
+
+## Setting a model
+
+### From the dashboard
+
+1. Go to **Settings → Agents** and open the agent you want to configure.
+2. Click the **Model** tab.
+3. Pick a provider and model from the dropdown.
+4. Save. The change takes effect on the next message — no restart required.
+
+### From the config file
+
+```yaml
+# ~/.qorven/agents.yml  (or the path shown in Settings → Advanced → Config path)
+agents:
+  - id: developer
+    model:
+      provider: anthropic
+      name: claude-opus-4-5
+  - id: email
+    model:
+      provider: anthropic
+      name: claude-haiku-4-5
+  - id: researcher
+    model:
+      provider: openai
+      name: gpt-4o
+  - id: writer
+    model:
+      provider: anthropic
+      name: claude-sonnet-4-5
+  - id: prime
+    model:
+      provider: anthropic
+      name: claude-opus-4-5
+```
+
+YAML wins over UI when both are set — the dashboard shows a warning if the config file overrides it.
+
+## Recommended starting point
+
+| Agent | Suggested model | Reason |
+|---|---|---|
+| Prime | Claude Opus | Orchestration, judgment calls, delegation decisions |
+| Developer | Claude Opus | Long context, code reasoning, multi-file edits |
+| Researcher | GPT-4o | Strong web synthesis, broad knowledge |
+| Writer | Claude Sonnet | Good prose, faster than Opus |
+| Email Agent | Claude Haiku | High volume triage, minimal latency |
+
+These are starting points. Adjust based on your usage patterns and the cost/quality trade-off you want.
+
+## Fallback behaviour
+
+If no model is set on an agent, it inherits the **install default** from `config.toml`:
+
+```toml
+[models]
+default_provider = "anthropic"
+default_model    = "claude-sonnet-4-5"
+```
+
+The install default also covers any custom agents you create without a model assignment.
+
+## Model availability
+
+Not every model is available from every provider key. If a model shows as greyed out in the dropdown, the provider key for that provider either hasn't been added or doesn't have access to that model tier.
+
+<Warning>
+  Changing a production agent's model mid-conversation can shift its behaviour noticeably. Test model changes on a staging agent first, or at the start of a fresh session.
+</Warning>
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Models Hub" icon="layers" href="/models/hub">
+    Full catalog of available providers and models with context windows, pricing, and capability notes.
+  </Card>
+  <Card title="Failover" icon="arrow-right" href="/models/failover">
+    How Qorven rotates across keys and falls back to a secondary provider when a model is unavailable.
+  </Card>
+  <Card title="Provider keys" icon="key" href="/models/providers">
+    Adding and rotating API keys for OpenAI, Anthropic, and other providers.
+  </Card>
+  <Card title="Agent configuration" icon="settings" href="/qors/creating-a-qor">
+    Full reference for agent config including system prompt, tools, and memory settings.
+  </Card>
+</CardGroup>

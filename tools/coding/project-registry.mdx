@@ -1,0 +1,84 @@
+---
+title: "Project Registry"
+description: "Register named projects with their paths so agents can reference them by name instead of needing the full path every time."
+sidebarTitle: "Project Registry"
+icon: "folder"
+---
+
+The Project Registry is a named directory of projects on your Qorven server. Once you register a project, agents can refer to it by name — "the API project", "my-app" — rather than requiring the full filesystem path in every conversation.
+
+## Registering a project
+
+```bash
+qorven projects add --name "api" --path /home/user/my-api
+qorven projects add --name "frontend" --path /home/user/my-app/web
+qorven projects add --name "infra" --path /home/user/terraform
+```
+
+You can also register projects from the dashboard under **Settings → Projects**.
+
+## Using a registered project
+
+Once registered, agents know the project and its location automatically. You can refer to them naturally:
+
+```
+"Open the api project and find where the rate limiting is configured"
+"Run the tests in the frontend project"
+"Look at the infra project and tell me which AWS regions are configured"
+```
+
+The agent resolves the name to a path and uses the filesystem, coding, and LSP tools accordingly.
+
+## Listing registered projects
+
+```bash
+qorven projects list
+```
+
+Output:
+
+```
+NAME        PATH                          ADDED
+api         /home/user/my-api             2025-11-03
+frontend    /home/user/my-app/web         2025-11-03
+infra       /home/user/terraform          2025-11-10
+```
+
+## Removing a project
+
+```bash
+qorven projects remove --name "infra"
+```
+
+Removing a project from the registry does not delete any files — it only removes the name-to-path mapping.
+
+## Per-project configuration
+
+Each registered project can have optional metadata that helps agents work with it more effectively:
+
+```bash
+qorven projects add \
+  --name "api" \
+  --path /home/user/my-api \
+  --language go \
+  --description "Main REST API — Go, PostgreSQL, deployed to EC2"
+```
+
+The `--description` is included in the agent's context when it opens the project, giving it immediate orientation without needing to explore first.
+
+## Default project
+
+Set a default project so agents always know where to work if you do not specify one:
+
+```bash
+qorven projects set-default --name "api"
+```
+
+<CardGroup cols={2}>
+  <Card title="Codebase Digest" icon="book" href="/tools/coding/codebase-digest">
+    Generate a structural summary of a registered project.
+  </Card>
+  <Card title="LSP Bridge" icon="code" href="/tools/coding/lsp-bridge">
+    Connect IDE-level intelligence to a registered project.
+  </Card>
+</CardGroup>

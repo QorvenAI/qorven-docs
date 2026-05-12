@@ -1,0 +1,111 @@
+---
+title: "Encryption Key"
+description: "The encryption key protects all secrets stored in Qorven's database. Understand how to back it up, rotate it, and what losing it means."
+sidebarTitle: "Encryption Key"
+icon: "key"
+---
+
+Qorven encrypts sensitive data before storing it in PostgreSQL. Provider API keys, OAuth tokens, and vault entries are all encrypted at rest. The encryption key is what makes that possible.
+
+## Where the key lives
+
+The key is stored in `/etc/qorven/config.toml`:
+
+```toml
+[security]
+encryption_key = "a3f8e2c1d4b5a6f7e8d9c0b1a2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9a0"
+```
+
+The key is a 64-character hex string (32 bytes, 256 bits). It is generated during installation using a cryptographically secure random number generator.
+
+## What it protects
+
+| Data | Encrypted |
+|---|---|
+| Provider API keys (OpenAI, Anthropic, etc.) | Yes |
+| OAuth tokens for channel integrations | Yes |
+| Vault secrets stored by agents | Yes |
+| User passwords | Hashed (bcrypt), not encrypted |
+| Agent configurations | No |
+| Session content | No |
+| Memories | No |
+
+Data that is not encrypted is still protected by authentication and (in multi-tenant mode) row-level security. The encryption key specifically protects secret values that must be recovered exactly, like API keys.
+
+## Backing up the key
+
+<Warning>
+  Losing the encryption key means losing permanent access to all encrypted secrets. Provider keys, OAuth tokens, and vault entries cannot be recovered without the key. Back it up.
+</Warning>
+
+The key is included in every `qorven backup` archive alongside the database dump. If you back up manually, include `config.toml`:
+
+```bash
+# Store a copy of config.toml in a secure offsite location
+scp /etc/qorven/config.toml backup-server:/secure/qorven/config.toml.backup
+```
+
+Store it separately from the database backup. If both are in the same place and that location is compromised, the encrypted data is also compromised.
+
+## Generating a new key
+
+To generate a new key for a fresh installation:
+
+```bash
+openssl rand -hex 32
+```
+
+This produces a 64-character hex string. Paste it into `config.toml`.
+
+## Rotating the key
+
+Key rotation re-encrypts all secrets with a new key. This is required if:
+
+- The key was exposed or you suspect it was compromised.
+- Your security policy requires periodic key rotation.
+
+```bash
+qorven security rotate-key
+```
+
+This command:
+
+1. Generates a new random key.
+2. Decrypts all secrets with the old key.
+3. Re-encrypts them with the new key.
+4. Updates `config.toml` with the new key.
+5. Verifies all secrets were re-encrypted successfully.
+
+The server continues running during rotation. The process takes a few seconds for most installations.
+
+After rotation, update your backup of `config.toml` immediately.
+
+<Warning>
+  If key rotation is interrupted (power loss, crash), the database may contain a mix of old and new encrypted values. Run `qorven security rotate-key --resume` to complete the rotation from where it stopped.
+</Warning>
+
+## Security recommendations
+
+- **File permissions:** `config.toml` should be readable only by the `qorven` user:
+  ```bash
+  sudo chown qorven:qorven /etc/qorven/config.toml
+  sudo chmod 600 /etc/qorven/config.toml
+  ```
+- **Do not log the key:** The key should never appear in logs. Qorven redacts it, but be careful if you are parsing `config.toml` in shell scripts.
+- **Use a secrets manager:** For enterprise deployments, you can store the key in AWS Secrets Manager, HashiCorp Vault, or similar, and have Qorven fetch it at startup:
+  ```toml
+  [security]
+  encryption_key_source = "aws-secrets-manager"
+  encryption_key_id     = "arn:aws:secretsmanager:us-east-1:123456789:secret:qorven-key"
+  ```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Backup and restore" icon="archive" href="/gateway/backup-restore">
+    The key must be in every backup.
+  </Card>
+  <Card title="PostgreSQL setup" icon="database" href="/ops/postgres-setup">
+    Database storing the encrypted secrets.
+  </Card>
+</CardGroup>

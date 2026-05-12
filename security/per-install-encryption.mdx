@@ -1,0 +1,75 @@
+---
+title: "Per-Install Encryption"
+description: "Every Qorven install generates a unique AES-256-GCM encryption key. Here's what it protects and why you must back it up."
+sidebarTitle: "Per-Install Encryption"
+icon: "key"
+---
+
+## How it works
+
+When you run the Qorven installer for the first time, it generates a random 256-bit key and writes it to `/etc/qorven/config.toml` under the `[security]` section:
+
+```toml
+[security]
+encryption_key = "base64encodedkeyhere..."
+```
+
+Every secret stored in the database — provider API keys, OAuth client secrets, OAuth access and refresh tokens, vault entries — is encrypted with this key using **AES-256-GCM** before being written to PostgreSQL.
+
+## What this protects
+
+If an attacker obtains a copy of your database (via a backup, a misconfigured pg_dump, or a PostgreSQL vulnerability), all secrets are ciphertext. Without the encryption key, they cannot recover any credentials.
+
+The database stores only the encrypted blobs. The key never touches the database.
+
+## Backup your key
+
+<Warning>
+  If you lose your encryption key, every secret stored in the database is permanently unrecoverable. You will need to re-enter all provider API keys, re-authorize all OAuth connectors, and re-add all vault entries. There is no recovery mechanism — Qorven does not have a copy of your key.
+</Warning>
+
+Back up `/etc/qorven/config.toml` (or at minimum the `encryption_key` value) to a secure location — a password manager, a secrets manager, or an encrypted offline backup. Treat it with the same care as a private key or root password.
+
+## Key rotation
+
+Key rotation is not yet available through the UI or CLI. To rotate manually:
+
+<Steps>
+  <Step title="Export all secrets in plaintext">
+    Use `qorven config export --decrypt` to dump a plaintext copy while the current key is still in place.
+  </Step>
+  <Step title="Generate a new key">
+    Replace the value in `config.toml` with a new 32-byte base64-encoded random key.
+  </Step>
+  <Step title="Re-import secrets">
+    Use `qorven config import` to re-encrypt everything under the new key.
+  </Step>
+  <Step title="Restart the service">
+    ```bash
+    sudo systemctl restart qorven
+    ```
+  </Step>
+</Steps>
+
+## Docker and CI/CD
+
+In containerized environments, inject the key via environment variable rather than mounting the config file:
+
+```bash
+QORVEN_SECURITY_ENCRYPTION_KEY=your_key_here
+```
+
+Environment variables override `config.toml` values. See [Environment variables](/reference/environment-vars) for the full list.
+
+<Warning>
+  Never commit the encryption key to a git repository or include it in a Docker image. Use a secrets manager (Vault, AWS Secrets Manager, Docker Secrets) to inject it at runtime.
+</Warning>
+
+<CardGroup cols={2}>
+  <Card title="Config keys reference" icon="settings" href="/reference/config-keys">
+    Full reference for config.toml including the security section.
+  </Card>
+  <Card title="Environment variables" icon="terminal" href="/reference/environment-vars">
+    Inject config via environment for Docker and CI/CD.
+  </Card>
+</CardGroup>

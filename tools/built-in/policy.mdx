@@ -1,0 +1,78 @@
+---
+title: "Policy"
+description: "Define rules that agents check before taking actions — enforce org-specific constraints automatically."
+sidebarTitle: "Policy"
+icon: "scroll"
+---
+
+The `policy` tool lets agents check whether a proposed action is permitted before they take it. Think of it as a rule engine: you define the rules, and agents consult them at decision time.
+
+## How it works
+
+When an agent is about to take an action, it can call `check_policy` with a description of what it's about to do. The policy engine evaluates the request against your rules and returns `allow`, `deny`, or `require_approval`.
+
+Policies are evaluated in order. The first matching rule wins.
+
+## Example policies
+
+```toml
+[[tools.policy.rules]]
+name = "no_external_email_without_approval"
+condition = "sending email to address not in @company.com"
+action = "require_approval"
+
+[[tools.policy.rules]]
+name = "financial_threshold"
+condition = "action involves financial amount greater than $1000"
+action = "require_approval"
+message = "Financial actions over $1000 require explicit approval."
+
+[[tools.policy.rules]]
+name = "no_delete_in_production"
+condition = "delete_file called with path containing /production/"
+action = "deny"
+message = "Files in /production/ cannot be deleted by agents."
+
+[[tools.policy.rules]]
+name = "working_hours_only"
+condition = "exec called outside hours 09:00-18:00 UTC"
+action = "deny"
+message = "Shell commands are only permitted during working hours."
+```
+
+## Built-in policy checks
+
+Some checks happen automatically without you configuring anything:
+
+- **Approval gate** — actions marked as requiring approval are held until the user responds (this is the approval system itself)
+- **Deny list enforcement** — denied tools are blocked before any policy check runs
+- **SSRF and outbound checks** — network requests are validated before they go out
+
+Custom policies layer on top of these.
+
+## The policy tool vs approvals
+
+Approvals are configured per-tool: "this tool always needs approval". The policy tool adds **conditional** logic: "this tool needs approval only when the email is going outside the company" or "only when the amount is over a threshold".
+
+Use approvals for blanket requirements. Use policies for conditional, rule-based logic.
+
+## Checking policies from agents
+
+Agents call `check_policy` automatically when they've been instructed to enforce specific rules. You can also instruct an agent to be policy-aware in its system prompt:
+
+> "Before sending any email to an external address, always call check_policy with the full recipient and subject."
+
+## Policy violations in the audit log
+
+Every policy evaluation — whether the result was allow, deny, or require_approval — is written to the audit log with the rule that matched, the action that was evaluated, and the outcome.
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Approvals" icon="check-circle" href="/tools/approvals">
+    Per-tool approval gates.
+  </Card>
+  <Card title="Deny Lists" icon="x-circle" href="/tools/deny-lists">
+    Hard blocks that override everything.
+  </Card>
+</CardGroup>

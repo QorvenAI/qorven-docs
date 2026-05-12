@@ -1,0 +1,77 @@
+---
+title: "Approvals"
+description: "Agents pause before high-risk actions and wait for your explicit sign-off — approve or reject from the dashboard, Telegram, or Slack."
+sidebarTitle: "Approvals"
+icon: "check-circle"
+---
+
+Approvals are Qorven's agent-in-the-loop safety mechanism. When an agent is about to take an action that could have real-world consequences — sending an email, modifying a file, running a command — it pauses and asks you to confirm before proceeding.
+
+This gives you full control without sacrificing automation.
+
+## Why approvals exist
+
+AI agents are powerful, but "powerful" cuts both ways. An agent that can send emails on your behalf is extremely useful — until it sends the wrong email to the wrong person.
+
+Approvals let you define a clear line between what agents can do freely and what requires human eyes first. Actions below the line run without friction. Actions above the line pause and wait. You decide where the line is.
+
+## What triggers an approval
+
+By default, these action categories require approval:
+
+- **Sending messages** — emails, Slack messages, Telegram messages sent on your behalf
+- **File modifications** — writing to, deleting, or moving files
+- **Running commands** — shell commands, code execution, API calls that mutate data
+- **Financial actions** — anything involving payments, invoices, or billing systems
+- **Calendar changes** — creating or modifying calendar events
+
+<Note>
+  The default set is conservative. You can relax any category using auto-approve rules (see below).
+</Note>
+
+## How to approve or reject
+
+When an agent hits an approval gate, the action appears in:
+
+- **Dashboard** — **Workflows → Approvals**, with full context about what the agent is about to do and why
+- **Telegram** — a message from your Qorven bot with Approve / Reject buttons
+- **Slack** — an interactive message in your configured Qorven channel
+
+You'll see:
+- The agent's name and the task it's working on
+- The exact action it wants to take (e.g. the email it's about to send)
+- The reasoning it provided for why this action is needed
+
+Click **Approve** to let the agent proceed, or **Reject** with an optional note explaining why. The agent receives your decision instantly and continues (or abandons) the task accordingly.
+
+## Auto-approve rules
+
+For actions you trust implicitly, you can configure auto-approve rules so the agent never pauses. Rules can match on:
+
+- **Agent** — only auto-approve for a specific agent (e.g. "always trust Email Agent for internal emails")
+- **Action type** — approve all calendar reads but not writes
+- **Recipient or destination** — auto-approve emails to `@yourcompany.com` addresses, require approval for external recipients
+- **Time window** — auto-approve during business hours only
+
+Configure rules in **Settings → Approvals → Auto-approve rules**.
+
+<Warning>
+  Be deliberate with auto-approve rules. Once set, the agent will execute those actions without any human check. Start narrow (specific agent + specific recipient domain) and expand as you build confidence.
+</Warning>
+
+## Approval timeout
+
+If you don't respond to an approval request within the configured timeout (default: 24 hours), the agent abandons the action and logs it as expired. You can adjust the timeout per rule or globally in **Settings → Approvals**.
+
+## Approval history
+
+Every approval decision — approved, rejected, or expired — is recorded in the [Audit Log](/workflows/audit) with the full context: which agent, what action, who approved it, and when. This record cannot be modified.
+
+<CardGroup cols={2}>
+  <Card title="Audit Log" icon="history" href="/workflows/audit">
+    See every approval decision with full context.
+  </Card>
+  <Card title="Schedules" icon="calendar" href="/workflows/schedule">
+    Scheduled tasks that may trigger approval gates.
+  </Card>
+</CardGroup>

@@ -1,0 +1,95 @@
+---
+title: "Connectors"
+description: "Connect third-party services so your agents can read and write data on your behalf."
+sidebarTitle: "Connectors"
+icon: "link"
+---
+
+Connectors give your agents access to external services — email, files, code, and collaboration tools. Once a connector is active, agents can use it as a tool without any additional setup.
+
+## Available connectors
+
+<CardGroup cols={2}>
+  <Card title="Gmail" icon="mail">
+    Read, send, and search email. Required for the Email Agent to manage your inbox.
+  </Card>
+  <Card title="Google Drive" icon="folder">
+    Read and write files. Agents can open, search, and create documents.
+  </Card>
+  <Card title="Google Calendar" icon="calendar">
+    Check availability, create events, and send invites.
+  </Card>
+  <Card title="Notion" icon="book-open">
+    Read pages and databases, create and update content.
+  </Card>
+  <Card title="GitHub" icon="github">
+    Read repos, open issues, create pull requests, push commits.
+  </Card>
+  <Card title="Slack" icon="message-square">
+    Send and read messages in channels and DMs.
+  </Card>
+  <Card title="Dropbox" icon="box">
+    Sync files to your Qorven Drive.
+  </Card>
+  <Card title="Outlook / Microsoft 365" icon="microsoft">
+    Email and calendar access for Microsoft accounts.
+  </Card>
+</CardGroup>
+
+## How connectors work
+
+Connectors use OAuth 2.0. You authorize Qorven to act on your behalf within that service — no passwords are stored. The OAuth token is encrypted and kept on your server; it never leaves.
+
+<Info>
+  Before connecting most services, you need to register an OAuth app in that service's developer portal and add the credentials to Qorven. See [OAuth Apps](/web-ui/settings/oauth-apps) in Settings.
+</Info>
+
+## Connecting a service
+
+<Steps>
+  <Step title="Open Connectors">
+    Go to **Connectors** in the sidebar.
+  </Step>
+  <Step title="Find the service">
+    Browse the connector list or use the search box.
+  </Step>
+  <Step title="Click Connect">
+    You'll be redirected to the service's authorization page.
+  </Step>
+  <Step title="Grant permissions">
+    Review the requested scopes and approve. You'll be returned to the Connectors page once complete.
+  </Step>
+</Steps>
+
+## Managing active connectors
+
+Each active connector shows:
+
+- Connected account (email or username)
+- Last used timestamp
+- Which agents have used it
+
+Click the **...** menu on any connector to:
+
+- **Reconnect** — refresh the token if it has expired
+- **View permissions** — see exactly what scopes were granted
+- **Disconnect** — immediately revoke access
+
+## Credential storage
+
+All OAuth tokens and API keys are stored encrypted at rest on your Qorven server using AES-256. They are decrypted in memory only when an agent needs to make a request.
+
+<Warning>
+  Disconnecting a connector immediately prevents agents from using it. Any in-progress task that depends on that connector will fail.
+</Warning>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="OAuth Apps" icon="link" href="/web-ui/settings/oauth-apps">
+    Register OAuth credentials for each service.
+  </Card>
+  <Card title="Provider Keys" icon="key" href="/web-ui/settings/provider-keys">
+    Add API keys for AI model providers.
+  </Card>
+</CardGroup>

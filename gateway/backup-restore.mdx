@@ -1,0 +1,154 @@
+---
+title: "Backup and Restore"
+description: "What to back up, how to automate it, and how to restore a Qorven instance from backup."
+sidebarTitle: "Backup & Restore"
+icon: "archive"
+---
+
+Two things contain everything needed to restore a Qorven instance:
+
+1. **PostgreSQL database** — agents, sessions, memories, provider keys, users, audit log.
+2. **`/etc/qorven/config.toml`** — encryption key, listen addresses, all server configuration.
+
+If you have both, you can restore on any machine.
+
+<Warning>
+  The encryption key lives in `config.toml`. Without it, encrypted secrets (provider API keys, OAuth tokens) stored in the database cannot be decrypted. Back up `config.toml` alongside the database dump.
+</Warning>
+
+## Creating a backup
+
+The `qorven backup` command creates a timestamped PostgreSQL dump and packages it with a copy of the config file.
+
+```bash
+# Manual backup — writes to /var/backups/qorven/ by default
+qorven backup
+
+# Specify a destination
+qorven backup --output /mnt/backups/
+```
+
+Output:
+
+```
+Backup created: /var/backups/qorven/qorven-2026-05-12T09-14-32Z.tar.gz
+  - database: 142 MB
+  - config:   included
+```
+
+The archive contains:
+- `db.dump` — PostgreSQL custom-format dump (`pg_dump -Fc`)
+- `config.toml` — your current config (encryption key included)
+- `backup-meta.json` — Qorven version, timestamp, database size
+
+## Automated daily backups
+
+```bash
+qorven backup --schedule daily
+```
+
+This installs a systemd timer that runs `qorven backup` at 02:00 UTC every day. Backups older than 30 days are pruned automatically.
+
+To change the schedule:
+
+```toml
+[backup]
+schedule       = "0 2 * * *"   # cron syntax
+retention_days = 30
+output_dir     = "/var/backups/qorven"
+```
+
+## Offsite backup
+
+The built-in backup writes to local disk. For disaster recovery, copy backups offsite after they are created.
+
+```bash
+# Example: sync backups to an S3 bucket
+aws s3 sync /var/backups/qorven/ s3://my-bucket/qorven-backups/
+
+# Or use rclone for any storage provider
+rclone sync /var/backups/qorven/ remote:qorven-backups/
+```
+
+A post-backup hook can automate this:
+
+```toml
+[backup]
+post_hook = "aws s3 sync /var/backups/qorven/ s3://my-bucket/qorven-backups/"
+```
+
+## Restoring from backup
+
+<Steps>
+  <Step title="Stop the service">
+    ```bash
+    sudo systemctl stop qorven
+    ```
+  </Step>
+  <Step title="Extract the backup archive">
+    ```bash
+    tar -xzf qorven-2026-05-12T09-14-32Z.tar.gz -C /tmp/qorven-restore/
+    ```
+  </Step>
+  <Step title="Restore the database">
+    Drop and recreate the database, then restore from the dump:
+
+    ```bash
+    # Drop and recreate
+    psql -U postgres -c "DROP DATABASE IF EXISTS qorven;"
+    psql -U postgres -c "CREATE DATABASE qorven OWNER qorven;"
+    psql -U postgres -d qorven -c "CREATE EXTENSION IF NOT EXISTS vector;"
+
+    # Restore the dump
+    pg_restore -U qorven -d qorven -Fc /tmp/qorven-restore/db.dump
+    ```
+  </Step>
+  <Step title="Restore the config">
+    ```bash
+    sudo cp /tmp/qorven-restore/config.toml /etc/qorven/config.toml
+    sudo chown qorven:qorven /etc/qorven/config.toml
+    sudo chmod 600 /etc/qorven/config.toml
+    ```
+  </Step>
+  <Step title="Start the service">
+    ```bash
+    sudo systemctl start qorven
+    ```
+
+    Migrations run automatically on startup. Check the service is healthy:
+
+    ```bash
+    curl http://localhost:4200/health
+    ```
+  </Step>
+</Steps>
+
+## What is not in the backup
+
+- **Agent workspace files** — files created by agents during task execution. These live at `runtimePath()` (default: `/var/lib/qorven/workspace/`). Back this directory up separately if you need to preserve agent-generated files.
+- **Log files** — `/var/log/qorven/` is not included. The audit log history is in the database and is included.
+
+## Testing your backups
+
+A backup you have never tested is not a backup. Schedule a quarterly restore drill to a staging machine:
+
+```bash
+# Verify a backup archive without restoring
+qorven backup verify /var/backups/qorven/qorven-2026-05-12T09-14-32Z.tar.gz
+```
+
+This checks that the archive is not corrupted, that the database dump is valid, and that the encryption key in the config matches the database.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Encryption key" icon="key" href="/ops/encryption-key">
+    Why the encryption key must be in every backup.
+  </Card>
+  <Card title="PostgreSQL setup" icon="database" href="/ops/postgres-setup">
+    Database prerequisites and connection setup.
+  </Card>
+  <Card title="Upgrading" icon="arrow-up" href="/ops/upgrading">
+    Always back up before upgrading.
+  </Card>
+</CardGroup>

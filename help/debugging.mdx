@@ -1,0 +1,130 @@
+---
+title: "Debugging"
+description: "Logs, tools, and runbooks for the 95% of issues you'll hit in the first month."
+sidebarTitle: "Debugging"
+icon: "bug"
+---
+
+<Info>
+  When something breaks, run `qorven doctor` first. It checks DB, gateway, providers, channels, TLS, file perms, disk space, and config validity. If `doctor` is green and you still have an issue, this page is the playbook.
+</Info>
+
+## The five-minute diagnosis
+
+<Steps>
+  <Step title="Is the gateway alive?">
+    ```bash
+    sudo systemctl status qorven
+    curl -k https://localhost/health
+    # expected: {"status":"ok","version":"..."}
+    ```
+  </Step>
+  <Step title="Is Postgres reachable?">
+    ```bash
+    sudo -u postgres psql -c "SELECT 1;"
+    qorven doctor
+    ```
+  </Step>
+  <Step title="Are provider keys valid?">
+    ```bash
+    qorven providers verify openai
+    ```
+    Hits the provider with a 1-token ping. If it fails, your key is wrong or expired.
+  </Step>
+  <Step title="Is the failure recent?">
+    ```bash
+    journalctl -u qorven -f --since "10 minutes ago"
+    ```
+    Most real errors show up here with `ERROR` prefix.
+  </Step>
+  <Step title="Is a channel stuck?">
+    ```bash
+    qorven channels status
+    ```
+    Every binding shows active / rate-limited / disconnected.
+  </Step>
+</Steps>
+
+## Log locations
+
+| Source | Where |
+|---|---|
+| Gateway (systemd) | `journalctl -u qorven` |
+| Gateway (file) | `/var/log/qorven/gateway.log` |
+| Channels | `/var/log/qorven/channels.log` |
+| Install | `/var/log/qorven/install.log` |
+| Docker | `docker compose logs qorven` |
+| Tool runs | `qorven logs --filter tool` |
+| Agent loop | `qorven logs --filter agent.loop` |
+| Audit (human) | Web UI → Audit |
+| Audit (file) | `/var/log/qorven/audit.jsonl` |
+
+## Common failure modes
+
+<AccordionGroup>
+  <Accordion title="Gateway won't start — chi panic">
+    Mostly a config issue. Check `journalctl -u qorven --since "1 minute ago" -e`. Look for `panic: chi: all middlewares must be defined before routes on a mux` → see [boot fails →](/ops/troubleshooting/boot-fails).
+  </Accordion>
+
+  <Accordion title="Every chat says 'all providers failed'">
+    Provider keys exhausted. Check **Usage → Provider keys**. Add a new key or switch to a different provider. If you're on a free tier, you may have hit daily quota.
+  </Accordion>
+
+  <Accordion title="Browser says 'not secure'">
+    Local CA not trusted on this laptop. Run `sudo qorven tls install-ca` once on each browser host. [TLS guide →](/security/tls-best-practices)
+  </Accordion>
+
+  <Accordion title="Webhook isn't triggering">
+    Either the provider can't reach your public URL, or the signature check is failing. Look at `/var/log/qorven/channels.log` — each rejected webhook logs the reason. Common: webhook URL typo, expired signing secret, server behind NAT without port forward.
+  </Accordion>
+
+  <Accordion title="Slow replies">
+    Usually LLM latency. `qorven logs --filter llm.call` shows per-call timing. If it's the agent loop → check for tool timeouts (`--filter tool.timeout`).
+  </Accordion>
+
+  <Accordion title="Disk filling up">
+    Most likely: audit log. Set retention in `config.toml`:
+    ```toml
+    [audit]
+    retention_days = 90
+    ```
+    Or: Next.js build cache from an in-place dev install. `rm -rf .next/`.
+  </Accordion>
+</AccordionGroup>
+
+## Enable verbose logs temporarily
+
+```bash
+sudo systemctl set-environment QORVEN_LOG_LEVEL=debug
+sudo systemctl restart qorven
+# reproduce the issue
+sudo journalctl -u qorven -f
+# turn it off when done
+sudo systemctl unset-environment QORVEN_LOG_LEVEL
+sudo systemctl restart qorven
+```
+
+## Dump diagnostics for support
+
+```bash
+qorven debug > /tmp/qorven-debug.txt
+```
+
+Collects: version, config (secrets redacted), DB migration status, provider verification, channel status, disk + memory usage. Share this in your GitHub Issue.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Log locations" icon="file-text" href="/help/log-locations">
+    Full file-system map of where things log.
+  </Card>
+  <Card title="Error codes" icon="alert-octagon" href="/help/error-codes">
+    Every error string + cause.
+  </Card>
+  <Card title="Boot fails" icon="alert-circle" href="/ops/troubleshooting/boot-fails">
+    Gateway refuses to start.
+  </Card>
+  <Card title="Getting help" icon="life-buoy" href="/help/getting-help">
+    Discord, issues, commercial.
+  </Card>
+</CardGroup>

@@ -1,0 +1,84 @@
+---
+title: "Debounce"
+description: "How Qorven batches rapid inbound messages so your Qor doesn't fire off five replies to five near-simultaneous messages."
+sidebarTitle: "Debounce"
+icon: "clock"
+---
+
+<Info>
+  When a user sends three messages in five seconds, you probably want **one reply** to all three — not three replies to each. Debounce merges rapid messages before dispatching to the agent loop.
+</Info>
+
+## How it works
+
+<Steps>
+  <Step title="Inbound message arrives">
+    Webhook → dispatcher → message queued with a 2-second timer.
+  </Step>
+  <Step title="Timer resets on new messages">
+    Another message from the same sender within 2 seconds → merge into the queue, reset timer.
+  </Step>
+  <Step title="Timer expires">
+    No new messages for 2 seconds → flush the queue as a single batched message to the Qor.
+  </Step>
+  <Step title="Qor replies once">
+    The Qor sees all messages concatenated with timestamps, answers them together.
+  </Step>
+</Steps>
+
+## The defaults
+
+| Scope | Window | Why |
+|---|---|---|
+| Chat-family channels | 2 seconds | People type in bursts |
+| Email | 30 seconds | Replies rarely need <30s latency |
+| SMS | 5 seconds | Same bursty pattern |
+| Voice transcript | 1 second | Stream-level debounce |
+| GitHub / webhook | 0 seconds | Each event is discrete |
+
+## Tuning
+
+Per channel binding:
+
+```bash
+qorven channels configure telegram-bot --debounce-ms 3000
+```
+
+Or in the routing config:
+
+```yaml
+rules:
+  - match:
+      channel: slack
+      from: chatty-user
+    qor: support
+    debounce_ms: 5000   # give them more time
+```
+
+## When to turn it off
+
+<Warning>
+  Setting debounce to `0` makes every message trigger an immediate Qor run. Use for:
+
+  - Voice dictation where you want instant response
+  - Automation webhooks where each event is independent
+  - Debugging latency
+
+  It does **not** cancel in-flight LLM calls — those complete. You'll just get multiple reply threads interleaving, which users find confusing.
+</Warning>
+
+## Debounce + typing indicators
+
+When debounce is active, the Qor sends a "typing" indicator (where the channel supports it — Telegram, WhatsApp, Slack). The indicator stays on from first message until reply sends, so users see *something's happening* even during the 2-second quiet window.
+
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Channel routing" icon="git-branch" href="/channels/routing">
+    Per-rule debounce overrides.
+  </Card>
+  <Card title="Quotas" icon="gauge" href="/channels/quotas">
+    The other flow-control mechanism: rate limits.
+  </Card>
+</CardGroup>

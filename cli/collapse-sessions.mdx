@@ -1,0 +1,50 @@
+---
+title: "qorven collapse-sessions"
+description: "Collapses chat-family sessions per Qor into a single canonical chat row."
+sidebarTitle: "collapse-sessions"
+icon: "git-merge"
+---
+
+<Info>Generated from `qorven collapse-sessions --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Collapses chat-family sessions per Qor into a single canonical chat row.
+
+Use this once after upgrading past the one-Qor-one-chat refactor.
+Subsequent chat-family writes already route to the canonical session,
+so this only needs to run against databases with historical fan-out.
+
+Archives old rows rather than deleting them; drop the archive later
+once you're confident nothing depends on their ids.
+
+Usage:
+  qorven collapse-sessions [flags]
+
+Examples:
+  qorven collapse-sessions --dry-run
+  qorven collapse-sessions --yes
+
+Flags:
+      --dry-run   print what would change without writing
+  -h, --help      help for collapse-sessions
+      --yes       skip interactive confirmation
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

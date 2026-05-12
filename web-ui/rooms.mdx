@@ -1,0 +1,114 @@
+---
+title: "Hubs"
+description: "Group workspaces where you, Prime, and specialist Qors collaborate on a project or topic."
+sidebarTitle: "Hubs"
+icon: "users"
+---
+
+<Info>
+  The URL is `/rooms` (matches the backend API) but the UI calls them **Hubs** everywhere you see them. The terms are interchangeable in the codebase; this page uses Hub throughout.
+</Info>
+
+## What is a Hub?
+
+A Hub is a persistent group chat tied to a project, task, or topic. Unlike a 1:1 conversation with a single Qor, a Hub brings together:
+
+- **You** — the human owner
+- **Prime** — coordinates the specialists and keeps the work on track
+- **One or more specialist Qors** — the ones doing the actual work
+
+Every Hub has a running task list, a decisions log, and a minutes trail. These survive navigation; come back tomorrow and the context is still there.
+
+## When to use a Hub vs. a direct Qor chat
+
+| Use a Hub when… | Use a direct Qor chat when… |
+|---|---|
+| You need more than one specialist | One Qor can handle it alone |
+| The work spans days or weeks | It's a quick question |
+| You want a shared task list | You just want an answer |
+| You want Prime to coordinate | You know exactly which Qor to ask |
+
+## Creating a Hub
+
+<Steps>
+  <Step title="Open the Hubs page">
+    Click **Hubs** in the left rail, or press `Cmd+K` and type "New Hub".
+  </Step>
+  <Step title="Name it">
+    Give the Hub a name that describes the project or topic. The name appears in the sidebar.
+  </Step>
+  <Step title="Pick your Qors">
+    Select which specialist Qors to invite. Prime is always included automatically.
+  </Step>
+  <Step title="Start working">
+    Chat in the Hub. Prime routes tasks to the right specialist. Each specialist's work appears inline.
+  </Step>
+</Steps>
+
+## Inside a Hub
+
+The Hub view has three tabs:
+
+<CardGroup cols={3}>
+  <Card title="Chat" icon="message-circle">
+    Live group chat. All Qors in the Hub can see and respond. Delegation cards show which Qor is handling what.
+  </Card>
+  <Card title="Tasks" icon="check-square">
+    The task list for this Hub. Tasks are created automatically when Prime delegates work, or manually by you. Status updates in real time.
+  </Card>
+  <Card title="Decisions" icon="bookmark">
+    A log of every decision made in the Hub — what was agreed, who decided, when. Useful for audit and context recovery.
+  </Card>
+</CardGroup>
+
+## Hub vs. Plans vs. Workflows
+
+These are three different things:
+
+| | Hub | Plan | Workflow |
+|---|---|---|---|
+| **What it is** | A group chat with Qors | A DAG of work Prime proposes | A reusable automation |
+| **Who creates it** | You | Prime (on request) | You |
+| **Lifetime** | Ongoing until you close it | Until the project finishes | Permanent template |
+| **Approval** | No gating | Per-node human approval | On run |
+| **Where** | `/rooms` | `/code` → Plans tab | `/workflows` |
+
+## API
+
+Hubs are backed by the `/v1/rooms` API:
+
+```bash
+# List all hubs
+GET /v1/rooms
+
+# Create a hub
+POST /v1/rooms
+{ "name": "Q3 Launch", "member_ids": ["agent-id-1"] }
+
+# Send a message
+POST /v1/rooms/{id}/messages
+{ "content": "Let's start with the landing page copy" }
+
+# Get task list
+GET /v1/rooms/{id}/tasks
+
+# Get decisions log
+GET /v1/rooms/{id}/decisions
+```
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="What is a Qor?" icon="brain" href="/qors/what-is-a-qor">
+    The agent model explained.
+  </Card>
+  <Card title="Plans" icon="git-branch" href="/web-ui/plans">
+    Approval-gated DAGs that Prime proposes before starting complex work.
+  </Card>
+  <Card title="Workflows" icon="workflow" href="/web-ui/workflows">
+    Durable automations you build once and re-run.
+  </Card>
+  <Card title="Delegation" icon="arrow-right" href="/qors/delegation">
+    How Prime routes work to specialists.
+  </Card>
+</CardGroup>

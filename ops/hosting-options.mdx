@@ -1,0 +1,137 @@
+---
+title: "Hosting Options"
+description: "Where to run Qorven — laptop, home server, cloud VM, or on-premise. Requirements and recommendations for each."
+sidebarTitle: "Hosting Options"
+icon: "server"
+---
+
+Qorven is a single binary. It runs anywhere Linux runs. The right hosting option depends on your audience and your availability requirements.
+
+## Options at a glance
+
+<CardGroup cols={2}>
+  <Card title="Laptop / desktop" icon="laptop">
+    Development and personal use. No uptime requirements. Free.
+  </Card>
+  <Card title="Home server" icon="home">
+    Personal or family use. Always-on if the machine is on. Free hardware cost.
+  </Card>
+  <Card title="Cloud VM" icon="cloud">
+    Team use. Reliable uptime. Low cost ($10–40/month). Recommended.
+  </Card>
+  <Card title="On-premise server" icon="building">
+    Enterprise. Data never leaves your network. Higher setup cost.
+  </Card>
+</CardGroup>
+
+## Laptop or desktop
+
+Good for: trying Qorven, personal development, single-user local use.
+
+```
+RAM:   4 GB minimum, 8 GB recommended
+Disk:  20 GB free (for database and workspace files)
+OS:    Linux, macOS (with Rosetta if Apple Silicon)
+```
+
+Run Qorven directly:
+
+```bash
+qorven start
+```
+
+Qorven is accessible at `http://localhost:443`. When you close the laptop or reboot, Qorven stops. There is no persistent URL for other devices to reach.
+
+## Home server
+
+Good for: personal use with always-on access from other devices on your network.
+
+```
+RAM:   4 GB minimum
+Disk:  50 GB recommended
+OS:    Ubuntu 22.04+ or Debian 12+
+```
+
+A Raspberry Pi 5 (8 GB) is adequate for a single-user setup. For consistent performance, use an x86 machine.
+
+Set up Qorven as a systemd service so it starts automatically:
+
+```bash
+sudo systemctl enable qorven
+```
+
+For access outside your home network, you'll need a static IP or dynamic DNS service, plus port forwarding on your router.
+
+## Cloud VM (recommended for teams)
+
+Good for: teams of 2–50 users, always-on availability, simple setup.
+
+A $20/month VPS handles most team deployments. Providers:
+
+| Provider | Size | Cost/month | Notes |
+|---|---|---|---|
+| DigitalOcean | 2 vCPU, 4 GB RAM | $24 | Good default choice |
+| Hetzner | 2 vCPU, 4 GB RAM | €6 | Best value in Europe |
+| Vultr | 2 vCPU, 4 GB RAM | $24 | Good global coverage |
+| AWS (EC2) | t3.medium | ~$30 | Use if you're already on AWS |
+| GCP (Compute) | e2-medium | ~$25 | Use if you're already on GCP |
+| Azure | B2s | ~$35 | Use if you're already on Azure |
+
+Requirements:
+
+```
+RAM:   4 GB minimum, 8 GB for larger teams
+CPU:   2 vCPU minimum
+Disk:  50 GB SSD (100 GB if storing many agent-generated files)
+OS:    Ubuntu 22.04 LTS (recommended)
+```
+
+The one-line installer handles PostgreSQL, systemd, TLS, and firewall configuration automatically:
+
+```bash
+curl -fsSL https://get.qorven.ai | sudo bash
+```
+
+## On-premise server
+
+Good for: enterprises with data residency requirements, air-gapped environments, or existing on-premise infrastructure.
+
+```
+RAM:   8–16 GB recommended (for comfortable headroom)
+CPU:   4 vCPU recommended
+Disk:  200 GB SSD (depends on data volume)
+OS:    RHEL 8+, Ubuntu 22.04+, Debian 12+
+```
+
+Qorven does not phone home. No data leaves your server. AI model calls go directly from your server to the provider's API (OpenAI, Anthropic, etc.) — or to a local model if you configure one.
+
+For air-gapped deployments, configure a local LLM with Ollama and set Qorven to use it as the provider. No internet connection is required.
+
+## Minimum vs recommended specs
+
+| | Minimum | Recommended |
+|---|---|---|
+| RAM | 2 GB | 8 GB |
+| CPU | 1 vCPU | 4 vCPU |
+| Disk | 10 GB | 100 GB |
+| OS | Linux (kernel 5.4+) | Ubuntu 22.04 LTS |
+| PostgreSQL | 14 | 16 |
+
+The minimum spec runs Qorven but leaves little headroom for concurrent agent tasks. Each active agent session uses roughly 50–200 MB of RAM depending on context size.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="PostgreSQL setup" icon="database" href="/ops/postgres-setup">
+    Database requirements and setup.
+  </Card>
+  <Card title="systemd service" icon="server" href="/gateway/systemd">
+    Running Qorven as a system service.
+  </Card>
+  <Card title="TLS configuration" icon="shield" href="/gateway/tls">
+    Setting up HTTPS.
+  </Card>
+  <Card title="Monitoring" icon="activity" href="/ops/monitoring">
+    Keeping an eye on your instance.
+  </Card>
+</CardGroup>

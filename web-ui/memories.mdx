@@ -1,0 +1,81 @@
+---
+title: "Memories"
+description: "Browse, search, edit, and delete everything your agents have remembered about you and your work."
+sidebarTitle: "Memories"
+icon: "database"
+---
+
+Memories are facts your agents store between conversations — your preferences, project context, client details, recurring instructions, and learned behaviors. The Memories page gives you full visibility into what your agents know, and full control to correct or delete anything.
+
+## Memory types
+
+Each memory has a type that describes what kind of fact it is:
+
+| Type | Examples |
+|---|---|
+| **User preference** | "Prefers replies in bullet points," "Always schedule meetings before 3pm" |
+| **Project context** | "Project X deadline is end of Q3," "Client Y uses Salesforce" |
+| **Skill** | "When summarizing a document, start with a one-sentence TL;DR" |
+| **Fact** | "Acme Corp was founded in 2010," "Sarah's phone is +1-555-0123" |
+| **Instruction** | "Never send an email without subject line confirmation" |
+
+## Browsing memories
+
+The Memories page lists all stored memories in reverse chronological order (most recently created or updated first). Each row shows:
+
+- The memory content
+- The type badge
+- Which agent created it
+- When it was created and last updated
+
+Click any memory to expand its full content and edit it inline.
+
+## Filtering and searching
+
+- **By agent** — use the agent filter to see only what a specific agent has remembered
+- **By type** — filter to user preferences, project context, skills, facts, or instructions
+- **By keyword** — the search box searches memory content in real time
+
+## Editing a memory
+
+Click on any memory to open the edit view. You can change the content text directly. Your edit is saved when you click outside the field or press Enter.
+
+<Tip>
+  Correcting memories is the fastest way to fix persistent agent behavior. If an agent keeps doing something wrong, find the relevant memory and correct it.
+</Tip>
+
+## Deleting a memory
+
+Click the **Delete** icon (trash) on any memory row to remove it. The agent will no longer have access to that fact. This is permanent — the agent will not re-learn it unless it encounters the information again naturally.
+
+To delete all memories at once, use [Privacy Settings](/web-ui/settings/privacy).
+
+## How memories are created
+
+Agents create memories automatically when they notice something worth retaining:
+
+- You correct an agent — it remembers your preference
+- You mention a deadline or client detail — it records it as a fact
+- You give a repeated instruction — it stores it as a standing rule
+- You share context about a project — it keeps it for future conversations
+
+You can also create memories manually: ask any agent "Remember that [fact]" and it will store it immediately.
+
+## Memory and privacy
+
+All memories are stored on your server. They are never sent to external services except as context within a prompt to your configured AI model. You can control how long memories are retained in [Privacy Settings](/web-ui/settings/privacy).
+
+<Warning>
+  Memories sent as context to an AI model are subject to that provider's data handling policies. If you use sensitive memories (PII, credentials), enable PII redaction in Privacy Settings.
+</Warning>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Knowledge Graph" icon="network" href="/web-ui/knowledge-graph">
+    A visual map of entities and relationships your agents have learned.
+  </Card>
+  <Card title="Privacy Settings" icon="shield" href="/web-ui/settings/privacy">
+    Set memory retention periods and enable PII redaction.
+  </Card>
+</CardGroup>

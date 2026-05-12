@@ -1,0 +1,54 @@
+---
+title: "Browser Automation"
+description: "Give your agents a real Chromium browser to fill forms, log into sites, extract data, and automate anything on the web."
+sidebarTitle: "Overview"
+icon: "globe"
+---
+
+Qorven agents can control a real Chromium browser running on your server. They can navigate to any URL, click buttons, fill in forms, interact with JavaScript-heavy pages, and extract data — all the things a human would do in a browser, but automatically.
+
+## What agents can do with a browser
+
+- **Log into web apps** — authenticate with username/password and continue working in the logged-in session
+- **Fill and submit forms** — expense reports, CRM records, support tickets, data entry tasks
+- **Click through UIs** — navigate multi-step wizards, approve requests, trigger actions
+- **Scrape dynamic content** — extract data from pages that require JavaScript to render (React apps, SPAs, dashboards)
+- **Download files** — trigger downloads and save the files to Drive for further processing
+- **Take screenshots** — capture the state of a page at any point in a workflow
+
+## Privacy and security
+
+The browser runs on **your server**, not in the cloud. Any credentials you give an agent stay within your infrastructure — they are never sent to Anthropic or any third party.
+
+<Warning>
+  Browser tools that submit forms, click buttons, or change data on external sites require approval by default. Enable the Approvals panel in your workspace to review these actions before they execute.
+</Warning>
+
+## Two modes
+
+<CardGroup cols={2}>
+  <Card title="Browse and Act" icon="bot" href="/tools/browser/browse-and-act">
+    Describe what you want in plain English. The agent figures out how to do it using vision. No selectors required.
+  </Card>
+  <Card title="Primitive Tools" icon="mouse-pointer" href="/tools/browser/primitive-tools">
+    Low-level tools for exact control — click, fill, navigate, scroll, wait, screenshot. Use when you need precision.
+  </Card>
+</CardGroup>
+
+## Requirements
+
+Chromium must be installed on the host running Qorven. On Debian/Ubuntu:
+
+```bash
+apt-get install -y chromium-browser
+```
+
+Qorven will use the `CHROME_PATH` environment variable if set, or fall back to finding `chromium` / `chromium-browser` / `google-chrome` on `$PATH`.
+
+## Watching the browser in real time
+
+Open the **Live Stream** panel in the dashboard to watch what the agent is doing as it happens. You can take over at any point.
+
+<Card title="Live stream" icon="video" href="/tools/browser/live-stream">
+  Watch and take control of an agent's browser session in real time.
+</Card>

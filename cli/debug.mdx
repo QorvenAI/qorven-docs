@@ -1,0 +1,57 @@
+---
+title: "qorven debug"
+description: "Print a complete system diagnostics snapshot."
+sidebarTitle: "debug"
+icon: "bug"
+---
+
+<Info>Generated from `qorven debug --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Print a complete system diagnostics snapshot.
+
+Checks and reports:
+  - Binary version and build info
+  - Configuration file status
+  - Database connectivity and migration version
+  - Gateway reachability and health
+  - Provider count and status
+  - Agent count
+  - Channel status
+  - Go runtime stats (goroutines, memory)
+  - Environment variables (redacted)
+  - Disk and workspace status
+
+Useful for troubleshooting and support requests.
+
+Examples:
+  qorven debug           # human-readable output
+  qorven debug --json    # machine-readable JSON
+
+Usage:
+  qorven debug [flags]
+
+Flags:
+  -h, --help   help for debug
+      --json   Output as JSON
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

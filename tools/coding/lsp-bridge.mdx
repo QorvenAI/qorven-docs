@@ -1,0 +1,93 @@
+---
+title: "LSP Bridge"
+description: "Connect a Language Server to give agents IDE-level code intelligence — go-to-definition, find references, type information, and diagnostics."
+sidebarTitle: "LSP Bridge"
+icon: "code"
+---
+
+LSP Bridge connects Qorven agents to a Language Server Protocol (LSP) server running on your host. With it, agents can navigate and understand code the way an IDE does — not as plain text, but with full awareness of types, definitions, references, and errors.
+
+## What agents can do with LSP Bridge
+
+| Capability | What it means in practice |
+|-----------|--------------------------|
+| **Go to definition** | Jump to where a function, type, or variable is defined — even across files |
+| **Find all references** | Find every place a symbol is used in the codebase |
+| **Hover type information** | Get the type signature and documentation for any symbol |
+| **Diagnostics** | See compiler errors and linter warnings without running a build |
+| **Rename symbol** | Rename a symbol everywhere it is used, safely |
+| **Completion candidates** | Understand what methods and properties are available on a value |
+
+This is the difference between an agent that reads code as text and guesses at structure, and one that actually understands the code.
+
+## Supported language servers
+
+| Language | LSP server |
+|----------|-----------|
+| TypeScript / JavaScript | `typescript-language-server` |
+| Go | `gopls` |
+| Python | `pylsp` or `pyright` |
+| Rust | `rust-analyzer` |
+| C / C++ | `clangd` |
+| Java | `eclipse.jdt.ls` |
+| Ruby | `solargraph` |
+| Any LSP-compatible language | Any conforming LSP server |
+
+## Setup
+
+<Steps>
+  <Step title="Install the language server">
+    Install the LSP server for your language on the Qorven host. For example, for Go:
+
+    ```bash
+    go install golang.org/x/tools/gopls@latest
+    ```
+
+    For TypeScript:
+
+    ```bash
+    npm install -g typescript typescript-language-server
+    ```
+  </Step>
+  <Step title="Configure in Qorven">
+    Add the LSP server to your `config.toml`:
+
+    ```toml
+    [[lsp]]
+    language = "go"
+    command  = "gopls"
+    args     = ["serve"]
+    root_dir = "/home/user/my-project"
+
+    [[lsp]]
+    language = "typescript"
+    command  = "typescript-language-server"
+    args     = ["--stdio"]
+    root_dir = "/home/user/my-app"
+    ```
+  </Step>
+  <Step title="Assign to an agent">
+    Enable LSP Bridge in the agent's tool list. The agent will automatically use it when working with files in the configured `root_dir`.
+  </Step>
+</Steps>
+
+## Multiple projects
+
+You can configure multiple LSP entries, each pointing to a different project directory. Qorven starts the language server lazily when the agent first opens a file in that directory, and keeps it running for the duration of the session.
+
+## Performance
+
+LSP servers take 2–10 seconds to initialise on first use (they need to index the project). After that, individual queries (go-to-definition, find references) typically complete in under 100ms.
+
+<Info>
+  LSP Bridge is most valuable for large, multi-file projects where a flat text search would miss context. For small scripts and single-file work, Glob and Grep are often sufficient.
+</Info>
+
+<CardGroup cols={2}>
+  <Card title="Codebase Digest" icon="book" href="/tools/coding/codebase-digest">
+    Get a structural overview of a project before diving into individual files.
+  </Card>
+  <Card title="Glob and Grep" icon="search" href="/tools/coding/glob-grep">
+    Text-based search across the codebase.
+  </Card>
+</CardGroup>

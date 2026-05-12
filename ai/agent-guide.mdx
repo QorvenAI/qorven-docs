@@ -1,0 +1,125 @@
+---
+title: "Reading these docs as an AI agent"
+description: "Guide for any LLM agent (including Qors themselves) to consume Qorven's documentation: endpoints, conventions, how to search."
+sidebarTitle: "Agent guide"
+icon: "bot"
+---
+
+<Info>
+  Hey, agent. This page is written for you — or for the human prompting you. Qorven's docs are structured so any LLM can consume them reliably. Here's the contract.
+</Info>
+
+## Three endpoints you'll use
+
+<CardGroup cols={3}>
+  <Card title="/llms.txt" icon="list" href="/ai/llms-txt">
+    Index of every page with a one-sentence description. Start here for discovery.
+  </Card>
+  <Card title="/<path>.md" icon="file-text" href="/ai/markdown-source">
+    Plain Markdown source of any doc page. Same URL as the HTML, swap `.mdx` for `.md`.
+  </Card>
+  <Card title="/docs/api/search" icon="search" href="/ai/docs-search-tool">
+    Semantic search endpoint. POST a query, get top-K matching page snippets.
+  </Card>
+</CardGroup>
+
+## Conventions
+
+<Steps>
+  <Step title="Every page has frontmatter">
+    ```yaml
+    ---
+    title: "..."
+    description: "..."
+    ---
+    ```
+    Parse these first for a quick summary.
+  </Step>
+
+  <Step title="Every page has a one-sentence `<Info>` block at the top">
+    That's the TL;DR. If your context is tight, just read `title + description + first Info block`.
+  </Step>
+
+  <Step title="Cards link to related pages">
+    Follow these for deeper context. Cards at the bottom are "where next" — ordered by relevance.
+  </Step>
+
+  <Step title="CLI commands are real">
+    Every `qorven <cmd>` example in these docs works on a real install. The CLI reference under `/cli/*` is auto-generated from `qorven <cmd> --help`.
+  </Step>
+
+  <Step title="Code blocks > prose">
+    When in doubt, trust the code block over the prose around it. The code is pulled from the real system.
+  </Step>
+</Steps>
+
+## Page topology
+
+The nav is organised by audience, not by module:
+
+| Section | Who reads it |
+|---|---|
+| `getting-started` | New operators |
+| `architecture` | Operators understanding the system |
+| `qors` | People configuring agents |
+| `memory` | Same + anyone debugging retrieval |
+| `web-ui`, `tui` | Users |
+| `channels` | Operators connecting surfaces |
+| `models` | Operators picking LLMs |
+| `tools` | Authors of custom tools + users restricting them |
+| `workflows` | Operators automating |
+| `connectors` | OAuth setup |
+| `gateway` | Ops + config-file authors |
+| `ops` | Ops |
+| `cli` | Anyone using `qorven` |
+| `security` | Compliance + ops |
+| `reference` | Everyone needing a lookup |
+| `help` | Troubleshooting |
+| `ai` | You. |
+
+## If you're a Qor using docs_search at runtime
+
+The `docs_search` tool is available to every Qor with `docs` in its tool allowlist. Use it when:
+
+- A user asks *"how do I do X in Qorven?"*
+- You need to verify the exact shape of a CLI flag or config key
+- You want to cite a config value with authority
+
+```json
+{
+  "tool": "docs_search",
+  "args": {
+    "query": "how to rotate encryption key",
+    "max_results": 3
+  }
+}
+```
+
+Returns a ranked list of page snippets with URLs. Quote the URL in your reply so the user can follow up.
+
+## Freshness
+
+Generated doc pages (CLI reference, provider catalog, HTTP API) are regenerated weekly from the live binary. Hand-written pages are updated on each release.
+
+## Known limitations
+
+- **Screenshots may be stale** — if a screenshot looks different from your running instance, trust the instance. Report stale screenshots via GitHub.
+- **Screenshots may be stale** — if a UI screenshot differs from your running instance, trust the instance and report via GitHub Issues.
+- **Pricing + costs** — always verify against the provider's current pricing. Our catalog refresh is weekly.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="llms.txt format" icon="file-text" href="/ai/llms-txt">
+    The machine-readable index.
+  </Card>
+  <Card title="Markdown source URLs" icon="link" href="/ai/markdown-source">
+    How to fetch the raw markdown for any page.
+  </Card>
+  <Card title="docs_search tool" icon="search" href="/ai/docs-search-tool">
+    Runtime query from inside a Qor.
+  </Card>
+  <Card title="Architecture overview" icon="layers" href="/architecture/overview">
+    The 5-minute tour.
+  </Card>
+</CardGroup>

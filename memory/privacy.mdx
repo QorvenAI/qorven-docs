@@ -1,0 +1,61 @@
+---
+title: "Memory Privacy"
+description: "All memories are stored on your own server in PostgreSQL — your data never leaves your infrastructure."
+sidebarTitle: "Memory Privacy"
+icon: "shield"
+---
+
+Qorven is self-hosted. Your memories — everything agents know about you, your team, and your business — live in your PostgreSQL database on your own server. No cloud sync, no third-party storage, no data sent to Anthropic or any other external service.
+
+## Where memories are stored
+
+All memories are stored in the `memories` table of your Qorven PostgreSQL database. This is the same database that runs everything else in Qorven — same server, same backup strategy, same access controls.
+
+The knowledge graph data is stored in the same database as a set of entity and relationship tables.
+
+To find your database connection details, check your `config.toml` or environment configuration.
+
+## Memory scoping
+
+Memories can be scoped at two levels:
+
+**Workspace-wide memories** are shared across all agents. If the Email Agent learns your preferred signature format, the Writer agent knows it too. This is the default for User facts and most Project context.
+
+**Agent-specific memories** are private to a single agent. Useful for agent-specific skills or context that doesn't apply workspace-wide. Set the scope when creating a memory manually, or configure the default scope per agent in **Settings → Agents → [Agent] → Memory scope**.
+
+## PII in memories
+
+Agents may store personally identifiable information — email addresses, names, phone numbers, company details — as part of their normal operation. This is intentional: knowing that Sarah Chen is your contact at Meridian Corp is exactly the kind of context that makes agents useful.
+
+Since all data is on your own infrastructure, your normal data handling policies apply. If you operate under GDPR, CCPA, or similar regulations, Qorven's self-hosted architecture means you are the data controller with full control over what is stored and for how long.
+
+To remove memories containing a specific person's data, use the search on **Dashboard → Memories** to find and delete relevant entries.
+
+## Deleting memories
+
+**Delete a single memory:** Go to **Dashboard → Memories**, find the entry, and click the delete icon.
+
+**Delete all memories for an agent:** Go to **Settings → Agents → [Agent] → Danger Zone → Clear memories**.
+
+**Delete all workspace memories:** Go to **Settings → System → Privacy → Clear all memories**. This removes all memories and resets the knowledge graph. Agent skills, preferences, and project context will all be lost. This action cannot be undone.
+
+## Factory reset
+
+A factory reset (**Settings → System → Danger Zone → Factory Reset**) wipes all data in the workspace, including all memories, the knowledge graph, sessions, audit logs, and configuration. The database schema is rebuilt from scratch.
+
+<Warning>
+  Factory reset is irreversible. There is no recovery. Back up your database before proceeding if you might need the data.
+</Warning>
+
+## Encryption
+
+Memories are stored as standard database rows in PostgreSQL. If you need encryption at rest, enable it at the database or disk level using your server's native tools — full-disk encryption (e.g. LUKS on Linux) or PostgreSQL Transparent Data Encryption options. Qorven does not add a second encryption layer on top of whatever your database provides.
+
+<CardGroup cols={2}>
+  <Card title="Memory types" icon="layers" href="/memory/types">
+    What agents store and why.
+  </Card>
+  <Card title="Memory search" icon="search" href="/memory/search">
+    How to find and review stored memories.
+  </Card>
+</CardGroup>

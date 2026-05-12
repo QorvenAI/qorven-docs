@@ -1,0 +1,97 @@
+---
+title: "Discord (DM)"
+description: "Connect Discord (DM) to your Qor. Setup, webhook URL, message shape, common issues."
+sidebarTitle: "Discord (DM)"
+icon: "gamepad-2"
+---
+
+<div className="mb-6 flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+  <img src="/images/logos/channels/discord.svg" alt="Discord logo" width={40} height={40} />
+  <div>
+    <div className="text-sm font-semibold">Discord</div>
+  </div>
+</div>
+
+
+<Info>
+  Discord (DM) is a **chat-family** channel. Messages merge into your Qor's canonical chat — the web UI and TUI see them alongside every other chat-family channel.
+</Info>
+
+## At a glance
+
+| | |
+|---|---|
+| **Family** | chat-family |
+| **Setup source** | Discord developer portal |
+| **Inbound** | Webhook / long-poll / socket — see below |
+| **Outbound** | `qorven channels send --channel discord` or auto-reply from the agent loop |
+| **Media** | Text + attachments (where the transport supports it) |
+| **Group chats** | [Group handling →](/channels/groups-vs-dms) |
+
+## Setup
+
+<Steps>
+  <Step title="Create the channel binding in Settings → Channels">
+    In the web UI: **Settings → Channels → Add channel → Discord (DM)**. Paste the credentials from Discord developer portal.
+  </Step>
+  <Step title="Configure the webhook URL (if the provider pushes events)">
+    Qorven exposes `POST /v1/webhooks/discord` on the web listener. Use your public URL (or a tunnel like Cloudflare / ngrok for dev).
+  </Step>
+  <Step title="Assign a Qor">
+    Bind this channel to one Qor. That Qor receives every inbound message. You can always delegate onward.
+  </Step>
+  <Step title="Test with one message">
+    Send a message from Discord (DM). Watch it appear in the web UI canonical chat with the Discord (DM) badge.
+  </Step>
+</Steps>
+
+## Routing & overrides
+
+By default, every inbound Discord (DM) message is routed to the Qor bound to this channel. You can override:
+
+- **By sender** — route VIP senders to a different Qor
+- **By keyword** — "URGENT" → escalation Qor
+- **By group** — if it's a group chat, use group-scoped settings
+
+See [Channel routing →](/channels/routing).
+
+## Common issues
+
+<AccordionGroup>
+  <Accordion title="Messages not arriving">
+    - Check `qorven channels status discord` — is the binding active?
+    - Check the webhook URL is reachable from the internet (provider needs to hit it)
+    - Check `/var/log/qorven/channels.log` for webhook 4xx/5xx entries
+    - Rate limits: every channel has a per-tenant quota; see [quotas](/channels/quotas)
+  </Accordion>
+  <Accordion title="Replies not going out">
+    - Check the Qor has the `send_message` tool in its allowlist
+    - Check the LLM isn't emitting malformed tool calls — `qorven logs --filter agent.loop.tool_error`
+    - Check the channel binding's credentials haven't expired (OAuth channels rotate tokens)
+  </Accordion>
+  <Accordion title="Duplicate messages">
+    - Usually webhook retries. Qorven dedupes by `(channel, external_id)` but some providers send different IDs on retry. Open an issue with logs.
+  </Accordion>
+</AccordionGroup>
+
+
+<Note>
+  Logo displayed under nominative fair use. See [trademarks & attribution](/reference/brand-trademarks) for owner, source library, and removal requests.
+</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="All channels" icon="message-square" href="/channels/index">
+    Catalog + concepts.
+  </Card>
+  <Card title="One Qor, one chat" icon="infinity" href="/architecture/one-qor-one-chat">
+    How chat-family channels merge.
+  </Card>
+  <Card title="Channel routing" icon="git-branch" href="/channels/routing">
+    Custom routing rules.
+  </Card>
+  <Card title="qorven channels CLI" icon="terminal" href="/cli/channels">
+    Scripted channel management.
+  </Card>
+</CardGroup>

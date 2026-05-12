@@ -1,0 +1,99 @@
+---
+title: "SSRF Allowlist"
+description: "Qorven blocks agent requests to private network ranges by default. Configure the allowlist to let agents reach internal services."
+sidebarTitle: "SSRF Allowlist"
+icon: "shield"
+---
+
+Server-Side Request Forgery (SSRF) is an attack where an agent is tricked into making requests to internal services that should not be reachable from the outside. Qorven blocks these by default.
+
+## What is blocked by default
+
+When an agent uses a tool that makes HTTP requests (like `http_request`, `browse_web`, or custom tools), Qorven checks the target address before the request goes out. Requests to private network ranges are blocked:
+
+| Range | Description |
+|---|---|
+| `10.0.0.0/8` | Private network (class A) |
+| `172.16.0.0/12` | Private network (class B) |
+| `192.168.0.0/16` | Private network (class C) |
+| `127.0.0.0/8` | Loopback |
+| `169.254.0.0/16` | Link-local (AWS metadata) |
+| `::1/128` | IPv6 loopback |
+| `fc00::/7` | IPv6 unique local |
+
+Requests to these ranges return an error to the agent: `SSRF protection: target address is in a blocked range`.
+
+## Allowing internal services
+
+If your agents legitimately need to call an internal API — for example, your internal inventory system at `10.0.1.50` — add it to the allowlist.
+
+```toml
+[security]
+ssrf_allowlist = [
+  "10.0.1.50/32",     # internal inventory API (exact host)
+  "10.0.2.0/24",      # internal services subnet
+]
+```
+
+You can use CIDR notation or exact IPs. Changes take effect after a service restart.
+
+<Warning>
+  Keep the allowlist as narrow as possible. `10.0.0.0/8` allows agents to reach everything on your internal network. Prefer exact IPs or narrow subnets.
+</Warning>
+
+## Allowing specific ports
+
+You can restrict allowlist entries to specific ports:
+
+```toml
+[security]
+ssrf_allowlist = [
+  "10.0.1.50:8080",   # only port 8080 on this host
+]
+```
+
+## Disabling SSRF protection
+
+SSRF protection can be disabled entirely, but this is only appropriate in air-gapped or fully trusted environments.
+
+```toml
+[security]
+ssrf_protection = false
+```
+
+<Warning>
+  Disabling SSRF protection on a public-facing instance is a significant security risk. Any user who can create agents can potentially reach internal services and cloud metadata endpoints (like AWS `http://169.254.169.254`).
+</Warning>
+
+## AWS metadata endpoint
+
+The AWS instance metadata endpoint at `169.254.169.254` is explicitly blocked, even if you have added `169.254.0.0/16` CIDR to an allowlist. This endpoint is blocked by name at a higher priority than the allowlist.
+
+If you genuinely need agents to access cloud metadata, this must be enabled separately:
+
+```toml
+[security]
+allow_cloud_metadata = true   # not recommended
+```
+
+## Testing the allowlist
+
+After adding an address to the allowlist, test it with a quick agent prompt or via the `http_request` tool in the tool playground. If the address is still blocked, check that:
+
+- You restarted the service after editing `config.toml`.
+- The CIDR range actually includes the target IP.
+- The IP is not in the explicitly blocked metadata list.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Auth middleware" icon="lock" href="/gateway/auth-middleware">
+    Request authentication.
+  </Card>
+  <Card title="Rate limits" icon="gauge" href="/gateway/rate-limits">
+    Protecting against abuse.
+  </Card>
+  <Card title="Channel errors" icon="message-square" href="/ops/troubleshooting/channel-errors">
+    SSRF errors in webhook channels.
+  </Card>
+</CardGroup>

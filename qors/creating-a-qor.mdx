@@ -1,0 +1,104 @@
+---
+title: "Creating an Agent"
+description: "Add a new specialist to your team — give it a name, write its instructions, choose its tools, and it's ready to work."
+sidebarTitle: "Creating an Agent"
+icon: "plus"
+---
+
+Creating an agent takes about two minutes. You give it a name, a role, and instructions — Qorven handles the rest.
+
+## From the web dashboard
+
+<Steps>
+  <Step title="Open the Agents page">
+    Go to **Agents** in the sidebar and click **New Agent** in the top right.
+  </Step>
+  <Step title="Give it a name and role">
+    The name is how you and Prime will refer to this agent. The role description helps Prime know when to delegate work to it — for example: *"Specialist in financial analysis and spreadsheet data. Ask me to review reports, analyse numbers, or summarise financial documents."*
+  </Step>
+  <Step title="Write the instructions">
+    This is the most important step. Write in plain English — describe what this agent should do, how it should respond, what tone to use, and any specific rules it should follow. See [writing good instructions →](/qors/system-prompts) for tips.
+  </Step>
+  <Step title="Choose a model">
+    Select which AI model powers this agent. You can leave this as the install default, or pick a specific model — for example, a reasoning model for analysis tasks or a fast model for quick responses.
+  </Step>
+  <Step title="Enable tools">
+    Choose which tools this agent can use. A research agent needs web search and scraping. A developer agent needs file access and code execution. Limiting tools to what an agent actually needs is also a good security practice.
+  </Step>
+  <Step title="Save">
+    Click **Create Agent**. Your new agent is immediately available — Prime can delegate to it, and you can talk to it directly by selecting it in the chat interface.
+  </Step>
+</Steps>
+
+## From the CLI
+
+```bash
+qorven agents create \
+  --name "Support Agent" \
+  --role "Handles customer support questions and looks up order information." \
+  --model claude-opus-4-7 \
+  --tools research,read_document,email
+```
+
+List all agents:
+
+```bash
+qorven agents list
+```
+
+Edit an existing agent:
+
+```bash
+qorven agents edit <agent-id>
+```
+
+## Practical examples
+
+<AccordionGroup>
+  <Accordion title="A daily briefing agent">
+    **Name:** Morning Brief  
+    **Role:** Delivers a morning summary of news, email, and tasks.  
+    **Instructions:** "Every morning at 8am, compile a briefing for me covering: unread emails that need a response, any news in [my industry], and any tasks on my list for today. Keep it concise — bullet points, no fluff."  
+    **Tools:** `email`, `research`, `memory_read`  
+    **Schedule:** Set a cron schedule for 8:00 AM in your timezone
+  </Accordion>
+
+  <Accordion title="A customer support agent">
+    **Name:** Support  
+    **Role:** Answers product questions and helps customers with common issues.  
+    **Instructions:** "You're a friendly support agent for [Company]. Answer questions about our product using the information in your memory. For billing or account issues, tell the customer to email billing@company.com. Always be warm and concise."  
+    **Tools:** `memory_search`, `read_document`  
+    **Channel:** Connect to your website webchat or a Telegram/WhatsApp number
+  </Accordion>
+
+  <Accordion title="A code review agent">
+    **Name:** Reviewer  
+    **Role:** Reviews pull requests and checks code quality.  
+    **Instructions:** "When asked to review code, check for: bugs, security issues, unclear variable names, missing error handling, and anything that doesn't follow our style guide. Be direct — point out problems but also say what's good."  
+    **Tools:** `filesystem`, `glob`, `grep`, `read_document`
+  </Accordion>
+</AccordionGroup>
+
+## What makes a good agent
+
+- **One clear job.** An agent that does "everything" does nothing well. Give each agent a focused role.
+- **Good instructions.** The instructions are the most important part — they determine everything the agent does. Put real thought into them.
+- **The right tools.** Only enable tools the agent actually needs. This keeps the agent focused and limits what it can do by accident.
+- **A useful role description.** Prime uses the role description to decide when to call on this agent. Make it specific enough that Prime knows exactly when to delegate.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Write better instructions" icon="file-text" href="/qors/system-prompts">
+    How to write instructions that make agents work reliably.
+  </Card>
+  <Card title="Tools reference" icon="wrench" href="/qors/tools">
+    Every available tool and what it does.
+  </Card>
+  <Card title="Scheduling" icon="calendar" href="/workflows/cron">
+    Run agents on a schedule — daily briefings, weekly reports, and more.
+  </Card>
+  <Card title="Channels" icon="message-square" href="/channels/index">
+    Connect your agent to Telegram, WhatsApp, Slack, and more.
+  </Card>
+</CardGroup>

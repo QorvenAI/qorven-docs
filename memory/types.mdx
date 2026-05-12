@@ -1,0 +1,85 @@
+---
+title: "Memory Types"
+description: "Qorven agents store four types of memory — user facts, project context, skills, and world knowledge — each retrieved and used differently."
+sidebarTitle: "Memory Types"
+icon: "layers"
+---
+
+Qorven agents don't start from scratch every conversation. They build up memory over time — learning your preferences, tracking ongoing projects, and retaining facts they discover through research. This memory is organized into four distinct types, each stored and retrieved in a way that makes it most useful.
+
+## The four memory types
+
+### User facts
+
+Personal preferences, communication style, and context about you that helps agents tailor their work.
+
+Examples of what gets stored:
+- "Prefers bullet-point summaries over long paragraphs"
+- "Uses metric units"
+- "Does not want to receive notifications after 7 PM"
+- "Preferred name is 'Alex', not 'Alexander'"
+- "Primary language is English, but sends messages to clients in Spanish"
+
+User facts are workspace-wide by default — all agents share them so you don't have to repeat yourself.
+
+---
+
+### Project context
+
+Ongoing work, goals, decisions made, and deadlines that give agents the background they need without you re-explaining every time.
+
+Examples of what gets stored:
+- "Project Falcon — launching Q3, target market is mid-market SaaS companies"
+- "Client: Meridian Corp. Primary contact is Sarah Chen (sarah@meridian.com). Contract renewal due in August."
+- "Decision: we're not pursuing the US market this year — focus is APAC"
+- "Current sprint goal: finish the onboarding redesign by Friday"
+
+Agents actively update project context as work progresses. When you say "we decided to drop that feature," the agent stores that decision so future conversations don't revisit it.
+
+---
+
+### Skills
+
+Procedures that agents have learned to perform reliably — a kind of institutional memory for how your team gets things done.
+
+Examples of what gets stored:
+- "To generate a weekly sales report: pull data from Salesforce, filter by region, format as the template in /shared/templates/sales-report.docx, and email to ops@company.com"
+- "When writing a proposal, always use the tone from /templates/proposal-style-guide.md and cc the account manager"
+- "Expense reports go to finance@company.com with subject line 'Expense – [Month] – [Name]'"
+
+Skills are learned once — from a detailed instruction you give, or through repeated correction — and then applied consistently without re-explanation.
+
+---
+
+### World knowledge
+
+Facts agents have discovered through research that are worth retaining for future use.
+
+Examples of what gets stored:
+- "DHL's customs clearance API endpoint changed in March 2025 — new docs at [url]"
+- "VAT rate in Germany is currently 19%"
+- "OpenAI's rate limit on GPT-4o is 500 requests/minute for Tier 2 accounts"
+
+This prevents agents from re-researching the same facts repeatedly. World knowledge has a confidence score and can be marked for re-verification after a configurable time period.
+
+---
+
+## How memories are added
+
+Memories are created in two ways:
+
+1. **Automatically** — agents extract and store relevant facts as they work, without you needing to instruct them
+2. **Explicitly** — you tell an agent to remember something ("Remember that we decided X") or create a memory directly from the Memories page in the dashboard
+
+## Viewing and editing memories
+
+Go to **Dashboard → Memories** to browse all stored memories, filter by type, edit individual entries, or delete ones that are outdated.
+
+<CardGroup cols={2}>
+  <Card title="Memory search" icon="search" href="/memory/search">
+    How agents find the right memories at the right time.
+  </Card>
+  <Card title="Memory privacy" icon="shield" href="/memory/privacy">
+    Where memories are stored and how to delete them.
+  </Card>
+</CardGroup>

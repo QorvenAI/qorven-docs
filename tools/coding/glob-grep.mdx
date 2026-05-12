@@ -1,0 +1,68 @@
+---
+title: "Glob and Grep"
+description: "Find files by pattern and search code by content — agents use these to navigate codebases efficiently without reading every file."
+sidebarTitle: "Glob & Grep"
+icon: "search"
+---
+
+Glob and Grep are two complementary search tools that agents use to locate relevant code without reading an entire codebase.
+
+- **Glob** finds files whose paths match a pattern
+- **Grep** finds files whose contents match a string or regular expression
+
+Used together, they let an agent go from "I need to find where authentication is handled" to reading the right file in two steps instead of dozens.
+
+## Glob — find files by path pattern
+
+Glob uses standard shell glob patterns to match file paths.
+
+| Pattern | Matches |
+|---------|---------|
+| `**/*.ts` | All TypeScript files anywhere in the tree |
+| `src/**/*.go` | All Go files under `src/` |
+| `**/handlers_*.go` | Go files whose names start with `handlers_` |
+| `**/*_test.{go,ts}` | Test files in Go or TypeScript |
+| `config/*.{yaml,json}` | YAML and JSON files in the `config/` directory |
+
+Results include the full file path, file size, and last-modified time. The agent uses these to decide which files are worth reading.
+
+## Grep — search file contents
+
+Grep searches the text content of files. It supports both literal strings and regular expressions.
+
+```
+grep: { pattern: "func HandleLogin", path: "backend/**/*.go" }
+```
+
+```
+grep: { pattern: "import.*auth", path: "src/**/*.ts", regex: true }
+```
+
+Results include the file path, line number, and the matching line with a few lines of surrounding context. This is usually enough for the agent to understand the code without reading the full file.
+
+## How agents use them
+
+A typical agent workflow:
+
+1. **Glob** to find candidate files: `**/*.go` in `internal/gateway/`
+2. **Grep** to narrow down: search for `"func.*Login"` across those files
+3. **Read** the one or two files that match — now the agent is reading the right thing
+
+This is far more efficient than reading files one by one and much more targeted than a full codebase digest.
+
+## Performance
+
+Both tools run on the server's filesystem directly. On a project with 50,000 files, a glob typically completes in under a second; grep with a literal string completes in 1–3 seconds. Regex patterns with backtracking can be slower on very large codebases.
+
+## Ignoring files
+
+Glob and Grep both respect `.gitignore` by default. They skip `node_modules/`, `.git/`, build output directories, and binary files. Pass `ignore_gitignore: true` if you need to search files that are normally excluded.
+
+<CardGroup cols={2}>
+  <Card title="Codebase Digest" icon="book" href="/tools/coding/codebase-digest">
+    Generate a structural overview of a whole project at once.
+  </Card>
+  <Card title="Filesystem tools" icon="folder" href="/tools/coding/filesystem">
+    Read and write files once you know which ones to work with.
+  </Card>
+</CardGroup>

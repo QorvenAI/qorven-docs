@@ -1,0 +1,192 @@
+---
+title: "config.toml reference"
+description: "Every key in config.toml — what it controls, defaults, safe values, and examples."
+sidebarTitle: "config.toml"
+icon: "file-code"
+---
+
+<Info>
+  `config.toml` is Qorven's primary config file. Defaults are hardened for security; you're rarely forced to change anything beyond the initial install-time settings. Every key is hot-reloadable unless noted otherwise.
+</Info>
+
+## Location
+
+| Install shape | Path |
+|---|---|
+| systemd (root installer) | `/etc/qorven/config.toml` |
+| User install | `~/.qorven/config.toml` |
+| Docker | `/root/.qorven/config.toml` inside the container |
+| Override | `$QORVEN_CONFIG` env var |
+
+## Sections
+
+### `[server]`
+
+```toml
+[server]
+# API listener — where /v1/*, /auth/*, /ws live
+api_listen = "127.0.0.1:4200"
+
+# Web UI listener — where the embedded Next.js app is served
+web_listen = "0.0.0.0:443"
+
+# Legacy single-listener (both API + UI on one port). Empty = use split.
+listen = ""
+
+# Override the web UI location (for customisation without rebuild)
+# web_dir = "/var/lib/qorven/web"
+
+# CORS allowed origins (comma-separated). Default: localhost + LAN
+allowed_origins = "https://qorven.acme.com,https://app.acme.com"
+```
+
+### `[database]`
+
+```toml
+[database]
+# PostgreSQL DSN. Use unix socket for local installs (no password).
+dsn = "postgres://qorven@/qorven?host=/var/run/postgresql&sslmode=disable"
+
+# Or override via QORVEN_POSTGRES_DSN env var (wins over config).
+
+# Connection pool tuning
+max_conns = 50
+max_idle  = 10
+```
+
+### `[auth]`
+
+```toml
+[auth]
+# Auth token — required to call /v1/* endpoints. Generated at install.
+token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# Encryption key — protects every encrypted secret in the DB.
+# NEVER ROTATE without a migration plan. If you lose this, all
+# encrypted secrets are unrecoverable.
+encryption_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# JWT signing (if using JWT instead of opaque tokens)
+# jwt_secret = "..."
+# jwt_issuer = "qorven.acme.com"
+```
+
+### `[tls]`
+
+```toml
+[tls]
+# "auto" = local CA (default), "acme" = Let's Encrypt, "custom" = BYO, "off" = HTTP
+mode = "auto"
+
+# ACME settings (if mode = "acme")
+# domain = "qorven.acme.com"
+# email  = "ops@acme.com"
+
+# Custom cert (if mode = "custom")
+# cert_file = "/etc/letsencrypt/live/qorven.acme.com/fullchain.pem"
+# key_file  = "/etc/letsencrypt/live/qorven.acme.com/privkey.pem"
+```
+
+[TLS deep-dive →](/gateway/tls)
+
+### `[limits]`
+
+```toml
+[limits]
+ip_rate_per_sec        = 10     # per-IP request rate
+ip_rate_burst          = 20     # per-IP burst
+tenant_concurrent_runs = 5      # concurrent plan-run requests per tenant
+tenant_rate_per_min    = 600    # sustained per-tenant rate
+max_body_mb            = 10     # request body cap
+max_delegation_depth   = 3      # you → Prime → specialist → sub-specialist
+```
+
+### `[[providers]]` (config-based, optional)
+
+```toml
+[[providers]]
+name     = "openai"
+type     = "openai"
+api_base = "https://api.openai.com/v1"
+api_key  = "sk-..."
+enabled  = true
+is_default = true
+
+[[providers]]
+name   = "ollama"
+type   = "openai"
+api_base = "http://localhost:11434/v1"
+```
+
+<Warning>
+  Keys defined here sit in plaintext on disk. For production, use **Settings → Provider Keys** in the UI — those are encrypted at rest.
+</Warning>
+
+### `[self_build]`
+
+```toml
+[self_build]
+enabled   = true
+interval  = "6h"
+agent_id  = "prime"
+```
+
+Enables the self-improvement loop. Prime periodically analyses its own operation and suggests config or system-prompt changes (subject to approval).
+
+### `[llm_stats]`
+
+```toml
+[llm_stats]
+api_key       = "sk_..."         # from llmstats.ai
+refresh_hours = 24
+```
+
+Refreshes model catalog with live pricing weekly. Falls back to static catalog if missing.
+
+### `[telemetry]`
+
+```toml
+[telemetry]
+# Qorven ships ZERO telemetry by default. This section is for operators
+# who WANT opt-in metrics shipping to their own OTLP endpoint.
+enabled    = false
+otlp_url   = "https://otel.acme.com"
+otlp_token = ""
+```
+
+### `[instance]`
+
+```toml
+[instance]
+name     = "Acme staging"
+timezone = "Asia/Kolkata"
+```
+
+## Hot reload
+
+```bash
+sudo kill -HUP $(pidof qorven)
+# or
+sudo systemctl reload qorven
+```
+
+Reloads: `[providers]`, `[limits]`, `[instance]`, `[telemetry]`, `[self_build]`, `[llm_stats]`.
+
+Requires restart: `[server].listen/api_listen/web_listen`, `[database].dsn`, `[auth].token/encryption_key`, `[tls]`.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Environment variables" icon="variable" href="/cli/env-vars">
+    Env vars that override config.toml.
+  </Card>
+  <Card title="API vs Web listen" icon="split" href="/gateway/api-vs-web-listen">
+    Two-port vs one-port deployment.
+  </Card>
+  <Card title="TLS modes" icon="lock" href="/gateway/tls">
+    auto / acme / custom / off.
+  </Card>
+  <Card title="Rate limits" icon="gauge" href="/gateway/rate-limits">
+    Tuning for your traffic.
+  </Card>
+</CardGroup>

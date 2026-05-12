@@ -1,0 +1,78 @@
+---
+title: "Approvals"
+description: "Control which agent actions require your sign-off before they run."
+sidebarTitle: "Approvals"
+icon: "check-circle"
+---
+
+Agents are powerful — and some actions can't be undone. Approvals let you stay in control: the agent pauses, shows you exactly what it's about to do, and waits for your go-ahead.
+
+## Which tools require approval by default
+
+These tools pause for approval before executing:
+
+| Tool | Why |
+|------|-----|
+| `send_email` | Sends a message on your behalf |
+| `exec` | Runs a shell command on your server |
+| `write_file` | Creates or overwrites a file |
+| `delete_file` | Permanently deletes a file |
+| `send_message` | Posts to Slack, Telegram, or another channel |
+
+Read-only tools (web search, SQL reads, document reading) run without approval. Approval is only required for actions that affect the outside world.
+
+## How an approval request looks
+
+When an agent hits an approval-required tool, you see an **approval card** in the chat interface — before the tool runs. The card shows:
+
+- The tool name
+- The exact arguments (e.g., the email recipient, subject, and body — or the exact command to run)
+- The agent's reason for calling it
+
+You tap **Approve** or **Reject**. The agent waits until you respond.
+
+<Info>
+Approval cards also appear on Telegram and Slack if you have those channels connected. You can approve or reject with a single reply from your phone.
+</Info>
+
+## Approving and rejecting
+
+**Approve** — the tool runs immediately with the exact arguments shown. The result is returned to the agent and the conversation continues.
+
+**Reject** — the tool is blocked. You can optionally add a reason ("wrong recipient — use the billing address instead"). The agent receives the rejection and your note, and will try again or ask for clarification.
+
+## Configuring auto-approve for trusted commands
+
+If you find yourself approving the same action every time, you can mark it as auto-approved. Navigate to **Settings → Agents → [Agent Name] → Tools** and toggle **Auto-approve** next to the tool.
+
+You can also add command-level auto-approve rules. For example, auto-approve `exec` only when the command matches `git status` or `npm test`:
+
+```toml
+# config.toml
+[[agent.tools.exec.auto_approve]]
+match = "^git (status|log|diff)"
+
+[[agent.tools.exec.auto_approve]]
+match = "^npm (test|run lint)"
+```
+
+Commands that don't match any rule still require approval.
+
+<Warning>
+Auto-approving `exec` with a broad pattern is risky. Start with narrow, specific patterns and expand only when you're confident.
+</Warning>
+
+## Approval history
+
+Every approval decision — who approved, when, what was approved, and what the tool returned — is written to the audit log. You can view the full history in **Settings → Audit Log**.
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Deny Lists" icon="x-circle" href="/tools/deny-lists">
+    Block tools from running entirely, no approval possible.
+  </Card>
+  <Card title="How Tools Work" icon="wrench" href="/tools/how-tools-work">
+    Understand the full lifecycle of a tool call.
+  </Card>
+</CardGroup>

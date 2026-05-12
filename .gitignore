@@ -1,0 +1,10 @@
+node_modules/
+.mint/
+.next/
+.DS_Store
+out/
+dist/
+*.log
+
+export.zip
+export-out/

@@ -1,0 +1,64 @@
+---
+title: "Models Hub"
+description: "Browse over 1,700 AI models from every major provider, compare pricing, and configure which models your agents use."
+sidebarTitle: "Models Hub"
+icon: "cpu"
+---
+
+The Models Hub is your central place to discover, configure, and manage the AI models that power your agents.
+
+## What you can do here
+
+**Browse models.** Search across 1,700+ models from OpenAI, Anthropic, Google, Mistral, DeepSeek, and more. Filter by provider, context length, capabilities (vision, code, reasoning), or cost.
+
+**Compare pricing.** See the cost per million tokens for each model, so you can make an informed choice between capability and cost.
+
+**Set a default model.** Choose which model your agents use unless you've configured something different at the agent level.
+
+**Configure per-agent models.** Different agents can run on different models — your Developer agent might run on a strong reasoning model, while your Email Agent uses something faster and cheaper for routine triage.
+
+## Connecting providers
+
+Models are only available after you've added an API key for their provider. Go to **Settings → Provider Keys** to add your keys.
+
+Once a provider key is active, all of that provider's models appear in the Models Hub and are available to assign to agents.
+
+## Recommended models
+
+Every task type has a different best model:
+
+| Task | What to look for | Examples |
+|---|---|---|
+| Complex reasoning, code | High capability, large context | Claude Opus, GPT-4o, Gemini Ultra |
+| Research, writing | Good at synthesis and prose | Claude Sonnet, GPT-4o-mini |
+| Quick responses, triage | Fast, low cost | Claude Haiku, GPT-4o-mini, Gemini Flash |
+| Local / private | Runs on your own hardware | Ollama models (Llama, Qwen, Mistral) |
+
+## Smart routing
+
+You can enable **smart routing** to let Qorven automatically pick the right model for each task. When enabled, Qorven considers the task type, the conversation history length, and the cost profile of available models, then selects the best fit — without you having to think about it.
+
+Smart routing works best when you have keys for multiple providers active.
+
+## Local models with Ollama
+
+Qorven works with [Ollama](https://ollama.ai) — run models like Llama, Qwen, and Mistral on your own hardware. Add `http://localhost:11434` as your Ollama endpoint in **Settings → Provider Keys**, and all your Ollama models appear in the Hub.
+
+Local models never send data to any external service — useful when privacy is a priority.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Add provider keys" icon="key" href="/web-ui/settings/provider-keys">
+    Connect your API keys to unlock models.
+  </Card>
+  <Card title="Per-agent models" icon="brain" href="/models/per-qor-model">
+    Set a different model for each agent.
+  </Card>
+  <Card title="Local models" icon="server" href="/models/local-models">
+    Run Ollama or LM Studio models on your own hardware.
+  </Card>
+  <Card title="Provider reference" icon="cloud" href="/models/providers/openai">
+    Setup guides for each supported provider.
+  </Card>
+</CardGroup>

@@ -1,0 +1,172 @@
+---
+title: "Docker Deployment"
+description: "Run Qorven with Docker Compose — one Qorven container, one PostgreSQL container, fully configured."
+sidebarTitle: "Docker"
+icon: "box"
+---
+
+The official Docker Compose setup runs Qorven and PostgreSQL as two containers. It is the fastest way to get a reproducible, portable deployment.
+
+## Quick start
+
+```bash
+# Download the official compose file
+curl -fsSL https://get.qorven.ai/docker -o docker-compose.yml
+
+# Set required environment variables
+export QORVEN_DB_PASSWORD=your-secure-db-password
+export QORVEN_ENCRYPTION_KEY=$(openssl rand -hex 32)
+
+# Start
+docker compose up -d
+```
+
+Qorven will be available at `http://localhost:443` after a few seconds.
+
+<Warning>
+  `QORVEN_ENCRYPTION_KEY` must be 64 hex characters (32 bytes). Save it somewhere safe. If you lose it, encrypted secrets stored in the database cannot be recovered.
+</Warning>
+
+## The compose file
+
+```yaml
+services:
+  qorven:
+    image: qorvenai/qorven:latest
+    restart: unless-stopped
+    ports:
+      - "443:443"
+      - "4200:4200"
+    environment:
+      QORVEN_DB_URL: postgres://qorven:${QORVEN_DB_PASSWORD}@postgres:5432/qorven?sslmode=disable
+      QORVEN_ENCRYPTION_KEY: ${QORVEN_ENCRYPTION_KEY}
+    volumes:
+      - qorven-data:/var/lib/qorven
+      - qorven-config:/etc/qorven
+      - qorven-logs:/var/log/qorven
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: qorven
+      POSTGRES_USER: qorven
+      POSTGRES_PASSWORD: ${QORVEN_DB_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qorven"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  qorven-data:
+  qorven-config:
+  qorven-logs:
+  postgres-data:
+```
+
+<Info>
+  The compose file uses the `pgvector/pgvector` image, which includes the vector extension Qorven requires for memory search. Do not substitute with a plain `postgres` image.
+</Info>
+
+## Environment variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `QORVEN_DB_URL` | Yes | PostgreSQL connection string |
+| `QORVEN_ENCRYPTION_KEY` | Yes | 32-byte hex key for encrypting secrets |
+| `QORVEN_LOG_LEVEL` | No | `debug`, `info` (default), `warn`, `error` |
+| `QORVEN_WEB_LISTEN` | No | Overrides `[server] web_listen` (default `:443`) |
+| `QORVEN_API_LISTEN` | No | Overrides `[server] api_listen` (default `:4200`) |
+
+All `config.toml` settings can be overridden with environment variables using the format `QORVEN_SECTION_KEY` (uppercase, underscores).
+
+## Volume mounts
+
+The four volumes persist everything important:
+
+| Volume | Path | Contents |
+|---|---|---|
+| `qorven-data` | `/var/lib/qorven` | Agent workspace files |
+| `qorven-config` | `/etc/qorven` | `config.toml` |
+| `qorven-logs` | `/var/log/qorven` | Log files |
+| `postgres-data` | `/var/lib/postgresql/data` | Database files |
+
+<Warning>
+  Do not run in production without these volume mounts. Removing containers without volumes will delete all data.
+</Warning>
+
+## Upgrading
+
+```bash
+# Pull the latest image
+docker pull qorvenai/qorven:latest
+
+# Recreate the container (volumes are preserved)
+docker compose up -d qorven
+```
+
+Database migrations run automatically when the new container starts. No manual steps are needed.
+
+To pin a specific version:
+
+```yaml
+image: qorvenai/qorven:0.1.3-alpha
+```
+
+## Viewing logs
+
+```bash
+# Qorven application logs
+docker compose logs -f qorven
+
+# PostgreSQL logs
+docker compose logs -f postgres
+
+# Or use the CLI inside the container
+docker compose exec qorven qorven logs tail
+```
+
+## Stopping and removing
+
+```bash
+# Stop containers (volumes preserved)
+docker compose down
+
+# Stop and remove volumes (DELETES ALL DATA)
+docker compose down -v
+```
+
+## Running behind a reverse proxy
+
+If you place nginx or Caddy in front of Qorven, bind the Qorven ports to localhost:
+
+```yaml
+ports:
+  - "127.0.0.1:443:443"
+  - "127.0.0.1:4200:4200"
+```
+
+See [Reverse proxy](/gateway/reverse-proxy) for the nginx and Caddy configuration.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Reverse proxy" icon="arrow-right" href="/gateway/reverse-proxy">
+    Nginx and Caddy configuration.
+  </Card>
+  <Card title="TLS configuration" icon="shield" href="/gateway/tls">
+    Setting up HTTPS.
+  </Card>
+  <Card title="Upgrading" icon="arrow-up" href="/ops/upgrading">
+    Upgrade process and rollback.
+  </Card>
+  <Card title="Backup and restore" icon="archive" href="/gateway/backup-restore">
+    Backing up the database and config.
+  </Card>
+</CardGroup>

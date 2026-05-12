@@ -1,0 +1,28 @@
+/* Qorven docs — custom styles on top of the Mintlify "mint" theme.
+   Kept narrow on purpose: only overrides we need, nothing that forks
+   the theme wholesale. */
+
+/* ── Navbar logo — bigger. The default slot fits a 32px-tall mark;
+   ours has a tight viewBox now, so we can push to ~44px without
+   breaking the header rhythm. ── */
+.navbar img[alt*="logo" i],
+.navbar img[alt*="Qorven" i],
+header img[alt*="logo" i],
+header img[alt*="Qorven" i],
+[class*="navbar"] a[href="https://qorven.ai"] img {
+  height: 44px !important;
+  width: auto !important;
+  max-height: 44px !important;
+}
+
+/* Sidebar section icons — slight tweak so the violet accents are
+   more prominent against the dark background. */
+nav[aria-label="Sidebar"] svg {
+  opacity: 0.85;
+}
+
+/* Brand tile on provider/channel pages — a touch more breathing room. */
+[class*="content"] div[class*="flex items-center gap-3"] img[alt*="logo" i] {
+  width: 48px;
+  height: 48px;
+}

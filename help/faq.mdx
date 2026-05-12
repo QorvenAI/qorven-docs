@@ -1,0 +1,117 @@
+---
+title: "FAQ"
+description: "Common questions about Qorven — install, licensing, models, data, deployment, limits."
+sidebarTitle: "FAQ"
+icon: "help-circle"
+---
+
+## Install & setup
+
+<AccordionGroup>
+  <Accordion title="Is Qorven really free?">
+    Yes. Self-hosted is free forever under [FSL‑1.1‑ALv2](/reference/licensing). All features, unlimited agents, unlimited users. The license only restricts re-selling Qorven as a hosted service that competes with ours.
+  </Accordion>
+
+  <Accordion title="What do I need to run Qorven?">
+    - Linux or macOS, x86_64 or arm64
+    - ~2 GB RAM, ~5 GB disk
+    - PostgreSQL 14+ with pgvector (installer handles it)
+    - An LLM provider key (or Ollama for local)
+    - That's it.
+  </Accordion>
+
+  <Accordion title="Can I run it on a Raspberry Pi?">
+    Yes — a Pi 5 with 8 GB handles single-user just fine. Use Ollama with a small model (Qwen 2.5 7B, Llama 3.2 3B) for zero-network operation.
+  </Accordion>
+
+  <Accordion title="Docker or bare metal?">
+    Either. The installer script targets bare metal (systemd); `docker compose up` works identically. Teams deploying to Kubernetes should see [docker + reverse proxy](/gateway/docker).
+  </Accordion>
+
+  <Accordion title="Does it work on Windows?">
+    WSL2 (recommended) or Docker Desktop. Native .exe runs but needs manual PostgreSQL setup + a service wrapper (NSSM). The binary itself compiles fine.
+  </Accordion>
+</AccordionGroup>
+
+## Models & costs
+
+<AccordionGroup>
+  <Accordion title="What LLM providers work?">
+    Any OpenAI-compatible API: OpenAI, Anthropic, Bedrock, DeepSeek, Gemini, Groq, Mistral, Together, Fireworks, Ollama, LM Studio, Perplexity, DashScope, OpenRouter. Custom providers can register via the provider interface.
+  </Accordion>
+
+  <Accordion title="What's the cheapest way to run this?">
+    DeepSeek Chat for default + Gemini Flash for long-context tasks runs most users under $1/month. Fully local with Ollama is free (you pay in hardware).
+  </Accordion>
+
+  <Accordion title="Does Qorven send my data to OpenAI?">
+    Only the LLM calls you authorise. If you pick OpenAI as your provider, yes — you've asked Qorven to send prompts to OpenAI. That's the only external traffic. No telemetry, no training, no phone-home.
+  </Accordion>
+
+  <Accordion title="Can I use Claude in Bedrock?">
+    Yes. Set `type = "bedrock"` with your AWS profile. Claude, Llama, Nova, Titan, and others work.
+  </Accordion>
+
+  <Accordion title="Where is the model catalog?">
+    [Models overview](/models/overview) + `qorven models search`. 1,700+ models with live pricing from providers, refreshed weekly.
+  </Accordion>
+</AccordionGroup>
+
+## Privacy & data
+
+<AccordionGroup>
+  <Accordion title="What does Qorven send out?">
+    Only LLM provider calls (to your configured provider) and web-fetches your Qor explicitly makes. Every outbound destination is in the audit log.
+  </Accordion>
+
+  <Accordion title="Is there telemetry?">
+    No. Zero. The binary doesn't call home, doesn't report usage, doesn't check for updates without you running `qorven update`.
+  </Accordion>
+
+  <Accordion title="Where does my data live?">
+    PostgreSQL + `/var/lib/qorven`. All on your infrastructure. The encryption key in `config.toml` protects provider keys + OAuth secrets + vault entries.
+  </Accordion>
+
+  <Accordion title="Can I host Qorven in a regulated environment?">
+    Yes. Run air-gapped with Ollama (no outbound LLM calls), use customer-managed Postgres, enable [PII redaction](/security/pii-redaction), lock down [tenant isolation](/security/tenant-isolation). Enterprise compliance packet available on request.
+  </Accordion>
+
+  <Accordion title="How do I implement right-to-forget?">
+    `qorven memory purge --user <id>` + `qorven sessions delete --user <id>`. Soft-deletes propagate to backups after retention expires. [Privacy →](/reference/privacy)
+  </Accordion>
+</AccordionGroup>
+
+## Usage
+
+<AccordionGroup>
+  <Accordion title="How is this different from ChatGPT?">
+    ChatGPT is one cloud assistant. Qorven is *many* agents on your machine that delegate to each other. Your data stays yours. You pick the LLM.
+  </Accordion>
+
+  <Accordion title="How is this different from LangChain / AutoGen / CrewAI?">
+    Those are libraries — you write Python to configure them. Qorven is a self-hosted product with a UI, channels, memory, audit. You don't write a workflow; you ask Prime and Prime delegates.
+  </Accordion>
+
+  <Accordion title="Can agents talk to each other?">
+    Yes. [Rooms](/workflows/rooms) are multi-agent collaboration spaces. Prime can delegate to one specialist or drop 3 into a room for coordinated work.
+  </Accordion>
+
+  <Accordion title="What's the difference between a Qor and an agent?">
+    Same thing. "Qor" is Qorven's branded term, short for Qorven Operating Role. We prefer it because "agent" is overloaded.
+  </Accordion>
+
+  <Accordion title="How many Qors can one install run?">
+    No hard cap. Qors are rows in `agents`, not processes. One install with 100 Qors uses the same memory as one with 10 Qors — they're only active when handling a message.
+  </Accordion>
+</AccordionGroup>
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Debugging" icon="bug" href="/help/debugging">
+    Logs, doctor, common failure modes.
+  </Card>
+  <Card title="Getting help" icon="life-buoy" href="/help/getting-help">
+    Discord + GitHub Issues + commercial support.
+  </Card>
+</CardGroup>

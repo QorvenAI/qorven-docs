@@ -1,0 +1,68 @@
+---
+title: "Default Model"
+description: "The default model is used by all agents unless they have their own model configured — change it in Settings or config.toml."
+sidebarTitle: "Default Model"
+icon: "cpu"
+---
+
+The default model is the fallback that every agent uses when no per-agent model has been configured. Setting this well means most agents work correctly out of the box, and you only need to configure individual agents when you want to optimize for a specific use case.
+
+## How to change the default model
+
+**Via the dashboard:**
+
+1. Go to **Settings → Models Hub**
+2. Find the model you want to use as default
+3. Click **Set as default**
+
+**Via config.toml:**
+
+```toml
+[models]
+default = "claude-sonnet-4-5"
+```
+
+Restart Qorven after editing `config.toml` for the change to take effect.
+
+## What to consider when picking a default
+
+**Capability** — How complex are the tasks your agents handle most often? General business tasks (email, research, writing, summarisation) are handled well by mid-tier models. Complex reasoning, code generation, or nuanced judgment benefits from frontier models.
+
+**Cost** — The default model affects every agent, every task, all day. A more expensive model multiplied across hundreds of daily operations adds up quickly. Consider starting with a mid-tier model and moving individual agents up where needed.
+
+**Speed** — Faster models give you snappier responses, especially important for interactive chat. If your agents run long background tasks, speed matters less.
+
+**Context window** — If your agents regularly handle long documents, emails, or codebases, ensure the default model has a context window large enough to hold them.
+
+## Recommended defaults
+
+For most business use cases, these are reliable starting points:
+
+| Use case | Recommended default |
+|---|---|
+| General business tasks | Claude Sonnet (latest) |
+| Cost-sensitive, high volume | GPT-4o mini or Claude Haiku |
+| Research-heavy workflows | GPT-4o or Gemini 2.5 Pro |
+| Heavy reasoning / analysis | Claude Opus or o3 |
+| Fully local / private | Llama 3 70B via Ollama |
+
+<Tip>
+  Start with Claude Sonnet or GPT-4o as your default — they balance capability, speed, and cost well for general use. Move specific agents to more powerful (or cheaper) models once you understand which tasks need it.
+</Tip>
+
+## How agent-specific models interact with the default
+
+The default model is only used when an agent has no model explicitly configured. If you set a per-agent model, that agent ignores the default entirely.
+
+This means you can set a reasonable default and then override selectively — for example, using a cheaper model as the default but assigning your Developer agent a more powerful coding model.
+
+See [Per-agent model](/models/per-qor-model) for how to configure model assignments per agent.
+
+<CardGroup cols={2}>
+  <Card title="Per-agent model" icon="sliders" href="/models/per-qor-model">
+    Assign different models to different agents.
+  </Card>
+  <Card title="Provider keys" icon="key" href="/models/provider-keys">
+    Add API keys to unlock models from each provider.
+  </Card>
+</CardGroup>

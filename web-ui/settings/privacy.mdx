@@ -1,0 +1,88 @@
+---
+title: "Privacy"
+description: "Control how your data is handled — PII redaction, memory retention, data export, and deletion."
+sidebarTitle: "Privacy"
+icon: "shield"
+---
+
+Privacy settings give you control over what data your agents store and what is sent to external AI model providers. Since Qorven is self-hosted, all data stays on your server by default — these settings let you fine-tune that further.
+
+## PII redaction
+
+When enabled, PII redaction strips personally identifiable information from prompts before they are sent to external AI model providers (OpenAI, Anthropic, etc.).
+
+The following are redacted by default when PII redaction is on:
+
+- Email addresses
+- Phone numbers
+- Credit card numbers
+- Social Security / National ID numbers
+- Street addresses
+- Passport and ID document numbers
+
+Redacted values are replaced with typed placeholders (e.g., `[EMAIL_REDACTED]`) so the model can still understand the structure of the content without seeing the actual PII.
+
+<Info>
+  PII redaction applies only to prompts sent to external providers. Data stored locally on your server (memories, audit logs, drive files) is not affected.
+</Info>
+
+To enable: toggle **PII Redaction** on and select which categories to redact. You can enable all categories or choose specific ones.
+
+## Memory retention
+
+By default, memories are kept indefinitely. You can set a retention period after which old memories are automatically deleted:
+
+- 30 days
+- 90 days
+- 1 year
+- Never expire (default)
+
+Retention applies to the memory creation date. Memories updated by agents reset their age on update.
+
+<Tip>
+  A 90-day retention period is a good balance — agents retain recent context without accumulating stale facts about outdated projects or former clients.
+</Tip>
+
+## Data export
+
+Download all your Qorven data as a JSON archive. The export includes:
+
+- All memories (with agent, type, content, and timestamps)
+- Audit log entries
+- Agent configurations
+- Conversation history
+- Scheduled tasks
+
+Click **Export All Data** and the archive will be prepared and downloaded. Depending on how long your instance has been running, this may take a minute.
+
+## Deleting memories
+
+To delete all memories for your account: click **Delete All Memories** in the Danger section at the bottom of the page. This is permanent. Agents will lose all retained context and will need to relearn preferences and project context over time.
+
+To delete memories selectively, use the [Memories](/web-ui/memories) page.
+
+## Conversation history
+
+By default, conversation history is stored indefinitely. You can configure automatic deletion of conversations older than a chosen period:
+
+- 30 days
+- 90 days
+- 1 year
+- Keep forever (default)
+
+This setting does not affect the Audit Log, which has its own retention management in [System Settings](/web-ui/settings/system).
+
+<Warning>
+  Deleting conversations also removes any memories that were created solely within those conversations and have not been reinforced elsewhere.
+</Warning>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Memories" icon="database" href="/web-ui/memories">
+    Browse and selectively delete individual memories.
+  </Card>
+  <Card title="Audit Log" icon="history" href="/web-ui/audit">
+    Review agent activity logs.
+  </Card>
+</CardGroup>

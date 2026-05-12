@@ -1,0 +1,45 @@
+---
+title: "qorven sessions"
+description: "Manage chat sessions"
+sidebarTitle: "sessions"
+icon: "list"
+---
+
+<Info>Generated from `qorven sessions --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Manage chat sessions
+
+Usage:
+  qorven sessions [command]
+
+Available Commands:
+  delete      Delete a session
+  get         Get session details and messages
+  list        List sessions
+
+Flags:
+  -h, --help   help for sessions
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+
+Use "qorven sessions [command] --help" for more information about a command.
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

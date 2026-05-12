@@ -1,0 +1,47 @@
+---
+title: "qorven auth"
+description: "Manage authentication"
+sidebarTitle: "auth"
+icon: "key"
+---
+
+<Info>Generated from `qorven auth --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Manage authentication
+
+Usage:
+  qorven auth [command]
+
+Available Commands:
+  list-contexts List configured profiles
+  login         Authenticate with a Qorven gateway
+  logout        Remove stored credentials
+  use-context   Switch active profile
+  whoami        Show current authentication info
+
+Flags:
+  -h, --help   help for auth
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+
+Use "qorven auth [command] --help" for more information about a command.
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

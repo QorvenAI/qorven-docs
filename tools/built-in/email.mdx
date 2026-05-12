@@ -1,0 +1,86 @@
+---
+title: "Email"
+description: "Connect any email account and let your agents read, triage, draft, and send email — with approval before anything goes out."
+sidebarTitle: "Email"
+icon: "mail"
+---
+
+<Info>
+  The email tool connects to any IMAP/SMTP email account. Your Email Agent reads your inbox, drafts replies, and sends messages — but nothing goes out without your approval unless you explicitly allow it.
+</Info>
+
+## What your Email Agent can do
+
+- **Monitor your inbox** — checks for new messages on a schedule or in real time
+- **Triage incoming mail** — categorises, flags, and summarises what matters
+- **Draft replies** — writes a reply based on the email context and what it knows about you
+- **Send messages** — with your approval, or automatically for low-stakes responses you've pre-approved
+- **Search mail** — find emails by sender, subject, date, or content
+- **Forward and route** — forward relevant messages to the right person or system
+
+## Connecting an email account
+
+Go to **Settings → Channels → Email** and add your account credentials:
+
+- **IMAP server** — e.g. `imap.gmail.com:993` for Gmail
+- **SMTP server** — e.g. `smtp.gmail.com:587` for Gmail
+- **Email address** and **password** (or app password for Gmail/Outlook)
+
+For Gmail, you'll need to generate an App Password in your Google Account security settings — standard passwords won't work with IMAP.
+
+Once connected, your Email Agent will begin monitoring the inbox.
+
+## Using email aliases for routing
+
+You can give your agents their own email addresses. For example:
+
+```
+Your address:       alex@company.com
+Agent alias:        alex+prime@company.com
+```
+
+Any email to the alias routes directly to Prime for handling. You can set up multiple aliases — one per agent, or one per type of work (support@, orders@, etc.).
+
+## Approval flow
+
+By default, every outbound email requires your approval:
+
+1. The Email Agent drafts a reply
+2. An approval card appears in your dashboard (and optionally on Telegram, Slack, or any connected channel)
+3. You review the draft, edit if needed, and approve
+4. The email is sent
+
+You can change this to auto-approve for specific senders, labels, or types of response — configured in the agent's settings.
+
+## What the Email Agent remembers
+
+The Email Agent builds memory over time:
+
+- How you like emails addressed (formal or informal, by first name or title)
+- Standard responses to recurring questions
+- Which senders are high priority
+- Threads you've asked it to follow up on
+- People and context it's learned from past exchanges
+
+This means replies get better and more personalised over time.
+
+## Privacy note
+
+Your email credentials are encrypted and stored locally on your Qorven server. Email content is processed by your configured AI model (which may be a cloud provider depending on your setup). If you're handling sensitive email, consider using a local model. See [Privacy →](/web-ui/settings/privacy).
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Email channel setup" icon="mail" href="/channels/email">
+    Full setup guide including Gmail, Outlook, and custom IMAP.
+  </Card>
+  <Card title="Approvals" icon="check-circle" href="/workflows/approvals">
+    How to configure approval rules for outbound actions.
+  </Card>
+  <Card title="Scheduling" icon="calendar" href="/workflows/cron">
+    Run email triage on a schedule — morning review, evening summary, etc.
+  </Card>
+  <Card title="Mail dashboard" icon="inbox" href="/web-ui/mail">
+    The inbox view in the web dashboard.
+  </Card>
+</CardGroup>

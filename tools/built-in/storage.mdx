@@ -1,0 +1,69 @@
+---
+title: "Storage"
+description: "Agents can save and retrieve files in their own dedicated storage area — separate from your filesystem."
+sidebarTitle: "Storage"
+icon: "hard-drive"
+---
+
+The `storage` tool gives agents a dedicated file area where they can read and write files. It's intentionally more restricted than the `filesystem` tool — agents can only access their own storage, not arbitrary paths on your server.
+
+## What it is
+
+Each agent has its own storage folder. The agent can:
+
+- **Save files** — research outputs, generated reports, intermediate data, downloaded attachments
+- **Read files** — retrieve anything previously saved, or files you've placed there for the agent
+- **List contents** — see what files exist and their metadata
+- **Delete files** — remove files they no longer need
+
+Files in storage persist across sessions. An agent can save a report today and retrieve it next week.
+
+## How it differs from the filesystem tool
+
+| | Storage | Filesystem |
+|--|---------|------------|
+| Scope | Agent's own folder only | Any path you permit |
+| Requires approval | No (reads and writes are automatic) | Writes require approval by default |
+| Isolation | Per-agent | Shared |
+| Visible in UI | Yes — Drive page | No |
+| Best for | Reports, outputs, working data | Code files, project directories |
+
+Use `storage` for the agent's working files. Use `filesystem` when the agent needs to work in your actual project directories.
+
+## Viewing files in the UI
+
+Everything in an agent's storage is visible in **Drive** — you can browse, download, preview, or delete files directly from there. This makes it easy to grab a generated report without needing to ask the agent to send it to you.
+
+## Example uses
+
+- **"Research our top 5 competitors and save a summary"** — the agent writes a `competitors.md` file to storage for you to review later
+- **"Generate a weekly report and store it"** — the agent writes the report and you pull it from Drive
+- **"Save the extracted data from this PDF so we can use it next session"** — the agent parses the document and saves a structured JSON file
+- **"Read the notes you saved last time"** — the agent retrieves a file from a previous session
+
+## Inputs
+
+The storage tool exposes several operations:
+
+| Operation | Key parameters |
+|-----------|----------------|
+| `write` | `filename`, `content` (text or base64) |
+| `read` | `filename` |
+| `list` | — |
+| `delete` | `filename` |
+| `append` | `filename`, `content` |
+
+## Storage location
+
+Files are stored under `data/agents/{agent-id}/storage/` on your Qorven server. You can back this directory up like any other folder.
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Read Document" icon="file" href="/tools/built-in/read-document">
+    Read and extract content from documents.
+  </Card>
+  <Card title="Filesystem Tool" icon="folder" href="/tools/coding/filesystem">
+    Access paths outside agent storage.
+  </Card>
+</CardGroup>

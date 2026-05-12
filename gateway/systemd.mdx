@@ -1,0 +1,153 @@
+---
+title: "systemd Service"
+description: "The Qorven systemd unit — start, stop, restart, view logs, and understand the service configuration."
+sidebarTitle: "systemd"
+icon: "server"
+---
+
+The Qorven installer creates a systemd unit at `/etc/systemd/system/qorven.service`. The service starts automatically on boot and restarts on failure.
+
+## Basic commands
+
+```bash
+# Start the service
+sudo systemctl start qorven
+
+# Stop the service
+sudo systemctl stop qorven
+
+# Restart the service (e.g. after changing config.toml)
+sudo systemctl restart qorven
+
+# Check service status
+sudo systemctl status qorven
+
+# Enable auto-start on boot (already done by installer)
+sudo systemctl enable qorven
+
+# Disable auto-start
+sudo systemctl disable qorven
+```
+
+## Viewing logs
+
+```bash
+# Follow logs in real time
+journalctl -u qorven -f
+
+# Show last 200 lines
+journalctl -u qorven -n 200
+
+# Show only errors
+journalctl -u qorven -p err
+
+# Show logs since the last boot
+journalctl -u qorven -b
+
+# Show logs for a time range
+journalctl -u qorven --since "2026-05-12 09:00" --until "2026-05-12 10:00"
+```
+
+Logs also go to `/var/log/qorven/qorven.log`. Both streams contain the same entries.
+
+## The unit file
+
+```ini
+[Unit]
+Description=Qorven AI Gateway
+Documentation=https://docs.qorven.ai
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=notify
+User=qorven
+Group=qorven
+ExecStart=/usr/local/bin/qorven start
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart policy
+Restart=on-failure
+RestartSec=5s
+StartLimitIntervalSec=60s
+StartLimitBurst=3
+
+# Health check
+ExecStartPost=/bin/sh -c 'until curl -sf http://localhost:4200/health; do sleep 1; done'
+
+# Security hardening
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true
+ReadWritePaths=/var/log/qorven /var/lib/qorven /etc/qorven
+
+# Capabilities (needed to bind port 443)
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target
+```
+
+## Security hardening
+
+The unit includes several systemd security directives:
+
+| Directive | Effect |
+|---|---|
+| `ProtectSystem=strict` | `/usr`, `/boot`, `/etc` (except `/etc/qorven`) are read-only |
+| `ProtectHome=true` | Home directories are inaccessible |
+| `PrivateTmp=true` | Isolated `/tmp` directory |
+| `NoNewPrivileges=true` | Process cannot gain additional privileges |
+| `CAP_NET_BIND_SERVICE` | Allows binding to ports below 1024 (port 443) |
+
+Qorven runs as the `qorven` system user, created by the installer. This user has no shell and no home directory.
+
+## Restart behaviour
+
+The service restarts automatically on failure with a 5-second delay. If it fails to start 3 times within 60 seconds, systemd gives up and the service enters `failed` state. Check `journalctl -u qorven -n 50` to diagnose the cause.
+
+To reset the failure counter and try again:
+
+```bash
+sudo systemctl reset-failed qorven
+sudo systemctl start qorven
+```
+
+## Editing the unit file
+
+Do not edit `/etc/systemd/system/qorven.service` directly — the installer may overwrite it on upgrade. Use a drop-in override instead:
+
+```bash
+sudo systemctl edit qorven
+```
+
+This opens a drop-in file at `/etc/systemd/system/qorven.service.d/override.conf`. Add only the directives you want to change:
+
+```ini
+[Service]
+# Increase open file limit for large agent workloads
+LimitNOFILE=65536
+```
+
+After editing, reload and restart:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart qorven
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Health endpoints" icon="activity" href="/gateway/health-endpoints">
+    The health check URL used in the unit file.
+  </Card>
+  <Card title="Logging" icon="file-text" href="/gateway/logging">
+    Log file location and rotation.
+  </Card>
+  <Card title="Boot fails" icon="alert-triangle" href="/ops/troubleshooting/boot-fails">
+    Diagnosing startup failures.
+  </Card>
+</CardGroup>

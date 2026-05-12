@@ -1,0 +1,102 @@
+---
+title: "Audit Trail"
+description: "Every action taken by every agent and user is recorded in an append-only audit log."
+sidebarTitle: "Audit Trail"
+icon: "history"
+---
+
+## What is recorded
+
+The audit log captures every meaningful action in the system:
+
+| Category | Events logged |
+|---|---|
+| **Agent activity** | Tool calls (name, args, result), model invocations, loop guard triggers |
+| **Approvals** | Approval requested, approved, rejected, timed out |
+| **Messages** | Inbound messages received, outbound messages sent |
+| **Auth events** | Login success, login failure, token issued, account locked |
+| **Admin operations** | User created/deleted, agent config changed, provider key added/removed |
+| **Data resets** | Selective reset (target, row count), factory reset |
+
+## Log entry structure
+
+Each entry contains:
+
+```json
+{
+  "id": "uuid",
+  "timestamp": "2026-05-08T14:32:01Z",
+  "tenant_id": "uuid",
+  "user_id": "uuid",
+  "agent_id": "uuid",
+  "action": "tool.call",
+  "resource": "web_search",
+  "args": { "query": "..." },
+  "result": "ok",
+  "ip": "10.0.1.5",
+  "session_id": "uuid"
+}
+```
+
+`args` and `result` are stored verbatim. For tool calls that handle sensitive data, consider enabling [PII redaction](/security/pii-redaction) so that redacted content is what appears in the log.
+
+## Append-only guarantee
+
+The `audit_log` table is configured so that application-level DELETE and UPDATE operations are blocked by policy. Entries written to it can only be removed by an admin running a selective data reset or factory reset — and those operations are themselves audit-logged before the data is touched.
+
+<Info>
+  For destructive resets, the audit log entry is written **before** the data is deleted. This ensures the entry survives even if the reset operation removes other tables.
+</Info>
+
+## Viewing the audit log
+
+**In the UI:** Settings → Audit Log. Filterable by date range, user, agent, and action type.
+
+**Via CLI:**
+
+```bash
+# Tail the live audit log
+qorven logs audit --tail
+
+# Filter by agent
+qorven logs audit --agent my-agent --since 24h
+
+# Filter by action
+qorven logs audit --action tool.call --since 7d
+```
+
+## Exporting for compliance
+
+```bash
+# Export to CSV
+qorven logs audit --since 30d --format csv > audit-$(date +%Y%m%d).csv
+
+# Export to JSON
+qorven logs audit --since 30d --format json > audit-$(date +%Y%m%d).json
+```
+
+Exports honour tenant scoping — admin exports contain all tenants; user exports contain only the requesting user's tenant.
+
+## Retention
+
+By default, audit log entries are retained indefinitely. To configure automatic pruning:
+
+```toml
+[audit]
+retain_days = 365
+```
+
+Pruning runs nightly. Entries older than `retain_days` are permanently deleted.
+
+<Warning>
+  Once audit entries are pruned or factory-reset, they cannot be recovered. If you need long-term retention for compliance, set up log shipping to an external system (e.g. `qorven logs audit --stream | your-siem-tool`).
+</Warning>
+
+<CardGroup cols={2}>
+  <Card title="Threat model" icon="shield" href="/security/threat-model">
+    How the audit log fits into insider threat defense.
+  </Card>
+  <Card title="PII redaction" icon="eye-off" href="/security/pii-redaction">
+    Strip sensitive data before it reaches the audit log.
+  </Card>
+</CardGroup>

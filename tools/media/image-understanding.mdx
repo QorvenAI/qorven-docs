@@ -1,0 +1,62 @@
+---
+title: "Image Understanding"
+description: "Agents can look at images, screenshots, and documents — describe what they see, extract text, read charts, and answer visual questions."
+sidebarTitle: "Image Understanding"
+icon: "eye"
+---
+
+The image understanding tool lets agents interpret visual content. Upload an image in chat, attach it to a task, or pass one from another tool — the agent can describe it, extract text from it, answer questions about it, and use what it sees to inform its next action.
+
+## What agents can do with images
+
+- **Describe an image** — explain what is in a photo, screenshot, diagram, or document
+- **Extract text (OCR)** — read text from images, scanned documents, screenshots, or photos of printed pages
+- **Answer questions about visual content** — "What is the total on this invoice?", "What error does this screenshot show?", "Which bar is tallest in this chart?"
+- **Read charts and graphs** — interpret data from bar charts, line graphs, pie charts, and dashboards
+- **Review UI screenshots** — identify buttons, forms, and layout; useful for QA and design feedback
+- **Analyse photos** — describe people, objects, settings, or specific features in a photo
+
+## How to send an image
+
+**In chat:** Drag and drop an image into the message input, or click the attachment icon and select a file. The image is attached to your next message.
+
+**From another tool:** Tools like `screenshot` and Computer Use pass images directly to the agent — no manual upload needed.
+
+**From Drive:** Reference a file in Drive by path: *"Look at the file in Drive at Reports/screenshot-jan.png and tell me what error it shows."*
+
+## Supported formats
+
+JPEG, PNG, GIF (first frame), and WebP. Maximum file size is 20 MB. For PDFs with embedded images, extract the relevant page as a PNG first.
+
+## Model requirements
+
+Image understanding requires a **vision-capable model**. Make sure the agent is configured with one of the following:
+
+| Provider | Models with vision |
+|----------|--------------------|
+| OpenAI | GPT-4o, GPT-4 Turbo with vision |
+| Anthropic | Claude 3 Haiku, Sonnet, Opus; Claude 3.5+ |
+| Google | Gemini 1.5 Pro, Gemini 1.5 Flash, Gemini 2.0 |
+| Ollama | LLaVA, BakLLaVA, and other multimodal models |
+
+If the agent's model does not support vision, it will tell you it cannot process the image.
+
+## OCR accuracy
+
+Printed text in high-resolution images is extracted with high accuracy. Results are less reliable for:
+
+- Handwritten text
+- Low-contrast or stylised fonts
+- Images with heavy compression or blur
+- Text that is rotated or perspective-distorted
+
+For critical document extraction, always review the output before using the data.
+
+<CardGroup cols={2}>
+  <Card title="Image Generation" icon="image" href="/tools/media/image-generation">
+    Generate images from text descriptions.
+  </Card>
+  <Card title="Screen Share" icon="monitor" href="/tools/media/screen-share">
+    Share your screen so an agent can see what you are looking at.
+  </Card>
+</CardGroup>

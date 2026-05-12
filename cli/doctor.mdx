@@ -1,0 +1,46 @@
+---
+title: "qorven doctor"
+description: "Full health check of Qorven installation."
+sidebarTitle: "doctor"
+icon: "stethoscope"
+---
+
+<Info>Generated from `qorven doctor --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Full health check of Qorven installation.
+
+Checks: version, config, database, providers, agents, memory,
+tools, channels, workspace, external tools, gateway.
+
+Examples:
+  qorven doctor          # check everything
+  qorven doctor --fix    # auto-repair common issues
+
+Usage:
+  qorven doctor [flags]
+
+Flags:
+      --fix    Auto-repair common issues
+  -h, --help   help for doctor
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

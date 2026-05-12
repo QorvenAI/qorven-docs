@@ -1,0 +1,55 @@
+---
+title: "Slash commands"
+description: "Every slash command in the Qorven TUI, what it does, when to use it."
+sidebarTitle: "Slash commands"
+icon: "slash"
+---
+
+<Info>
+  Type `/` in the composer to open the command picker. Fuzzy-filter by typing more letters.
+</Info>
+
+## Reference
+
+| Command | Purpose |
+|---|---|
+| `/agent` | Switch to a different Qor for this session |
+| `/agents` | Open the full agent picker (filterable list) |
+| `/model` | Switch the LLM model for the current Qor |
+| `/sessions` | Browse other sessions (email threads, group chats) |
+| `/new` | Clear the local view (canonical server-side chat is kept — your Qor still remembers) |
+| `/clear` | Clear the local transcript |
+| `/tools` | List tools available to the current Qor |
+| `/compact` | Toggle the sidebar visibility |
+| `/help` | Show every command |
+| `/providers` | Open the provider picker |
+| `/keys` | Manage provider API keys |
+| `/code` | Flip into code mode (VS Code layout) |
+| `/status` | Gateway status + metadata |
+| `/research` | Search social platforms via the research tool |
+| `/read` | Read a URL into context |
+| `/vault` | Open the knowledge vault |
+| `/scan` | Scan text for prompt injection |
+| `/memory` | Search agent memories |
+| `/skills` | List available skills |
+| `/approve` | Approve pending actions |
+| `/deny` | Deny pending actions |
+| `/whoami` | Show current agent, model, session |
+
+## Muscle memory tips
+
+- `/a` → tab → lands on `/agents`
+- `/co` → tab → lands on `/code`
+- Ctrl+L → clear (like a shell)
+- Esc → close any picker / dialog
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Keybindings" icon="keyboard" href="/tui/keybindings">
+    Non-slash shortcuts.
+  </Card>
+  <Card title="Code mode" icon="code" href="/tui/code-mode">
+    Deep-dive on `/code`.
+  </Card>
+</CardGroup>

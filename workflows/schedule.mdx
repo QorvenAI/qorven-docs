@@ -1,0 +1,81 @@
+---
+title: "Schedules"
+description: "View, manage, and control all scheduled agent tasks from a single dashboard page."
+sidebarTitle: "Schedules"
+icon: "calendar"
+---
+
+The Schedules page is your control centre for automated agent work. Every task that runs on a timer lives here — you can create, pause, resume, and delete schedules without touching any configuration files.
+
+## What the Schedules page shows
+
+Each row in the schedule list displays:
+
+- **Name** — a label you set when creating the schedule
+- **Agent** — which agent runs the task
+- **Expression** — the cron schedule (e.g. `0 8 * * 1-5`)
+- **Next run** — when the task will fire next
+- **Last run** — when it last ran and whether it succeeded
+- **Status** — active, paused, or error
+
+Click any schedule to see its full run history and the output from each execution.
+
+## Cron vs trigger-based schedules
+
+Qorven supports two types of automation:
+
+| Type | When it runs | Example |
+|---|---|---|
+| **Cron (time-based)** | At a defined time or interval | Every weekday at 8 AM |
+| **Trigger-based** | When an event happens | When a new email arrives from a VIP sender |
+
+This page focuses on cron schedules. Trigger-based workflows are configured per-channel (email, Slack, Telegram, etc.) in the **Channels** settings.
+
+## Create a schedule
+
+<Steps>
+  <Step title="Click New Schedule">
+    From **Workflows → Schedules**, click the **New Schedule** button in the top right.
+  </Step>
+  <Step title="Choose an agent">
+    Select which agent will run the task. Prime handles most general tasks. Specialist agents (Email Agent, Researcher, etc.) are available if you want more focused execution.
+  </Step>
+  <Step title="Write the instruction">
+    Type the task instruction in plain language. This is exactly what the agent will receive when the schedule fires — write it the same way you'd write a chat message.
+  </Step>
+  <Step title="Set the cron expression">
+    Enter the cron expression for when the task should run. Use the visual helper if you're not familiar with cron syntax, or see the [Cron reference](/workflows/cron) for examples.
+  </Step>
+  <Step title="Set your timezone and save">
+    Confirm the timezone and click **Save**. The schedule activates immediately and the next run time is shown in the list.
+  </Step>
+</Steps>
+
+## Pause and resume
+
+To temporarily stop a schedule without deleting it, click the **Pause** button on the schedule row. The schedule keeps its configuration and history — click **Resume** to reactivate it.
+
+Useful when you're on holiday, running a one-off override, or testing a change.
+
+## Delete a schedule
+
+Click into a schedule and use the **Delete** option in the top-right menu. Deletion is permanent — the run history is preserved in the [Audit Log](/workflows/audit) but the schedule itself is removed.
+
+## Last run result
+
+The **Last run** column shows a green check (success), a red X (error), or a yellow warning (completed with caveats). Click the row to see the agent's full output and any error details.
+
+<Info>
+  If a schedule shows an error, the most common causes are: the instruction refers to a tool or channel that's no longer configured, the agent hit an approval gate and waited too long, or the model provider was unavailable. Check the run detail for specifics.
+</Info>
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Cron syntax" icon="timer" href="/workflows/cron">
+    Cron expression reference with examples.
+  </Card>
+  <Card title="Approvals" icon="check-circle" href="/workflows/approvals">
+    Handle agent actions that need sign-off before executing.
+  </Card>
+</CardGroup>

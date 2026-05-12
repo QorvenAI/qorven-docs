@@ -1,0 +1,77 @@
+---
+title: "Crawl"
+description: "Start from a URL, follow links, and read multiple pages — ideal for ingesting entire websites or documentation."
+sidebarTitle: "Crawl"
+icon: "network"
+---
+
+The `crawl` tool starts from a URL and follows links, reading and extracting content from multiple pages. It's the right tool when you need to understand a whole site — not just one page.
+
+## What it does
+
+- Visits the starting URL and discovers links on the page
+- Follows links within the same domain (or configured scope)
+- Extracts clean, structured content from each page visited
+- Respects `max_pages` and `max_depth` limits you set
+- Returns structured content from all pages, including URLs, headings, and body text
+- Deduplicates pages so the same URL isn't visited twice
+
+## When to use crawl vs other web tools
+
+| Tool | Best for |
+|------|----------|
+| `scrape` | Reading one specific page |
+| `crawl` | Reading a full site or documentation section |
+| `web_fetch` | Fetching raw content from a single URL |
+
+Use `crawl` when the information you need is spread across multiple pages and you don't know exactly which ones.
+
+## Example uses
+
+- **"Summarise what this company does"** — crawl their marketing site to read the about, product, and pricing pages
+- **"What does their API support?"** — crawl a documentation site to read all the reference pages
+- **"Find all the blog posts about X"** — crawl the blog section and find relevant content
+- **"Ingest our own docs so you know what we've published"** — crawl your documentation site as a knowledge-building step
+
+## Depth and page limits
+
+Crawl depth controls how many link-hops from the starting URL the agent will follow:
+
+- **Depth 1** — only the starting page
+- **Depth 2** — the starting page + all pages it links to
+- **Depth 3** — one more level of links from those pages
+
+`max_pages` is an absolute cap. Crawling stops when either limit is hit, whichever comes first.
+
+<Warning>
+Large sites can have thousands of pages. Always set a reasonable `max_pages` limit to avoid long-running crawls. For most research tasks, 20–50 pages is sufficient.
+</Warning>
+
+## Inputs
+
+| Parameter | Required | Default | Description |
+|-----------|----------|---------|-------------|
+| `url` | Yes | — | The starting URL |
+| `max_pages` | No | 20 | Maximum number of pages to visit |
+| `max_depth` | No | 3 | Maximum link depth from the starting URL |
+| `include_pattern` | No | — | Only follow URLs matching this pattern (e.g., `/docs/`) |
+| `exclude_pattern` | No | — | Skip URLs matching this pattern (e.g., `/blog/`) |
+
+## Scope control
+
+By default, `crawl` stays within the same domain as the starting URL. It won't follow external links. Use `include_pattern` to narrow further — for example, only crawl pages under `/docs/api/`:
+
+```
+include_pattern: /docs/api/
+```
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Scrape" icon="file-text" href="/tools/built-in/scrape">
+    Read a single page with clean extraction.
+  </Card>
+  <Card title="Web Fetch" icon="download" href="/tools/built-in/web-fetch">
+    Fetch raw content without crawling.
+  </Card>
+</CardGroup>

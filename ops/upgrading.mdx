@@ -1,0 +1,165 @@
+---
+title: "Upgrading"
+description: "Upgrade Qorven to the latest version — automatic upgrade, manual binary replacement, and rollback."
+sidebarTitle: "Upgrading"
+icon: "arrow-up"
+---
+
+Upgrading Qorven replaces the binary, restarts the service, and runs any new database migrations. Migrations run automatically on startup — no manual steps are needed.
+
+## Before upgrading
+
+Always take a backup before upgrading:
+
+```bash
+qorven backup
+```
+
+Check the [changelog](https://qorven.ai/changelog) for breaking changes before upgrading across major or minor versions. Patch upgrades (0.1.x → 0.1.y) are safe to apply without reading the changelog.
+
+## Automatic upgrade
+
+```bash
+qorven update
+```
+
+This command:
+
+1. Checks for a newer version.
+2. Downloads the new binary to a temporary location.
+3. Verifies the checksum.
+4. Stops the service (`systemctl stop qorven`).
+5. Replaces `/usr/local/bin/qorven` with the new binary.
+6. Starts the service (`systemctl start qorven`).
+7. Runs pending database migrations on startup.
+8. Verifies the service is healthy.
+
+Total downtime is typically under 10 seconds.
+
+```bash
+# Check for available update without installing
+qorven update --check
+
+# Install a specific version
+qorven update --version 0.1.4-alpha
+```
+
+## Manual upgrade
+
+If you prefer to control each step:
+
+<Steps>
+  <Step title="Take a backup">
+    ```bash
+    qorven backup
+    ```
+  </Step>
+  <Step title="Download the new binary">
+    ```bash
+    # Download for linux/amd64
+    curl -fsSL https://releases.qorven.ai/latest/qorven-linux-amd64 -o /tmp/qorven-new
+
+    # Verify the checksum
+    curl -fsSL https://releases.qorven.ai/latest/qorven-linux-amd64.sha256 | sha256sum -c -
+    ```
+  </Step>
+  <Step title="Stop the service">
+    ```bash
+    sudo systemctl stop qorven
+    ```
+  </Step>
+  <Step title="Replace the binary">
+    ```bash
+    sudo cp /tmp/qorven-new /usr/local/bin/qorven
+    sudo chmod +x /usr/local/bin/qorven
+    ```
+  </Step>
+  <Step title="Start the service">
+    ```bash
+    sudo systemctl start qorven
+    ```
+
+    Migrations run automatically. Check the service started cleanly:
+
+    ```bash
+    sudo systemctl status qorven
+    curl http://localhost:4200/health
+    ```
+  </Step>
+</Steps>
+
+## Docker upgrade
+
+```bash
+# Pull the latest image
+docker pull qorvenai/qorven:latest
+
+# Recreate the container (data volumes are preserved)
+docker compose up -d qorven
+```
+
+Migrations run when the new container starts.
+
+## Rollback
+
+If the upgrade causes a problem, restore the previous binary:
+
+```bash
+# The update command keeps the previous binary as /usr/local/bin/qorven.prev
+sudo systemctl stop qorven
+sudo cp /usr/local/bin/qorven.prev /usr/local/bin/qorven
+sudo systemctl start qorven
+```
+
+If the new version ran migrations, roll them back first:
+
+```bash
+qorven migrate down --steps <N>
+```
+
+Replace `<N>` with the number of migrations added by the version you are rolling back. This is listed in the changelog entry for the release.
+
+<Warning>
+  Rolling back migrations may delete data added by the new version. If in doubt, restore from the backup you took before upgrading.
+</Warning>
+
+## Zero-downtime upgrades
+
+For setups that require no downtime (load-balanced or multi-instance), use a blue/green approach:
+
+1. Start a new instance on a different port running the new version.
+2. Wait for it to pass health checks and complete migrations.
+3. Shift traffic to the new instance.
+4. Shut down the old instance.
+
+Migrations use an advisory lock, so running them from two instances simultaneously is safe.
+
+## Version pinning
+
+In production, pin the binary to a specific version rather than using `latest`:
+
+```bash
+qorven update --version 0.1.3-alpha
+```
+
+Or in Docker:
+
+```yaml
+image: qorvenai/qorven:0.1.3-alpha
+```
+
+This ensures upgrades happen intentionally, not automatically.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Backup and restore" icon="archive" href="/gateway/backup-restore">
+    Always back up before upgrading.
+  </Card>
+  <Card title="Database migrations" icon="database" href="/gateway/migrations">
+    How migrations run on startup.
+  </Card>
+  <Card title="Boot fails" icon="alert-triangle" href="/ops/troubleshooting/boot-fails">
+    What to do if the new version won't start.
+  </Card>
+</CardGroup>

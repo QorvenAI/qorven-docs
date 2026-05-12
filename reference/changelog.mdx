@@ -1,0 +1,65 @@
+---
+title: "Changelog"
+description: "Release history for Qorven. Full changelog on GitHub."
+sidebarTitle: "Changelog"
+icon: "history"
+---
+
+The complete changelog is maintained in the repository at [CHANGELOG.md on GitHub](https://github.com/qorvenai/qorven/blob/main/CHANGELOG.md). This page summarises recent releases.
+
+## v0.1.4-alpha (2026-05-08)
+
+**App Platform**
+
+- WordPress-style plugin system: install any app from disk with `app.yaml` manifest
+- Enable/disable/reload/uninstall apps without restarting the service
+- `window.__QorvenApp` SDK bus for frontend app bundles — exposes React, `request`, `getToken`, and `register()`
+- `/apps` management page in the UI (admin only)
+- Dynamic app pages at `/apps/[slug]/[...path]`
+- App tabs injectable into Qor workspace and Settings sidebar
+- Prime app builder auto-installs built apps on plan completion
+
+**Security fix**
+- Inbound rules: UPDATE and DELETE now scope by `agent_id` AND `tenant_id`, closing cross-tenant mutation vectors
+- Keyword rules compiled once at load time; invalid patterns skipped to prevent ReDoS
+
+## v0.1.3-alpha (2026-05-06)
+
+- **Software Update card** in Settings → System: shows current vs latest version, one-click install, SHA-256 verified binary replacement
+- `GET /v1/admin/update/check` — check for new releases without installing
+- `POST /v1/admin/update/install` — download and atomically replace the running binary
+
+## v0.1.2-alpha (2026-05-06)
+
+- Chat composer: flat full-width input, no pill container
+- Status bar: scoped to left sidebar, shows live indicator and version string
+- Chat fonts: removed `prose-invert` and opacity dimming on assistant text
+- Tasks panel: removed global pause/resume buttons; per-task controls only
+- Sidebar: username lowercase, role label removed, lock screen action added
+
+## v0.1.1-alpha (2026-05-06)
+
+- **Danger Zone**: 6 selective data resets + factory reset in Settings → System
+- Factory reset gated by password re-entry and type-to-confirm "RESET"
+- Setup redirect: API `403 setup_required` now auto-redirects to `/setup`
+- Backend version/commit exposed in status bar and via `/health/detailed`
+- Per-task pause/resume/message controls with optimistic UI updates
+
+## v0.1.0-alpha (2026-04-13)
+
+Initial release.
+
+- Multi-agent system with 70 tools, 9-stage sanitization, loop guards, context compaction
+- Smart Router v2 — complexity-based model routing across 1,773-model registry
+- Auth: bcrypt passwords, JWT tokens, API keys, login lockout, rate limiting
+- Channels: Telegram, Email, Slack, Discord, WhatsApp, Zalo, Webchat, Webhook
+- Web dashboard: 49 pages, 9-step setup wizard
+- CLI/TUI: 36 CLI commands, 34 slash commands, three-panel code mode
+- Self-building tools: `self_knowledge`, `self_patch`, `self_test`, `self_improve`
+- Docker Compose, `install.sh`, GitHub Actions CI/CD
+
+---
+
+<Info>
+  For the complete entry with all details for any release, see the [full CHANGELOG.md](https://github.com/qorvenai/qorven/blob/main/CHANGELOG.md) on GitHub.
+</Info>

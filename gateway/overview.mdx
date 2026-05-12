@@ -1,0 +1,128 @@
+---
+title: "Gateway overview"
+description: "The single Go binary that runs Qorven — what it does, how it's configured, and how to manage it."
+sidebarTitle: "Overview"
+icon: "server"
+---
+
+<Info>
+  The "gateway" is the one Go binary you install as `qorven`. It's the HTTP API, the WebSocket hub, the agent loop, the scheduler, the dreamer, and the embedded web UI — all in one process.
+</Info>
+
+## Lifecycle
+
+<CardGroup cols={2}>
+  <Card title="Start" icon="play" href="/cli/start">
+    `qorven start` or `systemctl start qorven`. Binds to the configured ports, connects to Postgres, applies migrations, ready.
+  </Card>
+  <Card title="Status" icon="activity" href="/cli/status">
+    `qorven status`: uptime, version, connected clients, active Qors, DB health.
+  </Card>
+  <Card title="Reload config" icon="refresh-cw">
+    `kill -HUP $(pgrep qorven)` — reloads `config.toml` without dropping connections. Most keys are hot-reloadable; some (listen addresses, encryption key) need a restart.
+  </Card>
+  <Card title="Stop" icon="pause" href="/cli/gateway">
+    `qorven gateway stop`. Graceful: drains WebSockets, cancels in-flight requests, then exits.
+  </Card>
+</CardGroup>
+
+## What happens at boot
+
+<Steps>
+  <Step title="Config load">
+    Reads `config.toml`. Env vars override. Validates — missing keys or invalid values fail loud.
+  </Step>
+  <Step title="Database connect">
+    Connects to Postgres, checks pgvector extension is present, runs any pending migrations.
+  </Step>
+  <Step title="Encryption key materialise">
+    Loads `encryption_key`, derives tenant-scoped keys for encryption at rest.
+  </Step>
+  <Step title="Provider registry">
+    Loads provider keys from config.toml AND `provider_keys` in the DB. Keys from the DB override config for the same provider.
+  </Step>
+  <Step title="Tool registry">
+    Registers all 80+ built-in tools. Loads any MCP servers configured.
+  </Step>
+  <Step title="Agent loop">
+    Initialises the loop with hooks: logging, metrics, budget, knowledge, plan-mode, auto-compact, permission.
+  </Step>
+  <Step title="Scheduler">
+    Starts cron ticker, heartbeat ticker, dreamer ticker.
+  </Step>
+  <Step title="Supervisor">
+    Starts the Qor health supervisor. Bootstraps Prime if it doesn't exist.
+  </Step>
+  <Step title="Channels">
+    Loads channel bindings, subscribes to webhooks.
+  </Step>
+  <Step title="HTTP + WebSocket listener">
+    Binds to `api_listen` and `web_listen`, starts serving.
+  </Step>
+  <Step title="TLS resolution">
+    If `[tls].mode = "auto"`, generates local CA. If `"acme"`, starts ACME negotiation.
+  </Step>
+</Steps>
+
+## Configuration
+
+<CardGroup cols={2}>
+  <Card title="config.toml reference" icon="file-code" href="/gateway/config-toml">
+    Every key, what it does, safe defaults.
+  </Card>
+  <Card title="API vs Web listen" icon="split" href="/gateway/api-vs-web-listen">
+    Two ports or one — when and why.
+  </Card>
+  <Card title="TLS modes" icon="lock" href="/gateway/tls">
+    auto (local CA), acme (Let's Encrypt), custom (BYO cert), off.
+  </Card>
+  <Card title="Rate limits" icon="gauge" href="/gateway/rate-limits">
+    IP, tenant, channel, provider.
+  </Card>
+  <Card title="SSRF allowlist" icon="shield" href="/gateway/ssrf-allowlist">
+    Controls which hosts `web_fetch` can reach.
+  </Card>
+  <Card title="Auth middleware" icon="key" href="/gateway/auth-middleware">
+    Tokens, sessions, refresh flow.
+  </Card>
+  <Card title="Multi-tenant RLS" icon="users" href="/gateway/multi-tenant-rls">
+    Postgres row-level security enforcement.
+  </Card>
+  <Card title="Audit log" icon="history" href="/gateway/audit-log">
+    Schema + retention.
+  </Card>
+</CardGroup>
+
+## Runtime
+
+<CardGroup cols={2}>
+  <Card title="systemd" icon="server" href="/gateway/systemd">
+    The unit file, hardening flags, journalctl.
+  </Card>
+  <Card title="Docker" icon="box" href="/gateway/docker">
+    Single-container deploy with compose.
+  </Card>
+  <Card title="Reverse proxy" icon="arrow-right" href="/gateway/reverse-proxy">
+    Nginx / Caddy / Traefik in front.
+  </Card>
+  <Card title="Backup & restore" icon="save" href="/gateway/backup-restore">
+    What to back up, how to restore.
+  </Card>
+  <Card title="Logging" icon="file-text" href="/gateway/logging">
+    Where logs go, how to ship them.
+  </Card>
+  <Card title="Migrations" icon="database" href="/gateway/migrations">
+    Schema changes, rollback, zero-downtime.
+  </Card>
+</CardGroup>
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="config.toml reference" icon="file-code" href="/gateway/config-toml">
+    Your primary config file.
+  </Card>
+  <Card title="Health endpoints" icon="activity" href="/gateway/health-endpoints">
+    `/health`, `/livez`, `/readyz` — what each means.
+  </Card>
+</CardGroup>

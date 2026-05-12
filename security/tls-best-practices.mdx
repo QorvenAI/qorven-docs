@@ -1,0 +1,129 @@
+---
+title: "TLS Best Practices"
+description: "How to secure traffic to your Qorven install — from local CA for internal use to Let's Encrypt for public-facing deployments."
+sidebarTitle: "TLS Best Practices"
+icon: "lock"
+---
+
+## How Qorven handles TLS
+
+Qorven ships with three certificate options:
+
+| Mode | Use case | Setup effort |
+|---|---|---|
+| **Local CA** (default) | Internal team, LAN, VPN-only | Install CA cert on client devices |
+| **Self-signed** | Quick local testing | Browser warning on every visit |
+| **Let's Encrypt / ACME** | Public-facing domain | Requires a real domain name |
+
+The minimum TLS version is **1.2**. TLS 1.3 is preferred and negotiated automatically with clients that support it.
+
+## Local CA (recommended for internal installs)
+
+The installer generates a local certificate authority and issues a leaf certificate signed by it. This avoids browser warnings without requiring a public domain.
+
+### Installing the CA on client devices
+
+**macOS:**
+```bash
+# Copy the CA cert from your Qorven server
+scp ubuntu@your-server:/etc/qorven/tls/ca.crt ~/qorven-ca.crt
+
+# Trust it system-wide
+sudo security add-trusted-cert -d -r trustRoot \
+  -k /Library/Keychains/System.keychain ~/qorven-ca.crt
+```
+
+**Windows (certmgr):**
+1. Copy `ca.crt` to your Windows machine.
+2. Double-click the file → Install Certificate.
+3. Select **Local Machine** → **Trusted Root Certification Authorities**.
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo cp qorven-ca.crt /usr/local/share/ca-certificates/qorven.crt
+sudo update-ca-certificates
+```
+
+**iOS:**
+1. Email `ca.crt` to yourself, or host it at a URL and open it on the device.
+2. Go to **Settings → General → VPN & Device Management** and install the profile.
+3. Go to **Settings → General → About → Certificate Trust Settings** and enable full trust for the Qorven CA.
+
+**Android:**
+1. Copy `ca.crt` to the device.
+2. Go to **Settings → Security → Encryption & credentials → Install a certificate → CA certificate**.
+
+## Let's Encrypt (public-facing installs)
+
+If your Qorven install has a public domain name and port 80 or 443 is reachable from the internet, Let's Encrypt is the easiest option.
+
+```toml
+[tls]
+acme_email = "admin@your-domain.com"
+acme_domain = "qorven.your-domain.com"
+```
+
+Restart Qorven. On first start, it will request a certificate from Let's Encrypt via the ACME HTTP-01 challenge.
+
+**Renewal is automatic.** Qorven checks certificate expiry and renews 30 days before expiration. You can also trigger a manual renewal:
+
+```bash
+qorven tls renew
+```
+
+<Warning>
+  Let's Encrypt certificates require port 80 to be reachable from the internet for the HTTP-01 challenge. If your server is behind a firewall or NAT, use DNS-01 challenge mode instead (see `acme_challenge = "dns01"` in config) or use the local CA option.
+</Warning>
+
+## Using your own certificate
+
+If you have certificates from a commercial CA or an enterprise PKI:
+
+```toml
+[tls]
+cert_file = "/etc/qorven/tls/server.crt"
+key_file  = "/etc/qorven/tls/server.key"
+```
+
+Restart after updating certificates. Qorven does not automatically detect file changes.
+
+## TLS configuration reference
+
+```toml
+[tls]
+# "local_ca" | "self_signed" | "acme" | "manual"
+mode = "local_ca"
+
+# For ACME / Let's Encrypt
+acme_email  = ""
+acme_domain = ""
+
+# For manual cert
+cert_file = ""
+key_file  = ""
+
+# Minimum TLS version: "1.2" or "1.3"
+min_version = "1.2"
+```
+
+## Checking your TLS configuration
+
+```bash
+# Print current cert info (expiry, issuer, SANs)
+qorven tls status
+
+# Renew certificate now (for ACME mode)
+qorven tls renew
+
+# Re-generate local CA and leaf cert
+qorven tls regenerate
+```
+
+<CardGroup cols={2}>
+  <Card title="Config keys reference" icon="settings" href="/reference/config-keys">
+    Full reference for all TLS config options.
+  </Card>
+  <Card title="Threat model" icon="shield" href="/security/threat-model">
+    TLS in the context of Qorven's security model.
+  </Card>
+</CardGroup>

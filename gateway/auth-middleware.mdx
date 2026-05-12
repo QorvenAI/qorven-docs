@@ -1,0 +1,90 @@
+---
+title: "Auth Middleware"
+description: "How Qorven authenticates API requests — Bearer tokens, multi-tenant tokens, and token rotation."
+sidebarTitle: "Auth Middleware"
+icon: "lock"
+---
+
+Every request to `/v1/*` must include a valid Bearer token. Requests without a token — or with an invalid one — receive `401 Unauthorized`.
+
+## How it works
+
+The auth middleware runs before every `/v1/` route handler. It:
+
+1. Reads the `Authorization: Bearer <token>` header.
+2. Looks up the token in the database to find the associated user and tenant.
+3. Attaches the user to the request context.
+4. Passes the request to the handler, or returns 401 if the token is invalid or absent.
+
+The web UI handles this automatically. You do not need to manage tokens when using the browser.
+
+## Making API requests
+
+For direct API calls, include the token in the `Authorization` header:
+
+```bash
+curl https://your-qorven-host/v1/agents \
+  -H "Authorization: Bearer qvt_live_xxxxxxxxxxxx"
+```
+
+Your auth token is visible in **Settings > API Keys**.
+
+<Warning>
+  Treat your auth token like a password. Anyone with the token has full API access under your account.
+</Warning>
+
+## Token format
+
+Qorven tokens use the prefix `qvt_live_` for production tokens and `qvt_test_` for test tokens. Do not hardcode tokens in source code — use environment variables or a secrets manager.
+
+## Multi-tenant tokens
+
+When multi-tenant mode is enabled, each tenant has their own isolated auth token. A token from tenant A cannot access tenant B's resources.
+
+Tenant tokens work identically to single-tenant tokens — the middleware resolves the tenant from the token automatically.
+
+See [Multi-tenant RLS](/gateway/multi-tenant-rls) for tenant provisioning.
+
+## Rotating the auth token
+
+To rotate your auth token:
+
+1. In the admin panel, go to **Settings > API Keys**.
+2. Click **Rotate** next to the key you want to replace.
+3. Copy the new token — it is shown only once.
+4. Update any integrations or scripts that use the old token.
+5. The old token stops working immediately after rotation.
+
+<Info>
+  You can create multiple tokens with different names to identify which integration is making requests. Rotating one token does not affect others.
+</Info>
+
+## Unauthenticated routes
+
+Some routes do not require authentication:
+
+| Route | Reason |
+|---|---|
+| `GET /health` | Liveness probe — must be reachable without a token |
+| `GET /health/detailed` | Readiness probe — same |
+| `POST /v1/auth/login` | Login endpoint — token doesn't exist yet |
+| `GET /metrics` | Prometheus scraping (can be restricted by IP) |
+
+## Error responses
+
+| Status | Meaning |
+|---|---|
+| `401 Unauthorized` | Token missing or malformed |
+| `401 Unauthorized` | Token valid but account locked or inactive |
+| `403 Forbidden` | Token valid but insufficient role (e.g. admin-only endpoint) |
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Multi-tenant RLS" icon="users" href="/gateway/multi-tenant-rls">
+    Per-tenant token isolation.
+  </Card>
+  <Card title="Rate limits" icon="gauge" href="/gateway/rate-limits">
+    Per-token request limits.
+  </Card>
+</CardGroup>

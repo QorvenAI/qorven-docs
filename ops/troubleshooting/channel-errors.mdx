@@ -1,0 +1,161 @@
+---
+title: "Channel Errors"
+description: "Fix channel connectivity issues — Telegram webhooks, WhatsApp authorization, webhook SSRF blocks, and email channel problems."
+sidebarTitle: "Channel Errors"
+icon: "message-square"
+---
+
+Channel errors occur when Qorven cannot send or receive messages through a connected channel. Most are configuration issues — wrong credentials, unregistered webhooks, or network access blocks.
+
+## Telegram: bot not responding
+
+**Symptom:** Messages sent to the Telegram bot get no reply, and there are no incoming webhook events in the logs.
+
+**Diagnose:**
+
+```bash
+# Check if the webhook is registered with Telegram
+qorven channels status telegram
+```
+
+**Cause 1: Webhook not registered or pointing to the wrong URL.**
+
+Qorven registers the webhook automatically when you save the channel config. If your server's URL changed, re-register:
+
+```bash
+qorven channels reconfigure telegram
+```
+
+Or manually via the Telegram API:
+
+```bash
+curl "https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://your-qorven-host/v1/channels/telegram/webhook"
+```
+
+Verify the webhook is set:
+
+```bash
+curl "https://api.telegram.org/bot<TOKEN>/getWebhookInfo"
+```
+
+**Cause 2: Telegram can't reach your server (port 443 not publicly accessible).**
+
+Telegram requires HTTPS on port 443 (or 80, 88, 8443). Check that your server is reachable:
+
+```bash
+curl -v https://your-qorven-host/v1/channels/telegram/webhook
+```
+
+**Cause 3: Bot token is wrong.**
+
+Verify the token in **Settings > Channels > Telegram**. Tokens look like `123456789:ABCdef...`. If the bot was revoked, generate a new token from [@BotFather](https://t.me/botfather).
+
+---
+
+## WhatsApp: "not authorized" / 403
+
+**Symptom:** WhatsApp messages fail to send with an authorization error.
+
+**Common causes:**
+
+1. The phone number was not properly verified.
+2. The WhatsApp Business API token expired.
+3. The phone number ID in config doesn't match the token.
+
+**Fix:**
+
+1. Go to **Settings > Channels > WhatsApp**.
+2. Click **Re-verify number** and follow the verification flow.
+3. Ensure the token and phone number ID are from the same Meta app and phone number registration.
+
+WhatsApp Business API tokens expire every 60 days by default. Use a system user token (never expires) instead of a user access token.
+
+---
+
+## Webhook channel not receiving events
+
+**Symptom:** A webhook-based channel (Slack, custom webhook) is not triggering. Events from the source are not reaching Qorven.
+
+**Diagnose:**
+
+Check whether the source IP is blocked by SSRF protection:
+
+```bash
+qorven logs tail --audit | grep "ssrf"
+```
+
+**Cause: The webhook source IP is in a private range blocked by SSRF protection.**
+
+This happens when the service sending webhooks to Qorven is on the same network (e.g. your internal Slack gateway or a self-hosted service).
+
+Fix: add the source IP to the SSRF allowlist:
+
+```toml
+[security]
+ssrf_allowlist = ["10.0.1.50/32"]
+```
+
+See [SSRF allowlist](/gateway/ssrf-allowlist).
+
+**Cause: Qorven's webhook URL is not reachable by the external service.**
+
+Check the webhook URL you registered with the external service. It must be the public HTTPS URL of your Qorven instance.
+
+Test it from outside your network:
+
+```bash
+curl -X POST https://your-qorven-host/v1/channels/webhook/<channel-id>/incoming \
+  -H "Content-Type: application/json" \
+  -d '{"test": true}'
+```
+
+---
+
+## Email channel: can't connect to IMAP/SMTP
+
+**Symptom:** Email channel shows "connection failed" or "authentication failed".
+
+**Common causes:**
+
+1. Wrong IMAP/SMTP server address or port.
+2. Wrong credentials (especially for Gmail — requires an App Password, not your regular password).
+3. Less Secure App Access disabled (Gmail legacy).
+4. Two-factor authentication blocking standard login.
+
+**Fix for Gmail:**
+
+Gmail requires an App Password when 2-factor authentication is enabled.
+
+1. Go to [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords).
+2. Generate an App Password for "Mail" and "Other device".
+3. Use this 16-character password in Qorven's email channel config — not your regular Gmail password.
+
+**Fix for other providers:**
+
+| Setting | Value |
+|---|---|
+| IMAP host | `mail.yourdomain.com` (check with your provider) |
+| IMAP port | 993 (SSL/TLS) or 143 (STARTTLS) |
+| SMTP host | `smtp.yourdomain.com` |
+| SMTP port | 587 (STARTTLS, recommended) or 465 (SSL/TLS) |
+
+Use port 587 with STARTTLS for SMTP. Port 25 is typically blocked by cloud hosting providers.
+
+**Test the connection:**
+
+```bash
+qorven channels test email
+```
+
+---
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="SSRF allowlist" icon="shield" href="/gateway/ssrf-allowlist">
+    Allow internal IPs to reach Qorven.
+  </Card>
+  <Card title="Common errors" icon="help-circle" href="/ops/troubleshooting/common-errors">
+    Quick reference error table.
+  </Card>
+</CardGroup>

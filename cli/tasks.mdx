@@ -1,0 +1,45 @@
+---
+title: "qorven tasks"
+description: "Manage background tasks"
+sidebarTitle: "tasks"
+icon: "check-square"
+---
+
+<Info>Generated from `qorven tasks --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Manage background tasks
+
+Usage:
+  qorven tasks [command]
+
+Available Commands:
+  cancel      Cancel a running task
+  get         Get task details
+  list        List tasks
+
+Flags:
+  -h, --help   help for tasks
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+
+Use "qorven tasks [command] --help" for more information about a command.
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

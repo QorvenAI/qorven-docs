@@ -1,0 +1,78 @@
+---
+title: "API vs Web Listen Addresses"
+description: "How Qorven separates its API and web UI listener addresses, and why this matters for secure deployments."
+sidebarTitle: "API vs Web Listen"
+icon: "network"
+---
+
+The Qorven gateway listens on two separate addresses: one for the browser UI and one for the API. Keeping them separate lets you expose only what the outside world needs.
+
+## The two addresses
+
+| Config key | Default | Purpose |
+|---|---|---|
+| `[server] api_listen` | `:4200` | Internal API — health checks, programmatic access |
+| `[server] web_listen` | `:443` | Browser UI — served to end users |
+
+```toml
+[server]
+api_listen = ":4200"
+web_listen = ":443"
+```
+
+## Why they are separate
+
+The web UI and the API serve different audiences. Your users need port 443. Your monitoring stack and load balancer need port 4200. Keeping them separate means you can:
+
+- Firewall port 4200 to internal network only, exposing only port 443 publicly.
+- Point your load balancer's health check at `http://internal-ip:4200/health` without opening that port to the internet.
+- Rate-limit or restrict API access without affecting the UI.
+
+<Info>
+  On a typical cloud VM setup, port 4200 should be open only to your internal network or VPC. Port 443 is the only port that needs to be publicly accessible.
+</Info>
+
+## Changing the defaults
+
+To run on non-standard ports — for example, during development or behind a reverse proxy:
+
+```toml
+[server]
+api_listen  = "127.0.0.1:4200"   # bind to localhost only
+web_listen  = ":8443"             # custom HTTPS port
+```
+
+Binding `api_listen` to `127.0.0.1` prevents remote access to the health and metrics endpoints entirely. This is the right choice when a reverse proxy handles all public traffic.
+
+## Verifying both listeners
+
+After starting the service, check both ports are bound:
+
+```bash
+# Check the web UI is responding
+curl -k https://localhost:443/
+
+# Check the API health endpoint
+curl http://localhost:4200/health
+```
+
+<Tip>
+  If you change these values, restart the service to apply. The addresses are read once at startup.
+</Tip>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Health endpoints" icon="activity" href="/gateway/health-endpoints">
+    What the API listener exposes at /health.
+  </Card>
+  <Card title="Reverse proxy" icon="arrow-right" href="/gateway/reverse-proxy">
+    Using nginx or Caddy in front of Qorven.
+  </Card>
+  <Card title="TLS configuration" icon="shield" href="/gateway/tls">
+    Configuring HTTPS on the web listener.
+  </Card>
+  <Card title="systemd service" icon="server" href="/gateway/systemd">
+    Managing the Qorven process.
+  </Card>
+</CardGroup>

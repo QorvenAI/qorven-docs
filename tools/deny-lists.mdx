@@ -1,0 +1,80 @@
+---
+title: "Deny Lists"
+description: "Permanently block specific tools from running — for any agent, or for one specific agent."
+sidebarTitle: "Deny Lists"
+icon: "x-circle"
+---
+
+A deny list is a hard block. A denied tool will never run — not even if the agent tries to call it, and not even if the user approves. It's the strongest restriction available.
+
+Use deny lists when you want to make a capability completely unavailable, rather than just requiring approval.
+
+## Install-wide vs per-agent blocks
+
+You can deny tools at two levels:
+
+**Install-wide** — the tool is blocked for every agent on your Qorven instance. Configure in `config.toml`:
+
+```toml
+[tools.deny]
+names = ["exec", "delete_file"]
+```
+
+**Per-agent** — the tool is blocked only for a specific agent. Useful when you want Developer to be able to run commands but Research should never touch the shell. Configure in the agent's settings under **Settings → Agents → [Agent Name] → Tools**, or in `config.toml`:
+
+```toml
+[[agents]]
+name = "Researcher"
+
+  [agents.tools.deny]
+  names = ["exec", "write_file", "send_email"]
+```
+
+## Common use cases
+
+**Block `exec` for untrusted agents** — if you're running a customer-facing or externally-prompted agent, completely removing shell access prevents a prompt injection attack from doing real damage.
+
+**Block `send_email` for research-only agents** — a Researcher agent doesn't need to send email. Denying it means a malicious prompt can't trick it into leaking data.
+
+**Block `delete_file` install-wide** — if you never want any agent to delete files, one line in `config.toml` enforces that for the entire system.
+
+## Deny list vs approval
+
+| | Deny list | Approval required |
+|---|---|---|
+| Can the tool run? | Never | Yes, with user approval |
+| User can override? | No | Yes |
+| Best for | Permanent capability removal | Oversight of risky-but-needed actions |
+
+Use a deny list when the answer to "should this tool ever run?" is **no**. Use approvals when the answer is "yes, but only when I say so."
+
+## Deny list vs allowlist
+
+An allowlist is the inverse: instead of specifying what's blocked, you specify the only tools an agent is allowed to use. Allowlists are configured under `tools.allow` and are more restrictive — anything not on the list is automatically denied.
+
+```toml
+[[agents]]
+name = "Researcher"
+
+  [agents.tools.allow]
+  names = ["web_search", "scrape", "crawl", "web_fetch", "read_document", "memory"]
+```
+
+<Tip>
+For tightly scoped agents (a research assistant, a data reader), an allowlist is often cleaner than a deny list — you enumerate what's permitted rather than trying to enumerate everything that could go wrong.
+</Tip>
+
+## Attempting to call a denied tool
+
+If an agent calls a denied tool, the call returns an error immediately: `tool 'exec' is not available for this agent`. The error is returned to the agent (so it can handle it gracefully), and the attempt is recorded in the audit log.
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Approvals" icon="check-circle" href="/tools/approvals">
+    Require sign-off instead of a hard block.
+  </Card>
+  <Card title="Policy Tool" icon="scroll" href="/tools/built-in/policy">
+    Rule-based controls at action time.
+  </Card>
+</CardGroup>

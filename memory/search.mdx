@@ -1,0 +1,68 @@
+---
+title: "Memory Search"
+description: "Agents use semantic search to retrieve relevant memories automatically — not keyword matching, but meaning-based retrieval."
+sidebarTitle: "Memory Search"
+icon: "search"
+---
+
+Agents don't browse a list of memories when they need context — they search. Qorven uses semantic search, which means agents find memories based on meaning and relevance, not just exact keyword matches.
+
+## How semantic search works
+
+When you ask an agent "what did we decide about the pricing model?", it doesn't look for memories containing the words "pricing model." It converts your question into a vector embedding — a mathematical representation of meaning — and finds stored memories that are semantically similar, even if they use different words.
+
+This means an agent will correctly retrieve a memory like "We agreed to use tiered pricing with a free starter plan" even if you phrased your question differently.
+
+The practical benefit: you don't need to remember exactly how a fact was phrased when it was stored. Approximate descriptions work.
+
+## When agents search memory
+
+Memory retrieval happens automatically at the start of every agent response. Before generating a reply, the agent:
+
+1. Identifies the key concepts in your message
+2. Runs a semantic search against your memory store
+3. Ranks results by relevance
+4. Injects the top results into its context as background
+
+This happens in the background — there's no visible delay and you don't need to prompt it. The agent simply has the relevant context available when it responds.
+
+## Relevance ranking and thresholds
+
+Not every memory is included — only those above a relevance threshold. This prevents the agent from being cluttered with loosely related facts that might mislead its responses.
+
+If a memory exists but doesn't appear to be influencing the agent's responses, the most likely reason is that it scored below the relevance threshold for that particular query. Try rephrasing your question with more specific language, or mention the memory topic explicitly.
+
+## Searching memories from the dashboard
+
+You can search your memory store directly from the dashboard without involving an agent:
+
+1. Go to **Dashboard → Memories**
+2. Type in the search box — this runs the same semantic search the agents use
+3. Filter by memory type (User facts, Project context, Skills, World knowledge) using the tabs
+
+This is useful for:
+- Checking what the agent knows before asking it a question
+- Finding and editing an outdated memory
+- Confirming that a memory was stored correctly after an important conversation
+
+## Why a memory might not appear
+
+If you expect an agent to know something but it doesn't seem to:
+
+- **It was never stored** — not all facts from conversations are auto-stored. Important decisions and preferences are captured; casual mentions may not be.
+- **Below relevance threshold** — the memory exists but wasn't retrieved as relevant to the current query.
+- **Wrong agent scope** — the memory may be scoped to a different agent than the one you're talking to. Check **Memories → All** vs **Memories → [Agent name]**.
+- **Deleted or overwritten** — a newer memory may have superseded an older one.
+
+<Tip>
+  If you need an agent to definitely have a specific piece of context, tell it explicitly in the conversation or create a memory directly from **Dashboard → Memories → New Memory**. Explicit memories reliably surface when relevant.
+</Tip>
+
+<CardGroup cols={2}>
+  <Card title="Memory types" icon="layers" href="/memory/types">
+    The four categories of memory agents store.
+  </Card>
+  <Card title="Knowledge graph" icon="network" href="/memory/knowledge-graph">
+    How agents link memories into a connected network of entities.
+  </Card>
+</CardGroup>

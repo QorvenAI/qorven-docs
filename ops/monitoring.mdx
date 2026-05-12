@@ -1,0 +1,162 @@
+---
+title: "Monitoring"
+description: "Monitor Qorven with the health endpoint, Prometheus metrics, Grafana dashboards, and alerting."
+sidebarTitle: "Monitoring"
+icon: "activity"
+---
+
+Qorven exposes a health endpoint for basic uptime monitoring and a Prometheus metrics endpoint for detailed observability.
+
+## Health endpoint
+
+The simplest monitoring check: poll `/health/detailed` from your uptime monitor.
+
+```bash
+curl http://your-server:4200/health/detailed
+```
+
+Expected response:
+
+```json
+{
+  "status": "ok",
+  "version": "0.1.3-alpha",
+  "database": "connected",
+  "db_latency_ms": 2,
+  "uptime_seconds": 86423
+}
+```
+
+If `status` is `degraded`, something is wrong. If the endpoint is unreachable, the process is down.
+
+Set up an uptime monitor (UptimeRobot, Betterstack, Cronitor) to poll this URL every 60 seconds and alert you on failure.
+
+## Prometheus metrics
+
+Enable the metrics endpoint in `config.toml`:
+
+```toml
+[monitoring]
+prometheus = true
+metrics_path = "/metrics"   # default
+```
+
+Then scrape `http://your-server:4200/metrics`.
+
+<Info>
+  The metrics endpoint is on the API listen port (default `:4200`), not the web port. Keep it firewalled to internal access only.
+</Info>
+
+### Restricting access to metrics
+
+To restrict the metrics endpoint to a specific IP range (e.g. your Prometheus server):
+
+```toml
+[monitoring]
+metrics_allowed_ips = ["10.0.0.0/8", "172.16.0.0/12"]
+```
+
+### Key metrics
+
+| Metric | Type | Description |
+|---|---|---|
+| `qorven_agent_requests_total` | Counter | Total agent task runs, labelled by agent and status |
+| `qorven_tool_calls_total` | Counter | Total tool invocations, labelled by tool name and status |
+| `qorven_llm_tokens_used_total` | Counter | LLM tokens consumed, labelled by model and direction (input/output) |
+| `qorven_http_request_duration_seconds` | Histogram | HTTP request latency by route and method |
+| `qorven_agent_task_duration_seconds` | Histogram | End-to-end agent task duration |
+| `qorven_db_query_duration_seconds` | Histogram | Database query latency |
+| `qorven_active_sessions` | Gauge | Currently open sessions |
+| `qorven_rate_limit_exceeded_total` | Counter | Rate limit violations by token/IP |
+| `qorven_db_pool_connections` | Gauge | Database connection pool utilisation |
+
+### Prometheus scrape config
+
+```yaml
+scrape_configs:
+  - job_name: qorven
+    static_configs:
+      - targets: ["your-server:4200"]
+    metrics_path: /metrics
+    scrape_interval: 30s
+```
+
+## Grafana dashboard
+
+A pre-built Grafana dashboard is available in the Qorven repository at `deploy/grafana/dashboard.json`. Import it via Grafana's dashboard import UI.
+
+The dashboard includes:
+
+- Request rate and error rate over time
+- Agent task throughput and duration percentiles (p50, p95, p99)
+- LLM token spend by model
+- Database connection pool utilisation
+- Rate limit hits
+
+## Alerting
+
+### Alert rules for Prometheus / Alertmanager
+
+```yaml
+groups:
+  - name: qorven
+    rules:
+      - alert: QorvenDown
+        expr: up{job="qorven"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Qorven instance is down"
+
+      - alert: QorvenDatabaseDegraded
+        expr: qorven_db_query_duration_seconds{quantile="0.95"} > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Qorven database queries are slow (p95 > 1s)"
+
+      - alert: QorvenHighErrorRate
+        expr: rate(qorven_agent_requests_total{status="error"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Qorven agent error rate above 10%"
+```
+
+### Slack or PagerDuty webhook
+
+For a simpler setup without Prometheus, configure a health check webhook in `config.toml`:
+
+```toml
+[monitoring]
+alert_webhook = "https://hooks.slack.com/services/..."
+alert_on      = ["service_down", "database_unavailable", "migration_failed"]
+```
+
+Qorven will POST to this URL when one of the configured events occurs.
+
+## Log aggregation
+
+Qorven's structured JSON logs can be forwarded to Datadog, Loki, Elasticsearch, or Splunk. See [Logging](/gateway/logging) for configuration.
+
+Useful log-based alerts:
+- `level: "error"` — any error log
+- `action: "migration_failed"` — migration failure on startup
+- `result: "rate_limited"` — rate limit hits for a specific token
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Health endpoints" icon="activity" href="/gateway/health-endpoints">
+    Health check endpoint reference.
+  </Card>
+  <Card title="Logging" icon="file-text" href="/gateway/logging">
+    Structured log format and aggregation.
+  </Card>
+  <Card title="Rate limits" icon="gauge" href="/gateway/rate-limits">
+    Rate limit metrics and configuration.
+  </Card>
+</CardGroup>

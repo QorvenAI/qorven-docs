@@ -1,0 +1,106 @@
+---
+title: "Qorven vs. the world"
+description: "Honest comparison with ChatGPT, LangChain, AutoGen, CrewAI, Letta, OpenClaw, and others. Where each fits, where we differ."
+sidebarTitle: "Comparison"
+icon: "scale"
+---
+
+<Info>
+  No bashing, no gotchas. Each of these tools is great at what it was built for. This page is so you can pick the right fit — which is sometimes not Qorven.
+</Info>
+
+## At a glance
+
+| Tool | Shape | Best for |
+|---|---|---|
+| **Qorven** | Self-hosted multi-agent platform | Teams & operators who want a full product with channels + memory + ops |
+| **ChatGPT Teams** | SaaS chat UI + custom GPTs | Individuals who want zero setup and are happy with one vendor |
+| **LangChain / LangGraph** | Python/TS library for agents | Developers building agent features inside their own app |
+| **AutoGen** | Python library for multi-agent conversations | Researchers experimenting with agent patterns |
+| **CrewAI** | Python framework, opinionated | Teams prototyping role-based agent workflows |
+| **Letta / MemGPT** | Hosted memory-first agents | Long-running agents with deep memory, not multi-channel |
+| **OpenClaw** | Similar shape, personal focus | Individual power users, mobile-first |
+
+## Qorven vs. ChatGPT (including Custom GPTs + Teams)
+
+| | Qorven | ChatGPT Teams |
+|---|---|---|
+| Setup | One-line install, runs on your box | Sign up, no install |
+| Where data lives | Your Postgres | OpenAI |
+| Model choice | Any — you BYO | GPT-4/5 family only |
+| Channels | Web + TUI + 20+ integrations | Web + mobile only |
+| Multi-agent | Built-in (Prime + specialists) | Manual via Custom GPTs, no delegation |
+| Cost | Your LLM bill, no SaaS markup | $30/user/mo + model costs |
+| Telemetry | Zero | Standard OpenAI telemetry |
+| Customisation | Full source, extensible | Limited to GPT instructions |
+
+**Pick ChatGPT if:** you want zero setup, are fine with one vendor, don't need Telegram/Slack/WhatsApp, don't need your own infrastructure.
+
+**Pick Qorven if:** you want multi-channel + multi-agent + data sovereignty.
+
+## Qorven vs. LangChain / LangGraph
+
+| | Qorven | LangChain |
+|---|---|---|
+| Form factor | Product (run it) | Library (write code with it) |
+| Target user | Ops + end users | Developers |
+| State | Built-in (Postgres) | You provide |
+| Agents | Create via UI | Code |
+| Channels | Built-in | Build yourself |
+| Memory | Typed + graph + dreaming | You wire it |
+| UI | Web + TUI included | None — you build it |
+
+**Pick LangChain if:** you're building agent features *inside* your product and want fine-grained control.
+
+**Pick Qorven if:** you want an agent *platform* to use, not a library to build one with.
+
+## Qorven vs. AutoGen
+
+AutoGen is excellent for multi-agent research — two agents conversing, critiquing, iterating. It's a library.
+
+Qorven's [rooms](/workflows/rooms) are inspired by AutoGen's multi-agent chat but productised: persistence, UI, approvals, audit, safety policies. AutoGen is where you prototype; Qorven is where you ship.
+
+## Qorven vs. CrewAI
+
+CrewAI is role-based (you define agents with roles + tasks). Conceptually similar to Qorven's specialists. Differences:
+
+- **CrewAI** = Python library, you define crews in code
+- **Qorven** = self-hosted product, you define Qors in the UI
+
+Both are reasonable. CrewAI wins for teams with a strong Python engineer who wants everything in-repo. Qorven wins for teams that want the agents accessible to non-technical operators via a browser.
+
+## Qorven vs. Letta (formerly MemGPT)
+
+Letta is memory-first — long-lived agents with sophisticated memory management. That's also our main investment.
+
+Where we differ: Letta is single-agent-focused and hosted. Qorven is multi-agent, self-hosted, with the broader ops surface (channels, connectors, tools, audit). If memory is your only concern → Letta is excellent. If you need multi-agent + multi-channel + on-prem → Qorven.
+
+## Qorven vs. OpenClaw
+
+We admire OpenClaw — its docs site inspired ours. Both are self-hosted, multi-channel, multi-agent.
+
+Where we differ:
+- OpenClaw emphasises **personal** use (one user, many channels)
+- Qorven supports **team** use out of the box (multi-tenant Postgres RLS, per-user Qors, team rooms, audit)
+- Qorven's memory system includes the knowledge-graph + dreaming layers
+- OpenClaw has deeper iOS/Android native-node integration
+
+Both are excellent. Pick based on whether you need personal or team shape.
+
+## When NOT to use Qorven
+
+- **You want managed.** Use ChatGPT Teams, Claude.ai, or similar SaaS.
+- **You're building agent features into your own product.** Use LangChain/LangGraph.
+- **You need a stateless function-calling library.** That's OpenAI's raw SDK.
+- **You're fine with one channel (web only) and one vendor.** ChatGPT or Claude.ai.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Architecture overview" icon="layers" href="/architecture/overview">
+    Decide from what we actually are.
+  </Card>
+  <Card title="Licensing" icon="file-text" href="/reference/licensing">
+    Is Qorven usable for your case.
+  </Card>
+</CardGroup>

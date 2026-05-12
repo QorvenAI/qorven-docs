@@ -1,0 +1,125 @@
+---
+title: "Agent Delegation"
+description: "How Prime automatically routes tasks to specialist agents and incorporates their output into the final response."
+sidebarTitle: "Delegation"
+icon: "git-branch"
+---
+
+<Info>
+  When you talk to Prime, you're talking to a Chief of Staff who knows when to hand off. Prime identifies which specialist agent is best placed for a task, delegates to them, and weaves their output into a single coherent reply. You always see one response; Prime handles the coordination.
+</Info>
+
+## How it works
+
+When Prime receives a message, it evaluates whether the task falls clearly within a specialist agent's scope. If it does, Prime calls `delegate_to_agent` — a tool that runs the target agent and returns its output.
+
+```
+User → Prime
+         ↓
+   "Does this need a specialist?"
+         ↓ yes
+   Prime calls delegate_to_agent(target="developer", task="...")
+         ↓
+   Developer agent runs, returns output
+         ↓
+   Prime incorporates output into final reply
+         ↓
+User ← Prime (single response)
+```
+
+The user sees one reply from Prime, not a raw dump of the specialist's output. Prime can add context, summarise, or reformat before sending.
+
+## What triggers delegation
+
+Prime decides based on each agent's **role description** — the system prompt field that describes what the agent is for. Default role descriptions:
+
+| Agent | Role |
+|---|---|
+| Developer | Code, files, terminal commands, debugging, deployments |
+| Researcher | Web research, fact-finding, synthesis, reports |
+| Writer | Drafting, editing, rewriting, content creation |
+| Email Agent | Email triage, drafting replies, sending |
+
+When a task clearly matches one of these, Prime delegates. When a task is ambiguous or spans multiple roles, Prime handles it directly or delegates in sequence.
+
+## Delegation in practice
+
+**Example: "Look up last quarter's SaaS benchmark numbers and draft a one-page summary for the board"**
+
+Prime's internal reasoning:
+1. "Look up benchmark numbers" → Researcher
+2. "Draft a one-page summary" → Writer
+
+Prime delegates to Researcher, gets the numbers, passes them to Writer with the context, gets the draft, then returns the draft to the user.
+
+**Example: "What's on my calendar today?"**
+
+Prime handles this directly if it has calendar access, or delegates to Email Agent if that agent owns the calendar integration.
+
+## Talking directly to a specialist
+
+You don't have to go through Prime. Select any agent directly in the chat — Prime is bypassed entirely and the specialist handles your message start to finish.
+
+**In the web UI:** Click the agent name at the top of the chat window and pick a different agent.
+
+**In the TUI:** Use the `/agent` command to switch. See [Agent picker →](/tui/agent-picker).
+
+**In channels (Telegram, Slack, etc.):** Use the `@agent-name` mention syntax if your install has multi-agent mentions enabled, or use the `/agent` slash command.
+
+<Tip>
+  Talking directly to the Developer agent for a coding session cuts out Prime's overhead and keeps the context tight. Use direct agent selection for focused, single-discipline work.
+</Tip>
+
+## Prime always stays in the loop
+
+Even when you delegate manually (by switching to a specialist), Prime's memory still records the exchange. When you return to Prime, it knows what happened. Delegation — automatic or manual — never creates an information silo.
+
+## Configuring delegation behaviour
+
+### Allow/deny which agents Prime can delegate to
+
+```yaml
+agents:
+  - id: prime
+    delegation:
+      allowed_targets:
+        - developer
+        - researcher
+        - writer
+        - email
+      max_depth: 2        # prevent infinite delegation chains
+      timeout_sec: 120    # max time to wait for a specialist
+```
+
+### Disable delegation entirely
+
+Set `delegation: disabled` on Prime if you want it to handle everything itself:
+
+```yaml
+agents:
+  - id: prime
+    delegation: disabled
+```
+
+### Custom delegation instructions
+
+Add guidance to Prime's system prompt about when to delegate:
+
+> "Always delegate code tasks to the Developer agent, even small ones. Never delegate tasks that involve personal or sensitive information."
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Agent picker (TUI)" icon="brain" href="/tui/agent-picker">
+    Switching to a specialist directly in the terminal UI.
+  </Card>
+  <Card title="Prime agent" icon="star" href="/qors/what-is-a-qor">
+    What Prime is and how it differs from specialist agents.
+  </Card>
+  <Card title="Agent tools" icon="wrench" href="/qors/tools">
+    The delegate_to_agent tool and the rest of Prime's allowlist.
+  </Card>
+  <Card title="Creating agents" icon="plus" href="/qors/creating-a-qor">
+    Adding new specialist agents for Prime to delegate to.
+  </Card>
+</CardGroup>

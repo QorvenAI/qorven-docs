@@ -1,0 +1,44 @@
+---
+title: "Markdown source"
+description: "Every docs page is also available as plain Markdown — same URL, swap .mdx for .md."
+sidebarTitle: "Markdown source"
+icon: "file-text"
+---
+
+<Info>
+  Every HTML page at `https://docs.qorven.ai/<path>` has a matching Markdown source at `https://docs.qorven.ai/<path>.md`. The docs server serves both from the same source, so they never diverge.
+</Info>
+
+## Example
+
+```text
+HTML:     https://docs.qorven.ai/getting-started/install
+Markdown: https://docs.qorven.ai/getting-started/install.md
+```
+
+The `.md` response is the raw MDX (minus the JSX that doesn't render as text). Components like `<CardGroup>` and `<Steps>` become standard Markdown lists.
+
+## Why we expose it
+
+- **Agents** consume Markdown 10x faster than HTML
+- **Offline copies** — `wget -r --accept=md https://docs.qorven.ai` gives you an offline archive
+- **Custom renderers** — if you want to embed Qorven docs inside your own UI, grab the Markdown and pass it through your preferred renderer
+
+## Encoding
+
+Plain UTF-8. No base64, no JSON wrapper. `Content-Type: text/markdown`.
+
+## Rate limits
+
+Same IP-level limit as the rest of the docs site. Aggressive scraping: please use `llms.txt` to discover first, then fetch only the pages you need.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="llms.txt index" icon="list" href="/ai/llms-txt">
+    Discover what's available.
+  </Card>
+  <Card title="Agent guide" icon="bot" href="/ai/agent-guide">
+    Consumption conventions.
+  </Card>
+</CardGroup>

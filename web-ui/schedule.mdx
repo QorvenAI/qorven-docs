@@ -1,0 +1,81 @@
+---
+title: "Schedule"
+description: "All your scheduled agent tasks in one view — daily briefings, weekly reports, and custom automations."
+sidebarTitle: "Schedule"
+icon: "clock"
+---
+
+The Schedule page lists every recurring task your agents run automatically. From here you can see what's running, when it last ran, create new schedules, and enable or disable individual tasks.
+
+## What you can schedule
+
+Any instruction you can give an agent manually can be scheduled to run on a recurring basis:
+
+- **Daily briefings** — Prime summarizes your calendar, tasks, and important emails each morning
+- **Weekly reports** — Researcher compiles a weekly digest of industry news or competitor activity
+- **Inbox reviews** — Email Agent triages and drafts replies at set intervals
+- **Data checks** — pull a report, check a metric, summarize a spreadsheet
+- **Custom automations** — any task you've tested manually and want to repeat
+
+## Schedule list
+
+Each schedule in the list shows:
+
+- **Agent** — which agent runs the task
+- **Task description** — what the agent is instructed to do
+- **Frequency** — the schedule (daily, weekly, specific days and times)
+- **Last run** — timestamp of the most recent execution
+- **Last result** — success, partial, or failed (click to see the full output)
+- **Status** — enabled or disabled
+
+Click any schedule to expand its full configuration.
+
+## Creating a new schedule
+
+<Steps>
+  <Step title="Click New Schedule">
+    Click the **+ New Schedule** button at the top of the page.
+  </Step>
+  <Step title="Choose an agent">
+    Select which agent should run this task.
+  </Step>
+  <Step title="Write the instruction">
+    Enter the task instruction exactly as you'd type it in chat. Be specific — the agent receives this text verbatim each time the schedule fires.
+  </Step>
+  <Step title="Set the frequency">
+    Choose from presets (daily, weekly, weekdays, weekends) or set a custom time using the time picker. You can specify the delivery timezone.
+  </Step>
+  <Step title="Set a delivery channel (optional)">
+    If you want the output sent to you automatically, choose a delivery channel (dashboard notification, Telegram, Slack, or email).
+  </Step>
+  <Step title="Save">
+    The schedule is active immediately. It will run at the next scheduled time.
+  </Step>
+</Steps>
+
+## Editing a schedule
+
+Click the **Edit** button on any schedule to change the instruction, timing, or delivery channel. Changes take effect from the next scheduled run.
+
+## Enabling and disabling schedules
+
+Use the toggle on any schedule row to pause or resume it without deleting it. Useful for temporarily suspending a weekly report while you're on holiday.
+
+## Viewing run history
+
+Click **View history** on any schedule to see the last 30 runs with their timestamps and outcomes. Expand any run to see the full agent output.
+
+<Info>
+  Schedules run on your server's clock. If your server is in UTC and you want a 9am briefing, set the time to 9am and choose your local timezone from the dropdown.
+</Info>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Agents" icon="brain" href="/web-ui/qors-page">
+    Configure which agents are available for scheduling.
+  </Card>
+  <Card title="Notifications" icon="bell" href="/web-ui/notifications">
+    Receive alerts when scheduled tasks complete or fail.
+  </Card>
+</CardGroup>

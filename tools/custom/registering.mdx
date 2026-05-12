@@ -1,0 +1,123 @@
+---
+title: "Registering a Custom Tool"
+description: "Build a custom tool in Go by implementing the Tool interface, register it in the tool registry, and make it available to any agent."
+sidebarTitle: "Registering a Tool"
+icon: "plus"
+---
+
+Custom tools let you extend Qorven with capabilities specific to your organisation — connecting an internal API, querying a proprietary database, triggering a workflow in a system Qorven does not know about natively.
+
+A custom tool is a Go struct that implements the `Tool` interface. Once registered, it appears alongside all built-in tools and can be assigned to any agent.
+
+## The Tool interface
+
+```go
+type Tool interface {
+    Name()        string
+    Description() string
+    Parameters()  map[string]ParameterDef
+    Execute(ctx context.Context, params map[string]any) (any, error)
+}
+```
+
+- **`Name()`** — the identifier agents use to call the tool (lowercase, underscore-separated, e.g. `get_customer_record`)
+- **`Description()`** — a plain-English description of what the tool does and when to use it; the model reads this to decide whether to call the tool
+- **`Parameters()`** — a map of parameter names to their definitions (type, description, required flag)
+- **`Execute()`** — the implementation; receives the parameters the agent passed and returns a result or an error
+
+## Example: a tool that looks up a customer
+
+```go
+package tools
+
+import (
+    "context"
+    "fmt"
+    "github.com/qorvenai/qorven/internal/tools"
+)
+
+type GetCustomerTool struct {
+    db *sql.DB
+}
+
+func (t *GetCustomerTool) Name() string {
+    return "get_customer"
+}
+
+func (t *GetCustomerTool) Description() string {
+    return "Look up a customer record by email address or customer ID. " +
+        "Returns name, plan, account status, and contact details."
+}
+
+func (t *GetCustomerTool) Parameters() map[string]tools.ParameterDef {
+    return map[string]tools.ParameterDef{
+        "identifier": {
+            Type:        "string",
+            Description: "Customer email address or numeric customer ID",
+            Required:    true,
+        },
+    }
+}
+
+func (t *GetCustomerTool) Execute(ctx context.Context, params map[string]any) (any, error) {
+    identifier, ok := params["identifier"].(string)
+    if !ok {
+        return nil, fmt.Errorf("identifier must be a string")
+    }
+
+    // query your database or call your internal API
+    customer, err := t.db.QueryCustomer(ctx, identifier)
+    if err != nil {
+        return nil, err
+    }
+
+    return customer, nil
+}
+```
+
+## Registering the tool
+
+In your Qorven plugin initialisation (or in `cmd/start.go` if you are forking the server), register the tool with the global registry:
+
+```go
+import "github.com/qorvenai/qorven/internal/tools"
+
+func init() {
+    tools.Register(&GetCustomerTool{db: myDB})
+}
+```
+
+The tool is available immediately after the server starts. No restart is needed if you are using the plugin system.
+
+## Writing a good description
+
+The description is the most important part of a custom tool. The model reads it to decide whether to call the tool and how to use it. A good description:
+
+- States what the tool returns, not just what it does
+- Mentions the key parameters and what format they should be in
+- Explains when the tool should be used vs. when another tool is more appropriate
+
+```
+// Bad
+"Gets customer info"
+
+// Good
+"Look up a customer record by email address or numeric customer ID.
+Returns name, subscription plan, account status, and primary contact details.
+Use this when the user asks about a specific customer or account."
+```
+
+## Error handling
+
+Return a descriptive error from `Execute` when something goes wrong. Qorven surfaces this to the agent, which can then decide how to handle it (retry, ask the user, try a different approach).
+
+Avoid panicking — wrap unexpected conditions in `fmt.Errorf`.
+
+<CardGroup cols={2}>
+  <Card title="MCP servers" icon="plug" href="/tools/custom/mcp-servers">
+    Connect tools from external processes using the Model Context Protocol.
+  </Card>
+  <Card title="How tools work" icon="wrench" href="/tools/how-tools-work">
+    How tools are assigned to agents and called during a session.
+  </Card>
+</CardGroup>

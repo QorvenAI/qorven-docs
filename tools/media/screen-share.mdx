@@ -1,0 +1,60 @@
+---
+title: "Screen Share"
+description: "Share your screen with an agent so it can see what you are looking at, identify problems, and guide you through what to do next."
+sidebarTitle: "Screen Share"
+icon: "monitor"
+---
+
+Screen Share lets you give an agent a live view of your screen so it can help you in context. Instead of describing a problem in words, you show it — and the agent can see exactly what you see.
+
+## What agents can do with your screen
+
+- **Describe what is visible** — "I can see a permissions error on line 47 of the terminal output. The process doesn't have write access to /var/log/app."
+- **Identify UI elements** — help you find a setting buried in a complex interface, or confirm you are looking at the right screen
+- **Debug issues visually** — read error messages, stack traces, and log output directly from your screen
+- **Guide you step by step** — "Click the gear icon in the top right, then select Advanced, then scroll down to the Security section"
+- **Review your work** — look at a design, a document, or code you have open and give feedback
+
+## How to start a screen share
+
+<Steps>
+  <Step title="Open the share panel">
+    Click the **Share screen** button in the chat toolbar (the monitor icon). Your browser will ask for permission to capture your screen.
+  </Step>
+  <Step title="Choose what to share">
+    Select the entire screen, a specific window, or a browser tab. The agent only sees what you choose — the rest of your screen stays private.
+  </Step>
+  <Step title="Talk to the agent">
+    Once sharing starts, describe what you need help with. The agent takes a snapshot of your screen and uses it to inform its response.
+  </Step>
+  <Step title="Stop sharing">
+    Click **Stop sharing** in the toolbar or use your browser's built-in screen share indicator to end the session.
+  </Step>
+</Steps>
+
+## Privacy
+
+Screen share captures are processed by the AI model that your agent is configured to use. If you are using an OpenAI or Anthropic model, screenshots are sent to their API. If privacy is a concern, use a locally-hosted vision model via Ollama.
+
+<Warning>
+  Be careful not to share screens containing passwords, private keys, or sensitive personal data. The agent will process everything visible in the captured area.
+</Warning>
+
+## Server-side screenshots
+
+Agents can also take screenshots of the **Qorven server's own display** (rather than your screen) using the `screenshot` tool. This is useful when you want the agent to check something running on the server — a dashboard, a terminal session, or a desktop app.
+
+This is distinct from screen share: the agent initiates the capture, and you see the result in the chat as an image.
+
+## Requirements
+
+Screen Share uses the browser's Screen Capture API and works in Chrome, Edge, and Firefox. Safari has limited support. No plugins or extensions are needed.
+
+<CardGroup cols={2}>
+  <Card title="Image Understanding" icon="eye" href="/tools/media/image-understanding">
+    Agents can also analyse uploaded images and documents.
+  </Card>
+  <Card title="Computer Use" icon="monitor" href="/tools/browser/computer-use">
+    Give agents control of the server's screen to automate desktop apps.
+  </Card>
+</CardGroup>

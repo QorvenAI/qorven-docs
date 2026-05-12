@@ -1,0 +1,47 @@
+---
+title: "qorven agent"
+description: "Commands for developers (human or AI) building on top of Qorven."
+sidebarTitle: "agent"
+icon: "code"
+---
+
+<Info>Generated from `qorven agent --help`. Re-run `scripts/gen-cli-reference.sh` after CLI changes.</Info>
+
+## Reference
+
+```text
+Commands for developers (human or AI) building on top of Qorven.
+These do NOT talk to a running gateway — they emit starter code
+onto your local filesystem.
+
+Run "qorven agent init" to generate plugin + UI boilerplate.
+
+Usage:
+  qorven agent [command]
+
+Available Commands:
+  init        Scaffold a Qorven plugin + optional Next.js UI starter
+
+Flags:
+  -h, --help   help for agent
+
+Global Flags:
+  -o, --output string   Output format: table, json, yaml (default "table")
+      --server string   Gateway URL (env: QORVEN_SERVER)
+      --token string    Auth token (env: QORVEN_TOKEN)
+  -v, --verbose         Verbose output
+  -y, --yes             Skip confirmation prompts
+
+Use "qorven agent [command] --help" for more information about a command.
+```
+
+## Examples
+
+<Note>Example section to fill with real operator usage patterns. TBD.</Note>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI index" icon="terminal" href="/cli/index">All commands.</Card>
+  <Card title="Global flags" icon="flag" href="/cli/global-flags">`--server`, `--token`, `--output`.</Card>
+</CardGroup>

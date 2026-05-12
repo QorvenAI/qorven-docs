@@ -1,0 +1,71 @@
+---
+title: "SSRF Protection"
+description: "Prevents agents from making requests to internal network addresses, protecting your infrastructure from agent-assisted attacks."
+sidebarTitle: "SSRF Protection"
+icon: "shield-off"
+---
+
+SSRF (Server-Side Request Forgery) is an attack where a malicious input tricks an agent into making HTTP requests to addresses on your internal network — your database, your cloud metadata endpoint, other internal services.
+
+Qorven's SSRF protection intercepts all outbound requests made by agents and blocks those targeting private or reserved address ranges.
+
+## What it blocks
+
+Any request to the following is blocked by default:
+
+| Range | Description |
+|-------|-------------|
+| `127.0.0.0/8` | Loopback (localhost) |
+| `10.0.0.0/8` | Private network |
+| `172.16.0.0/12` | Private network |
+| `192.168.0.0/16` | Private network |
+| `169.254.0.0/16` | Link-local (AWS metadata: `169.254.169.254`) |
+| `::1` | IPv6 loopback |
+| `fc00::/7` | IPv6 private |
+
+The AWS metadata endpoint (`169.254.169.254`) is a common target in SSRF attacks on cloud-hosted servers — it can return IAM credentials if reached. This is blocked by default.
+
+## How it activates
+
+SSRF protection runs automatically on every HTTP request made through any web tool (`web_fetch`, `scrape`, `crawl`) or any tool that makes outbound network calls. You don't need to configure it — it's always on.
+
+When a blocked request is attempted, the tool call returns an error (`SSRF protection: request to internal address blocked`), the agent is informed it can't reach that address, and the attempt is recorded in the audit log.
+
+## Allowing specific internal addresses
+
+In legitimate cases — for example, you want an agent to query an internal API or access a local development server — you can explicitly allowlist specific addresses:
+
+```toml
+[tools.ssrf]
+allowed_internal = [
+  "http://internal-api.company.local",
+  "http://192.168.1.50:8080/reports"
+]
+```
+
+<Warning>
+Be careful what you allowlist. Only add addresses you explicitly intend agents to access. An attacker who can influence an agent's inputs could try to reach any allowlisted address.
+</Warning>
+
+## Relationship to Outbound Gate
+
+SSRF protection and the Outbound Gate are complementary:
+
+| | SSRF protection | Outbound Gate |
+|--|-----------------|---------------|
+| Blocks | Internal/private addresses | Unapproved external domains |
+| Direction | Inward (your network) | Outward (the internet) |
+| On by default | Yes | Audit mode |
+
+Use SSRF protection to prevent internal access. Use Outbound Gate to control which external services agents can reach.
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Outbound Gate" icon="door-open" href="/tools/built-in/outbound-gate">
+    Control which external domains agents can contact.
+  </Card>
+  <Card title="Safety" icon="shield" href="/tools/built-in/safety">
+    Content safety and prompt injection defense.
+  </Card>
+</CardGroup>

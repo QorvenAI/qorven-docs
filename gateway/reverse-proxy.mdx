@@ -1,0 +1,167 @@
+---
+title: "Reverse Proxy"
+description: "Running Qorven behind nginx or Caddy — WebSocket support, TLS termination, and example configs."
+sidebarTitle: "Reverse Proxy"
+icon: "arrow-right"
+---
+
+You can run Qorven directly on port 443, or place a reverse proxy in front of it. A reverse proxy is useful for TLS termination, serving multiple services on one machine, and advanced routing.
+
+<Info>
+  WebSocket support is required. Qorven uses WebSockets for streaming chat responses and real-time agent updates. Your proxy must pass the `Upgrade` and `Connection` headers.
+</Info>
+
+## nginx
+
+### Basic HTTP proxy
+
+```nginx
+server {
+    listen 80;
+    server_name qorven.example.com;
+
+    location / {
+        proxy_pass         http://127.0.0.1:443;
+        proxy_http_version 1.1;
+
+        # WebSocket support
+        proxy_set_header   Upgrade    $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+
+        # Pass real client IP
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+
+        # Increase timeouts for long-running agent tasks
+        proxy_read_timeout  300s;
+        proxy_send_timeout  300s;
+    }
+}
+```
+
+### With TLS termination at nginx
+
+Let nginx handle TLS and pass plain HTTP to Qorven:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name qorven.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/qorven.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/qorven.example.com/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+
+    location / {
+        proxy_pass         http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade    $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto https;
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+    }
+}
+
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name qorven.example.com;
+    return 301 https://$host$request_uri;
+}
+```
+
+When nginx handles TLS, set Qorven to listen on a plain HTTP port:
+
+```toml
+[server]
+web_listen = ":8080"
+tls        = false
+```
+
+## Caddy
+
+Caddy is the simpler option if you want automatic TLS from Let's Encrypt with no manual cert management.
+
+```
+qorven.example.com {
+    reverse_proxy localhost:8080 {
+        header_up Upgrade    {http.upgrade}
+        header_up Connection {http.connection}
+        transport http {
+            dial_timeout 10s
+            response_header_timeout 300s
+        }
+    }
+}
+```
+
+Set Qorven to listen on HTTP:
+
+```toml
+[server]
+web_listen = ":8080"
+tls        = false
+```
+
+Caddy automatically handles HTTPS, certificate issuance, and renewal.
+
+## Health check endpoint
+
+Configure your proxy to use the health check endpoint for backend availability checks. This is available on the API listen port, not the web port:
+
+**nginx upstream health check:**
+
+```nginx
+upstream qorven {
+    server 127.0.0.1:8080;
+    keepalive 32;
+}
+```
+
+Use an external health check on `http://127.0.0.1:4200/health`.
+
+## Important: don't proxy the API port
+
+The `api_listen` port (default `:4200`) exposes health, metrics, and admin endpoints. Do not proxy this port publicly. Keep it firewalled to the internal network.
+
+Only proxy the `web_listen` port.
+
+## Timeouts
+
+Qorven agent tasks can run for several minutes. Make sure your proxy's read timeout is long enough:
+
+| Setting | Recommended |
+|---|---|
+| nginx `proxy_read_timeout` | 300s (5 minutes) |
+| nginx `proxy_send_timeout` | 300s |
+| Caddy `response_header_timeout` | 300s |
+
+## Trusted proxies
+
+If Qorven is behind a reverse proxy, tell it to trust forwarded IP headers so rate limits and audit logs record the real client IP:
+
+```toml
+[server]
+trusted_proxies = ["127.0.0.1", "::1"]
+```
+
+This enables Qorven to read `X-Forwarded-For` from those proxy IPs.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="TLS configuration" icon="shield" href="/gateway/tls">
+    TLS at Qorven vs TLS at the proxy.
+  </Card>
+  <Card title="API vs Web Listen" icon="network" href="/gateway/api-vs-web-listen">
+    Which port to proxy.
+  </Card>
+  <Card title="Health endpoints" icon="activity" href="/gateway/health-endpoints">
+    Backend health check URL.
+  </Card>
+</CardGroup>

@@ -1,0 +1,80 @@
+---
+title: "Primitive Browser Tools"
+description: "Low-level browser tools that target specific page elements with CSS selectors or text — for workflows that need exact, reproducible control."
+sidebarTitle: "Primitive Tools"
+icon: "mouse-pointer"
+---
+
+Primitive tools give an agent precise, deterministic control over a browser. Each tool targets a single element or performs a single action — no interpretation, no vision, no guessing. They are fast and predictable, which makes them well-suited for structured, repeatable workflows where the page layout is known.
+
+<Info>
+  Most users should start with [Browse and Act](/tools/browser/browse-and-act). Primitive tools are the right choice when you need exact control, are running the same workflow repeatedly, or are building an automation that must never misfire.
+</Info>
+
+## Available tools
+
+### Navigation
+
+| Tool | What it does |
+|------|-------------|
+| `navigate` | Go to a URL |
+| `wait_for` | Pause until a selector appears or a condition is met |
+| `screenshot` | Capture the current page as an image |
+
+### Interaction
+
+| Tool | What it does |
+|------|-------------|
+| `click` | Click an element by CSS selector or visible text |
+| `fill` | Type a value into an input, textarea, or select |
+| `select` | Choose an option from a `<select>` dropdown |
+| `press_key` | Send a keyboard event (Enter, Tab, Escape, etc.) |
+| `scroll` | Scroll the page or a specific element |
+
+## Targeting elements
+
+Every interaction tool accepts a `selector` parameter. You can use any valid CSS selector:
+
+```
+button[type="submit"]
+input[name="email"]
+#login-btn
+.submit-form .primary-action
+```
+
+For tools like `click`, you can also pass the element's visible text as a fallback when a reliable selector is not available:
+
+```
+click: { text: "Sign in" }
+```
+
+## Example: log in and download a report
+
+```
+navigate: { url: "https://app.example.com/login" }
+fill: { selector: "input[name='email']", value: "user@example.com" }
+fill: { selector: "input[name='password']", value: "<secret>" }
+click: { selector: "button[type='submit']" }
+wait_for: { selector: ".dashboard-header" }
+navigate: { url: "https://app.example.com/reports/monthly" }
+click: { text: "Download CSV" }
+```
+
+## When to use primitive tools vs. Browse and Act
+
+| Situation | Use |
+|-----------|-----|
+| Page structure is fixed and well-known | Primitive tools |
+| Running the same workflow many times | Primitive tools |
+| Automation must be fast and reliable | Primitive tools |
+| Page layout varies or is unfamiliar | [Browse and Act](/tools/browser/browse-and-act) |
+| One-off task described in plain language | [Browse and Act](/tools/browser/browse-and-act) |
+
+<CardGroup cols={2}>
+  <Card title="Browse and Act" icon="bot" href="/tools/browser/browse-and-act">
+    AI-guided automation — describe what to do in plain English.
+  </Card>
+  <Card title="Live stream" icon="video" href="/tools/browser/live-stream">
+    Watch primitive tool execution in real time and take over if needed.
+  </Card>
+</CardGroup>

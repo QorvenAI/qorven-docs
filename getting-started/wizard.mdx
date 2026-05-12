@@ -1,0 +1,143 @@
+---
+title: "The setup wizard"
+description: "`qorven setup` — interactive first-run configuration from the terminal. Same outcome as the browser wizard, faster for SSH sessions."
+sidebarTitle: "CLI wizard"
+icon: "terminal"
+---
+
+<Info>
+  `qorven setup` is the CLI equivalent of the browser wizard. If you're SSH'd into a headless box and don't want to expose the web UI yet, this is the shortest path from install to working chat.
+</Info>
+
+## Run it
+
+```bash
+sudo qorven setup
+```
+
+The wizard asks 8 questions, in order:
+
+<Steps>
+  <Step title="Instance name">
+    What you'd call this Qorven install internally (e.g. "Acme staging", "Home NAS"). Purely a label.
+  </Step>
+  <Step title="Admin username + password">
+    Credentials for your web UI login. Password is stored hashed (`bcrypt`, cost 12). Minimum 8 characters.
+  </Step>
+  <Step title="Admin email (optional)">
+    Used for password reset + delivery of cron/heartbeat alerts you subscribe to.
+  </Step>
+  <Step title="Web UI port">
+    Default `443`. Use `8443` for user-space (no `CAP_NET_BIND_SERVICE`). Use `80` to go HTTP-only (not recommended).
+  </Step>
+  <Step title="Public domain (optional)">
+    Skip for self-signed (works on LAN). Enter a domain to trigger ACME/Let's Encrypt at next boot.
+  </Step>
+  <Step title="Primary LLM provider">
+    Pick from `bedrock`, `openai`, `deepseek`, `gemini`, `groq`, `ollama`, `skip`. You can add more later from the UI.
+  </Step>
+  <Step title="API key">
+    Pasted here is **encrypted with the install's encryption key** before it touches the database.
+  </Step>
+  <Step title="Test the connection">
+    The wizard makes one real call to the provider to verify the key. Fails loudly if it doesn't work — no half-configured install.
+  </Step>
+</Steps>
+
+## Non-interactive mode
+
+For CI, Ansible, Terraform:
+
+```bash
+qorven setup \
+  --non-interactive \
+  --admin-user "ops" \
+  --admin-password "$QORVEN_ADMIN_PASSWORD" \
+  --provider "openai" \
+  --api-key "$OPENAI_API_KEY" \
+  --web-port 443 \
+  --domain "qorven.acme.com"
+```
+
+Every flag is optional; anything you skip uses the defaults listed above.
+
+<Tip>
+  Don't put secrets on the command line in production — they show up in `ps`. Pipe via environment variables (`$OPENAI_API_KEY`) as shown above, or use stdin:
+
+  ```bash
+  echo "sk-..." | qorven setup --api-key-stdin ...
+  ```
+</Tip>
+
+## What the wizard writes
+
+<Accordion title="config.toml (amended)">
+```toml
+[server]
+api_listen = "127.0.0.1:4200"
+web_listen = "0.0.0.0:443"
+
+[database]
+dsn = "postgres://qorven@/qorven?host=/var/run/postgresql&sslmode=disable"
+
+[auth]
+token          = "<generated>"
+encryption_key = "<generated>"
+
+[tls]
+mode = "auto"
+
+# Added by `qorven setup`:
+[[providers]]
+name     = "openai"
+type     = "openai"
+api_base = "https://api.openai.com/v1"
+api_key  = "<encrypted>"
+enabled  = true
+
+[instance]
+name = "Acme staging"
+```
+</Accordion>
+
+<Accordion title="Database rows">
+- `users` — one admin user, bcrypt password
+- `agents` — one `prime` Qor with the chosen model
+- `sessions` — one canonical web session for Prime (empty history)
+- `provider_keys` — the key you provided, encrypted
+</Accordion>
+
+## Re-running the wizard
+
+`qorven setup` is idempotent. Re-running with the same admin username updates the password + email without losing data. Re-running with a new provider appends it — existing provider keys are left alone.
+
+To wipe everything and start fresh:
+
+```bash
+sudo systemctl stop qorven
+sudo -u postgres dropdb qorven && sudo -u postgres createdb -O qorven qorven
+sudo qorven migrate up
+sudo qorven setup
+sudo systemctl start qorven
+```
+
+## When to use the browser wizard instead
+
+Most operators prefer the browser wizard — it has the same 8 steps with screenshots, helpful inline validation, and a one-click "test provider" for every LLM. The CLI wizard is for headless boxes or automation.
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Sign in and chat" icon="message-circle" href="/getting-started/first-chat">
+    Open the URL, meet Prime.
+  </Card>
+  <Card title="Add more providers" icon="cloud" href="/models/provider-keys">
+    Rotate keys, configure failover, add Ollama.
+  </Card>
+  <Card title="Connect a channel" icon="message-square" href="/channels/telegram">
+    Message your Qor from Telegram, WhatsApp, Slack.
+  </Card>
+  <Card title="Every wizard flag" icon="book" href="/cli/setup">
+    Full CLI reference.
+  </Card>
+</CardGroup>

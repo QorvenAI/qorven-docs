@@ -1,0 +1,73 @@
+---
+title: "Mail"
+description: "Your inbox managed by the Email Agent — triage, draft replies, and send directly from the dashboard."
+sidebarTitle: "Mail"
+icon: "mail"
+---
+
+The Mail page is your inbox as seen through the Email Agent's eyes. Emails are triaged automatically, draft replies are staged for your approval, and you can read full threads and send messages without leaving the dashboard.
+
+## Connecting your inbox
+
+Mail requires a Gmail or Outlook connector to be active. If you haven't set one up yet, the Mail page will prompt you to connect.
+
+See [Connectors](/web-ui/connectors) for setup instructions.
+
+## Triage categories
+
+The Email Agent sorts your incoming mail into categories:
+
+| Category | Description |
+|---|---|
+| **Needs reply** | Emails the agent believes require a response from you |
+| **Action required** | Tasks, requests, or deadlines that need follow-up |
+| **FYI** | Newsletters, notifications, and informational emails |
+| **Auto-handled** | Emails the agent has already responded to on your behalf |
+| **Archived** | Low-priority mail automatically moved out of your inbox |
+
+The category label appears next to each email in the list. Click any category chip to filter the inbox to just that group.
+
+## Reading email threads
+
+Click any email to open the full thread. The thread view shows all messages in the conversation in chronological order, with sender, timestamp, and the full body of each message.
+
+## Draft replies
+
+When the Email Agent prepares a reply, it appears as a draft card at the top of the thread. The draft shows:
+
+- The proposed reply text
+- A confidence note explaining why the agent drafted this response
+- **Approve** and **Reject** buttons
+
+Approving sends the email immediately from your connected account. Rejecting discards the draft and marks the thread as needing your attention.
+
+<Tip>
+  You can edit a draft before approving — click into the text area to make changes, then click Approve to send your revised version.
+</Tip>
+
+## Composing and sending
+
+Click **Compose** at the top of the Mail page to write a new email. You can also ask the Email Agent in chat to draft a message: "Draft an email to Sarah asking for an update on the contract."
+
+## Auto-handled emails
+
+The Auto-handled section shows every email the agent has responded to without your intervention, including the response it sent. Review this regularly when you first set up the Email Agent to verify it is handling messages appropriately.
+
+<Warning>
+  Auto-replies are only enabled if you have configured the Email Agent to act autonomously. By default, all drafts require your approval before sending.
+</Warning>
+
+## Tracking sent mail
+
+The **Sent** tab shows all emails sent from the Mail page, whether you wrote them directly or approved an agent draft. Each entry shows the recipient, subject, and timestamp.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Connectors" icon="link" href="/web-ui/connectors">
+    Connect Gmail or Outlook to enable Mail.
+  </Card>
+  <Card title="Notifications" icon="bell" href="/web-ui/notifications">
+    Get alerted when drafts are waiting for your approval.
+  </Card>
+</CardGroup>

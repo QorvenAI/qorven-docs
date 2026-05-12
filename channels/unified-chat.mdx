@@ -1,0 +1,148 @@
+---
+title: "Unified chat"
+description: "How Qorven merges chat-family channels (Telegram, WhatsApp, Slack DM, etc.) into a single canonical thread per Qor."
+sidebarTitle: "Unified chat"
+icon: "infinity"
+---
+
+<Info>
+  Your Qor has one chat. Full stop. That chat accepts messages from every chat-family surface — web UI, TUI, Telegram, WhatsApp, Slack DM, and more. Each message keeps a channel tag; per-surface views filter to their slice.
+</Info>
+
+This page is the practical companion to [architecture/one-qor-one-chat](/architecture/one-qor-one-chat). That page explains the **why**; this one explains the **how** for operators.
+
+## What it looks like
+
+<Frame caption="The web UI canonical chat. Messages from Telegram carry the Telegram badge; WhatsApp badge for those; web messages are unadorned.">
+  <img src="/images/screenshots/dashboard.png" alt="Unified canonical chat with channel badges" />
+</Frame>
+
+In the web UI and TUI you see every message. On Telegram you only see messages tagged `telegram`. On WhatsApp you only see messages tagged `whatsapp`.
+
+## Which channels merge
+
+| Channel | Merges into canonical? | Notes |
+|---|---|---|
+| [Web UI](/channels/web) | ✅ | The default surface |
+| [TUI](/channels/tui) | ✅ | Same canonical as web |
+| [Telegram DM](/channels/telegram) | ✅ | Groups are separate |
+| [WhatsApp DM](/channels/whatsapp) | ✅ | Groups are separate |
+| [Slack DM](/channels/slack) | ✅ | In-channel mentions are separate |
+| [Discord DM](/channels/discord) | ✅ | Server channels are separate |
+| [Teams](/channels/teams) | ✅ | DMs only |
+| [LINE](/channels/line) | ✅ | |
+| [Signal](/channels/signal) | ✅ | Via signal-cli |
+| [iMessage](/channels/imessage) | ✅ | Via Blue Bubbles |
+| [Facebook Messenger](/channels/facebook) | ✅ | |
+| [Matrix](/channels/matrix) | ✅ | 1:1 rooms |
+| [Mattermost DM](/channels/mattermost) | ✅ | |
+| [Feishu / Lark](/channels/feishu) | ✅ | DMs |
+| [DingTalk](/channels/dingtalk) | ✅ | DMs |
+| [WeCom](/channels/wecom) | ✅ | |
+| [Zalo](/channels/zalo) | ✅ | |
+| [Webchat](/channels/webchat) | ✅ | Embeddable widget |
+| [Email](/channels/email) | ❌ | Thread-per-subject, own session |
+| [SMS](/channels/sms) | ❌ | Own session |
+| [GitHub](/channels/github) | ❌ | Issues + PRs are not conversations |
+| [Webhook](/channels/webhook) | ❌ | Custom shape |
+| **Groups** (any channel) | ❌ | Multi-party, group-scoped session |
+
+## The data model
+
+<Frame>
+```sql
+-- One canonical session per (tenant, agent, user)
+CREATE TABLE sessions (
+  id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL,
+  agent_id UUID NOT NULL,
+  user_id VARCHAR(255),
+  channel TEXT,                -- "unified" or specific for non-chat-family
+  messages JSONB DEFAULT '[]',
+  -- ...
+  UNIQUE (tenant_id, agent_id, user_id, channel)
+);
+
+-- Messages (inside the JSONB array) carry their own channel:
+-- [
+--   {"role":"user", "content":"...", "channel":"telegram", "sender_name":"Priya", "timestamp":1776787200000},
+--   {"role":"assistant", "content":"...", "channel":"telegram", "timestamp":1776787210000},
+--   {"role":"user", "content":"...", "channel":"web", "timestamp":1776787300000}
+-- ]
+```
+</Frame>
+
+The `sessions.channel` column is set to `"unified"` (or `"web"` for legacy installs — both work). Each **message** inside the JSONB array has its own `channel` field. An index on `(session_id, (messages ->> 'channel'))` keeps per-channel reads fast.
+
+## Per-channel reads
+
+When Telegram asks *"show me the last 10 messages"*, Qorven runs:
+
+```sql
+SELECT jsonb_agg(m ORDER BY (m->>'timestamp')::bigint)
+FROM (
+  SELECT jsonb_array_elements(messages) AS m
+  FROM sessions WHERE id = $1
+) x
+WHERE m->>'channel' = 'telegram'
+LIMIT 10;
+```
+
+Web UI reads everything (no filter). Single source of truth, multiple views.
+
+## What about group chats
+
+Groups are fundamentally different — multi-party, shared context between people, often no single *user* to bind to. Qorven handles them with **group-scoped sessions**:
+
+- One session row per (tenant, agent, group_id)
+- Memories tagged with that group's scope never leak into the Qor's 1:1 chats
+- Memories tagged with the Qor's personal scope never leak into groups
+- See [Groups vs DMs →](/channels/groups-vs-dms)
+
+## What about email
+
+Email is its own thing:
+
+- Threads are real (users reply to specific messages)
+- Subjects matter (Qor tracks the subject as part of the thread)
+- Attachments happen
+- Latency is minutes to days, not seconds
+
+So email gets **one session per thread**, not merged with chat. The Qor's memory still sees email content (so context carries across), but the conversation shape is preserved. [Email channel →](/channels/email)
+
+## Operator migration
+
+If you upgraded from an old multi-session Qorven, run:
+
+```bash
+sudo qorven collapse-sessions --dry-run    # preview the merge
+sudo qorven collapse-sessions               # apply
+```
+
+This:
+1. Finds every Qor with >1 chat-family session
+2. Picks the most-recently-updated as canonical
+3. Merges all other messages into it, preserving `channel` tags
+4. Dedupes on `(role, timestamp, content)` so re-runs are safe
+5. Emits a memory digest per archived session so nothing's lost
+6. Archives the old rows (`status='archived'`) — not deleted
+
+[Full command reference →](/cli/collapse-sessions).
+
+
+## Where next
+
+<CardGroup cols={2}>
+  <Card title="Groups vs DMs" icon="users" href="/channels/groups-vs-dms">
+    How multi-party chats stay separate.
+  </Card>
+  <Card title="Channel routing" icon="git-branch" href="/channels/routing">
+    Override the default Qor per sender / keyword.
+  </Card>
+  <Card title="Memory system" icon="database" href="/architecture/memory-system">
+    How memory stays coherent across channels.
+  </Card>
+  <Card title="collapse-sessions" icon="git-merge" href="/cli/collapse-sessions">
+    Migrating old fan-out sessions.
+  </Card>
+</CardGroup>

@@ -1,0 +1,112 @@
+---
+title: "Cron Scheduling"
+description: "Run agents on a schedule using standard cron expressions — from daily briefings to weekly reports."
+sidebarTitle: "Cron"
+icon: "timer"
+---
+
+Cron scheduling lets you run any agent instruction automatically at a defined time. If you've ever used cron on a Linux server, the syntax is identical. If you haven't, this page has everything you need.
+
+## How cron expressions work
+
+A cron expression is five fields separated by spaces:
+
+```
+┌─ minute (0–59)
+│  ┌─ hour (0–23)
+│  │  ┌─ day of month (1–31)
+│  │  │  ┌─ month (1–12)
+│  │  │  │  ┌─ day of week (0–6, Sunday=0)
+│  │  │  │  │
+*  *  *  *  *
+```
+
+### Common examples
+
+| Expression | Meaning |
+|---|---|
+| `0 8 * * 1-5` | 8:00 AM, Monday to Friday |
+| `0 9 * * 1` | 9:00 AM every Monday |
+| `0 7 * * *` | 7:00 AM every day |
+| `0 18 * * 5` | 6:00 PM every Friday |
+| `30 8 1 * *` | 8:30 AM on the 1st of every month |
+| `0 */4 * * *` | Every 4 hours |
+| `*/15 9-17 * * 1-5` | Every 15 minutes, 9 AM–5 PM, weekdays |
+
+Special characters:
+
+- `*` — every value
+- `-` — range (e.g. `1-5` = Monday to Friday)
+- `/` — step (e.g. `*/2` = every 2 units)
+- `,` — list (e.g. `1,3,5` = Mon, Wed, Fri)
+
+## Set up a scheduled task
+
+<Steps>
+  <Step title="Go to Schedules">
+    Open the dashboard and navigate to **Workflows → Schedules**. Click **New Schedule**.
+  </Step>
+  <Step title="Write the instruction">
+    Type the instruction exactly as you would in a chat message. The agent will receive this as its task when the schedule fires.
+
+    Examples:
+    - `Send me a morning briefing: summarise overnight emails, any urgent tasks, and today's calendar.`
+    - `Pull last week's sales data and email the summary to team@company.com.`
+    - `Check my inbox for anything marked urgent and flag it in our Slack #alerts channel.`
+  </Step>
+  <Step title="Set the schedule">
+    Enter a cron expression or use the visual picker. Select your timezone. Click **Save**.
+
+    The schedule is active immediately. The next run time is displayed on the Schedule page.
+  </Step>
+</Steps>
+
+## Timezone support
+
+Every schedule runs in the timezone you specify when creating it. The default is your workspace timezone (set in **Settings → General**).
+
+Timezones use standard IANA names: `America/New_York`, `Europe/London`, `Asia/Singapore`, etc.
+
+<Tip>
+  If your team spans timezones, create separate schedules per region — or write a single instruction that addresses multiple audiences and let the agent tailor the output.
+</Tip>
+
+## Example schedules
+
+<AccordionGroup>
+  <Accordion title="Morning briefing (weekdays, 8 AM)">
+    **Expression:** `0 8 * * 1-5`
+
+    **Instruction:** `Good morning. Give me a briefing: summarise any unread emails from the last 12 hours, list my top 3 priorities for today, and flag anything that needs a decision from me.`
+  </Accordion>
+  <Accordion title="Weekly report (Friday 5 PM)">
+    **Expression:** `0 17 * * 5`
+
+    **Instruction:** `Prepare the weekly summary. Pull completed tasks from this week, highlight wins and blockers, and draft a short update I can send to the team.`
+  </Accordion>
+  <Accordion title="Daily inbox triage (9 AM)">
+    **Expression:** `0 9 * * *`
+
+    **Instruction:** `Triage my inbox. Categorise new emails as urgent, action-needed, or FYI. Draft responses for anything urgent and flag them for my approval.`
+  </Accordion>
+  <Accordion title="Hourly monitoring (business hours)">
+    **Expression:** `0 9-18 * * 1-5`
+
+    **Instruction:** `Check for new support tickets. If any are marked critical, notify me on Telegram immediately with a summary.`
+  </Accordion>
+</AccordionGroup>
+
+## Viewing run history
+
+Each schedule shows its last run time and result on the **Schedules** page. Click any schedule to see its full run history, including what the agent did, any tools it used, and whether it completed successfully.
+
+Full execution details are also captured in the [Audit Log](/workflows/audit).
+
+<CardGroup cols={2}>
+  <Card title="Schedule overview" icon="calendar" href="/workflows/schedule">
+    Manage all your scheduled tasks in one place.
+  </Card>
+  <Card title="Audit Log" icon="history" href="/workflows/audit">
+    Full record of every agent action.
+  </Card>
+</CardGroup>

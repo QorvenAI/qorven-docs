@@ -1,0 +1,148 @@
+---
+title: "TLS Configuration"
+description: "Configure HTTPS for Qorven — self-signed certs, Let's Encrypt, and bring-your-own certificate."
+sidebarTitle: "TLS"
+icon: "shield"
+---
+
+Qorven ships with TLS enabled. The installer generates a self-signed certificate and installs a local CA. For production use, you'll want a real certificate from Let's Encrypt or your own CA.
+
+## Default: self-signed certificate
+
+During installation, Qorven:
+
+1. Generates a private key and self-signed certificate.
+2. Creates a local CA and signs the certificate with it.
+3. Installs the CA in the system trust store (on the machine where Qorven runs).
+
+The result: Qorven works over HTTPS immediately, and the install machine trusts it. Other devices will see a certificate warning until you install the CA.
+
+### Installing the local CA on other devices
+
+Export the CA certificate:
+
+```bash
+qorven tls export-ca > qorven-ca.crt
+```
+
+Then install it:
+
+<Accordion title="macOS">
+  ```bash
+  sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain qorven-ca.crt
+  ```
+</Accordion>
+
+<Accordion title="Windows">
+  Double-click `qorven-ca.crt`, select "Install Certificate", choose "Local Machine", then "Trusted Root Certification Authorities".
+
+  Or via PowerShell:
+  ```powershell
+  Import-Certificate -FilePath qorven-ca.crt -CertStoreLocation Cert:\LocalMachine\Root
+  ```
+</Accordion>
+
+<Accordion title="Linux (Debian/Ubuntu)">
+  ```bash
+  sudo cp qorven-ca.crt /usr/local/share/ca-certificates/qorven.crt
+  sudo update-ca-certificates
+  ```
+</Accordion>
+
+<Accordion title="iOS">
+  Email or AirDrop `qorven-ca.crt` to the device. Open it, go to Settings > General > VPN & Device Management, tap the profile, and tap Install. Then go to Settings > General > About > Certificate Trust Settings and enable full trust for the certificate.
+</Accordion>
+
+<Accordion title="Android">
+  Copy `qorven-ca.crt` to the device. Go to Settings > Security > Install from storage and select the file.
+</Accordion>
+
+## Let's Encrypt (recommended for public domains)
+
+If your Qorven instance has a public domain name and port 80 is open, you can use Let's Encrypt for a browser-trusted certificate with automatic renewal.
+
+```toml
+[tls]
+provider   = "letsencrypt"
+domain     = "qorven.example.com"
+email      = "admin@example.com"   # for expiry notifications
+```
+
+Restart the service. Qorven will obtain a certificate from Let's Encrypt on startup and renew it automatically before expiry.
+
+Requirements:
+- A domain name that resolves to this server's public IP.
+- Port 80 accessible from the internet (for the ACME HTTP challenge).
+- Port 443 accessible for HTTPS traffic.
+
+<Warning>
+  Let's Encrypt has rate limits. Do not use it for development instances — use the default self-signed cert instead.
+</Warning>
+
+## Bring your own certificate
+
+If you have a certificate from an internal CA or a commercial provider:
+
+```toml
+[tls]
+provider  = "file"
+cert_file = "/etc/qorven/tls/cert.pem"
+key_file  = "/etc/qorven/tls/key.pem"
+```
+
+Place your certificate chain (not just the end-entity cert) in `cert_file`. The key file must be unencrypted (no passphrase).
+
+Set appropriate permissions:
+
+```bash
+sudo chown qorven:qorven /etc/qorven/tls/key.pem
+sudo chmod 600 /etc/qorven/tls/key.pem
+```
+
+### Certificate renewal
+
+When using `provider = "file"`, renewal is your responsibility. After replacing the cert and key files:
+
+```bash
+# Reload TLS without restarting (sends HUP signal)
+sudo systemctl reload qorven
+```
+
+Qorven reloads the certificate files on HUP without dropping existing connections.
+
+## TLS at a reverse proxy
+
+If you terminate TLS at nginx or Caddy, disable TLS in Qorven:
+
+```toml
+[server]
+web_listen = ":8080"
+tls        = false
+```
+
+See [Reverse proxy](/gateway/reverse-proxy) for proxy configuration.
+
+## Viewing current certificate
+
+```bash
+qorven tls status
+```
+
+```
+Provider:  letsencrypt
+Domain:    qorven.example.com
+Issuer:    Let's Encrypt R11
+Expires:   2026-08-10 (89 days)
+Auto-renew: yes
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Reverse proxy" icon="arrow-right" href="/gateway/reverse-proxy">
+    TLS termination at nginx or Caddy.
+  </Card>
+  <Card title="API vs Web Listen" icon="network" href="/gateway/api-vs-web-listen">
+    Which port serves HTTPS traffic.
+  </Card>
+</CardGroup>

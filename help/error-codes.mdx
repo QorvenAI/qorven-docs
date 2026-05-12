@@ -1,0 +1,109 @@
+---
+title: "Error Codes"
+description: "HTTP status codes and agent error messages returned by the Qorven API, and what to do about each."
+sidebarTitle: "Error Codes"
+icon: "alert-circle"
+---
+
+## HTTP status codes
+
+All API errors return a JSON body:
+
+```json
+{
+  "error": "human-readable message",
+  "code": "machine-readable_code"  // present on some errors
+}
+```
+
+### 401 Unauthorized
+
+**Meaning:** The request did not include a valid authentication token, or the token has expired.
+
+**Fix:**
+- Ensure you are sending `Authorization: Bearer <token>` on every request.
+- If using the UI, your session may have expired — log out and log back in.
+- If using the API directly, check that you are using the correct token from `config.toml` (`[auth] token`).
+
+---
+
+### 403 Forbidden
+
+**Meaning:** You are authenticated but do not have permission to perform this action. Common `code` values:
+
+| Code | Meaning |
+|---|---|
+| `admin_only` | This endpoint requires the `admin` role. |
+| `setup_required` | The system has not been set up yet. Visit `/setup`. |
+| `tenant_mismatch` | You are trying to access a resource belonging to a different tenant. |
+
+**Fix:** Check your user's role (`qorven users list`). Admin-only endpoints include anything under `/v1/admin/*`.
+
+---
+
+### 404 Not Found
+
+**Meaning:** The requested resource does not exist.
+
+**Fix:** Check the ID or slug in the URL. If you recently deleted the resource, it is gone. In multi-tenant mode, you can only see resources in your own tenant.
+
+---
+
+### 422 Unprocessable Entity
+
+**Meaning:** The request was well-formed but contained invalid data (validation error).
+
+**Fix:** Check the `error` field in the response body — it will describe which field failed validation and why. Common causes:
+- Missing required fields
+- Invalid enum value (e.g. an unrecognized role name)
+- Value out of allowed range
+
+---
+
+### 429 Too Many Requests
+
+**Meaning:** You have exceeded the rate limit for this endpoint.
+
+| Limit | Default |
+|---|---|
+| Login attempts | 10 per minute per IP |
+| General API | 1,000 per minute per token |
+
+**Fix:** Back off and retry after a moment. For login lockout specifically, the account is locked for 15 minutes after 5 failed attempts — wait for the lockout to expire or have an admin reset it with `qorven users unlock --email <email>`.
+
+---
+
+### 503 Service Unavailable
+
+**Meaning:** The database is not available.
+
+**Fix:**
+1. Check that PostgreSQL is running: `pg_isready -h localhost`
+2. Check the Qorven logs: `qorven logs tail --level error`
+3. Verify the `[database] url` in `config.toml` is correct.
+4. Run `qorven doctor` for a full health check.
+
+---
+
+## Agent error messages
+
+These appear in the UI or in tool call results when something goes wrong during agent execution.
+
+| Message | Meaning | Fix |
+|---|---|---|
+| `tool not allowed` | The agent tried to call a tool not in its allowlist. | Add the tool to the agent's allowlist in Settings → Agents → Tools. |
+| `approval required` | The tool is marked as requiring human approval before execution. | Go to the approvals queue and approve or reject the pending action. |
+| `model not available` | The configured model provider returned an error or the model name is unrecognized. | Check Settings → Providers to verify the API key is valid and the model name is correct. |
+| `context limit exceeded` | The conversation has grown too large for the model's context window. | Start a new session, or enable context compaction in the agent's settings. |
+| `loop guard triggered` | The agent repeated the same action too many times and was stopped. | Review the agent's instructions. The agent may be stuck in a loop due to an unclear goal or a failing tool. |
+| `ssrf blocked` | An agent tool call tried to reach a disallowed domain or private IP address. | If the domain is legitimate, add it to `ssrf_allowlist` in `config.toml`. |
+| `rate limit` | The AI model provider returned a rate limit error. | Wait and retry, or increase your rate limit with the provider. |
+
+<CardGroup cols={2}>
+  <Card title="Getting help" icon="help-circle" href="/help/getting-help">
+    Steps for diagnosing and reporting issues.
+  </Card>
+  <Card title="Log locations" icon="file-text" href="/help/log-locations">
+    Where to find detailed error output.
+  </Card>
+</CardGroup>

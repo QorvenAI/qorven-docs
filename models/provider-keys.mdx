@@ -1,0 +1,85 @@
+---
+title: "Provider Keys"
+description: "Add API keys from OpenAI, Anthropic, Google, and 10+ other providers to unlock their models in Qorven."
+sidebarTitle: "Provider Keys"
+icon: "key"
+---
+
+Provider keys connect Qorven to AI model providers. Without at least one key, agents can't do anything — a key is the first thing you configure after installation.
+
+## Adding a key
+
+<Steps>
+  <Step title="Go to Settings → Provider Keys">
+    Open the dashboard and navigate to **Settings → Provider Keys**.
+  </Step>
+  <Step title="Select the provider">
+    Choose the provider from the list. If your provider isn't listed, use the **OpenAI-compatible endpoint** option — most modern providers support this format.
+  </Step>
+  <Step title="Paste your API key">
+    Paste the key into the field. For providers that need additional configuration (region, endpoint URL, etc.), the form will prompt you for those values.
+  </Step>
+  <Step title="Save and verify">
+    Click **Save**. Qorven immediately tests the key with a lightweight API call. A green checkmark confirms the key works. If it fails, check that you've copied the full key and that it has the necessary permissions.
+  </Step>
+</Steps>
+
+Once saved, the provider's models become available in the [Models Hub](/models/overview) and can be assigned to agents.
+
+## Supported providers
+
+<CardGroup cols={2}>
+  <Card title="Anthropic" icon="sparkles">
+    Claude 3.5 Sonnet, Claude 3.7, Claude Opus, and all other Claude models. Get keys at console.anthropic.com.
+  </Card>
+  <Card title="OpenAI" icon="cpu">
+    GPT-4o, GPT-4o mini, o1, o3, and all OpenAI models. Get keys at platform.openai.com.
+  </Card>
+  <Card title="Google" icon="cloud">
+    Gemini 2.0 Flash, Gemini 2.5 Pro, and other Gemini models. Get keys at aistudio.google.com.
+  </Card>
+  <Card title="AWS Bedrock" icon="cloud">
+    Claude, Llama, Titan, and other models via AWS. Requires AWS credentials (access key + secret).
+  </Card>
+  <Card title="Groq" icon="zap">
+    Ultra-fast inference for Llama and Mixtral. Get keys at console.groq.com.
+  </Card>
+  <Card title="Mistral" icon="wind">
+    Mistral Large, Small, and Codestral. Get keys at console.mistral.ai.
+  </Card>
+  <Card title="DeepSeek" icon="brain">
+    DeepSeek-V3 and DeepSeek-R1 reasoning model. Get keys at platform.deepseek.com.
+  </Card>
+  <Card title="xAI" icon="x">
+    Grok models from xAI. Get keys at console.x.ai.
+  </Card>
+  <Card title="OpenRouter" icon="route">
+    Unified gateway to 200+ models from multiple providers with a single key.
+  </Card>
+  <Card title="LiteLLM" icon="layers">
+    Self-hosted proxy that standardizes access to 100+ providers.
+  </Card>
+  <Card title="Ollama" icon="server">
+    Run models locally on your own hardware. No API key required — just the endpoint URL.
+  </Card>
+  <Card title="Any OpenAI-compatible endpoint" icon="plug">
+    LM Studio, vLLM, Together AI, Fireworks, or any provider with an OpenAI-compatible API.
+  </Card>
+</CardGroup>
+
+## Key storage
+
+Keys are encrypted at rest using AES-256 before being stored in the database. They are never logged, never included in audit log entries, and never returned in plaintext after being saved. If you need to update a key, overwrite it — you cannot retrieve the existing value.
+
+## Multiple keys per provider
+
+You can add more than one key per provider — useful if you have keys scoped to different projects, cost centers, or rate limit tiers. Each key gets a label. Assign specific keys to specific agents in the agent's configuration.
+
+<CardGroup cols={2}>
+  <Card title="Default model" icon="cpu" href="/models/default-model">
+    Set the model all agents use unless configured otherwise.
+  </Card>
+  <Card title="Local models" icon="server" href="/models/local-models">
+    Run models on your own hardware with Ollama.
+  </Card>
+</CardGroup>

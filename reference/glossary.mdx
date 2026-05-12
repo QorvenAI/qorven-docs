@@ -1,0 +1,78 @@
+---
+title: "Glossary"
+description: "Key terms used in Qorven — what they mean and how they relate to each other."
+sidebarTitle: "Glossary"
+icon: "book-open"
+---
+
+## Agent
+
+An AI specialist with a defined job. Every agent has instructions (what it does), tools (what it can act on), a model (which AI powers it), and memory (what it remembers). Qorven ships with five built-in agents and lets you create as many custom agents as you need. Previously called "Qor" in early versions.
+
+## Prime
+
+Your lead agent and default point of contact. Prime understands your request, decides how to handle it, and coordinates other agents when needed. Think of Prime as your AI Chief of Staff — you tell it what you need, it figures out who does what.
+
+## Tool
+
+A specific capability an agent can use: searching the web, reading a file, sending an email, running code, tracking a shipment. Agents call tools when handling a task. You can see every tool call and its result in the chat interface in real time.
+
+## Memory
+
+Information an agent stores for future use — your preferences, past decisions, project context, business facts. Memory persists across conversations and sessions. Different memory types (user facts, project context, skills) are stored and searched differently. See [Memory overview →](/memory/overview).
+
+## Session
+
+A single conversation thread between you and an agent. Sessions are saved and can be resumed. Agents carry context within a session; between sessions, they rely on long-term memory.
+
+## Skill
+
+A saved procedure an agent has learned. When an agent figures out a reliable way to do something, it can save that as a skill and reuse it automatically. Skills can be shared across your team or installed from the marketplace.
+
+## Channel
+
+Where you reach your agents. The web dashboard is one channel. Telegram, WhatsApp, Slack, Discord, email, SMS, and webhooks are others. The same agent responds consistently across all channels you've connected.
+
+## Approval
+
+A confirmation step required before an agent takes a significant action — sending an email, modifying a file, running a command. Approval requests appear in the dashboard and can also be sent to you via your preferred channel. You approve or reject with one tap.
+
+## Briefing
+
+A scheduled report your agent delivers on a regular cadence — a morning email summary, a weekly business update, a daily news digest. Briefings are configured in the **Schedule** section of the dashboard.
+
+## Connector
+
+A link to a third-party service — Google Drive, Gmail, Notion, GitHub, Slack. Once connected, agents can read from and write to these services using the appropriate tools.
+
+## Cron
+
+A time-based schedule for agent tasks. Uses standard cron syntax (e.g., `0 8 * * 1-5` for weekdays at 8am). Managed in **Settings → Schedule** or via `qorven cron`.
+
+## Workspace
+
+A Qorven install — one server, one database, one set of agents and settings. All users on the same install share the same workspace. Multi-tenant setups are possible but each tenant is isolated.
+
+## Model
+
+The AI that powers an agent's responses — GPT-4o, Claude Sonnet, Gemini Flash, a local Llama model, etc. Different agents can use different models. Managed in the **Models Hub**.
+
+## Provider
+
+An AI company whose models you've connected to Qorven — OpenAI, Anthropic, Google, DeepSeek, Mistral, etc. You bring your own API keys; Qorven adds no markup on usage.
+
+## Smart routing
+
+An optional feature that automatically selects the best model for each task based on task type, context length, and cost. Enabled in **Models Hub**.
+
+## Delegation
+
+When Prime or another agent hands off a task to a specialist. Prime delegates by calling the `delegate_to_agent` tool. The specialist runs, returns its output, and Prime incorporates the result into its reply.
+
+## Audit log
+
+A complete, tamper-evident record of every agent action — tool calls, messages sent, approvals granted or rejected, model calls made. Available in the **Audit** page of the dashboard and via the CLI.
+
+## Inbound rules
+
+Routing logic for messages that arrive on connected channels. Rules can match on sender, keywords, or time of day, and route matching messages to a specific agent or trigger a specific response.

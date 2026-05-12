@@ -1,0 +1,81 @@
+---
+title: "Knowledge Graph"
+description: "Agents automatically link memories into a connected graph of entities and relationships, visualised in the Knowledge Graph page."
+sidebarTitle: "Knowledge Graph"
+icon: "network"
+---
+
+Individual memories tell agents isolated facts. The knowledge graph connects those facts into a structured picture of the world — linking people, companies, projects, and concepts into a web of relationships that agents can reason about.
+
+## What the knowledge graph is
+
+As agents work, they don't just store facts — they identify entities (a person, a company, a project) and the relationships between them. These connections form a graph:
+
+```
+Sarah Chen → works at → Meridian Corp
+Meridian Corp → is client of → Project Falcon
+Project Falcon → has deadline → August 2025
+Project Falcon → depends on → API integration
+```
+
+When you ask "what do we have coming up with Meridian?", the agent doesn't just search for "Meridian" — it traverses the graph and surfaces everything connected: the contact, the project, the deadline, and the dependencies.
+
+This is faster and more reliable than searching flat memory for complex relational questions.
+
+## How it's built
+
+The knowledge graph is built automatically as agents work. You don't configure or populate it manually.
+
+When an agent stores a memory, it also:
+
+1. Identifies entities mentioned (people, companies, products, locations, dates)
+2. Identifies the relationships between those entities
+3. Creates or updates nodes and edges in the graph
+
+Over time, the graph grows to reflect your actual business context — clients, projects, team members, tools, and how they all connect.
+
+## Viewing the knowledge graph
+
+Go to **Dashboard → Knowledge Graph** to see an interactive visualisation of your entity graph.
+
+- **Nodes** represent entities (people, companies, projects, etc.)
+- **Edges** represent relationships between them
+- Click any node to see its associated memories and connections
+- Use the search box to jump to a specific entity
+- Filter by entity type (Person, Company, Project, etc.)
+
+The graph updates in real time as agents store new memories.
+
+## Why it matters for agents
+
+Without a knowledge graph, agents answer relational questions by searching for each entity separately and hoping the results connect. With a knowledge graph, they can traverse relationships directly.
+
+Practical difference:
+
+| Question | Without graph | With graph |
+|---|---|---|
+| "Who's my contact at Meridian?" | Searches for "Meridian contact" — may miss it | Traverses: Meridian Corp → primary contact → Sarah Chen |
+| "What projects are at risk this quarter?" | Searches for "at risk" memories | Traverses: all projects → with deadline in Q3 → flagged as blocked |
+| "Has Apex Corp worked with us before?" | May not find an older memory | Checks the entity graph for any historical Apex Corp connections |
+
+## Entities Qorven tracks automatically
+
+- **People** — names, roles, email addresses, organizations
+- **Companies** — clients, vendors, partners
+- **Projects** — names, goals, deadlines, team members
+- **Products** — things you sell or build
+- **Locations** — offices, regions, delivery addresses
+- **Dates and deadlines** — linked to the projects and people they belong to
+
+<Tip>
+  The graph is most useful after a few weeks of regular use. The more your agents work — researching, communicating, tracking tasks — the richer and more accurate the graph becomes.
+</Tip>
+
+<CardGroup cols={2}>
+  <Card title="Memory types" icon="layers" href="/memory/types">
+    The building blocks that populate the knowledge graph.
+  </Card>
+  <Card title="Memory search" icon="search" href="/memory/search">
+    How semantic search and graph traversal work together.
+  </Card>
+</CardGroup>
