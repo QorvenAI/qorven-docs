@@ -158,6 +158,11 @@
       "twitter:card": "summary_large_image"
     }
   },
+  "analytics": {
+    "ga4": {
+      "measurementId": "G-8GCSD8SHQ2"
+    }
+  },
   "errors": {
     "404": {
       "redirect": false,
